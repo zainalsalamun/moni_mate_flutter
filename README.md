@@ -80,16 +80,18 @@ lib/
 ┃ ┗ app_theme.dart
 ┗ main.dart
 
+
 ---
 
 ## 🧾 Preview (Screenshots)
+## Versi Light Mode
 
 | Dashboard | Add Transaksi | Statistik | Settings |
 |------------|----------------|------------|------------|
 | ![Dashboard](assets/screenshots/dashboard_light.png) | ![Add](assets/screenshots/add_light.png) | ![Stats](assets/screenshots/stats_light.png) | ![Settings](assets/screenshots/settings_light.png) |
 
 
-## Dark
+## Versi Dark Mode
 
 | Dashboard | Add Transaksi | Statistik | Settings |
 |------------|----------------|------------|------------|
