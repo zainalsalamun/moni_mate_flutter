@@ -88,7 +88,14 @@ lib/
 
 | Dashboard | Add Transaksi | Statistik | Settings |
 |------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/dashboard_light.png) | ![Add](assets/screenshots/add_light.png) |![Add](assets/screenshots/list_light.png)| | ![Stats](assets/screenshots/stats_light.png) | ![Settings](assets/screenshots/settings_light.png) |
+| ![Dashboard](assets/screenshots/dashboard_light.png) | ![Add](assets/screenshots/add_light.png) | ![Stats](assets/screenshots/stats_light.png) | ![Settings](assets/screenshots/settings_light.png) |
+
+
+## Dark
+
+| Dashboard | Add Transaksi | Statistik | Settings |
+|------------|----------------|------------|------------|
+| ![Dashboard](assets/screenshots/dashboard_dark.png) | ![Add](assets/screenshots/add_dark.png) | ![Stats](assets/screenshots/stats_dark.png) | ![Settings](assets/screenshots/settings_dark.png) |
 
 > 📸 *Ganti dengan screenshot asli setelah build release.*
 
