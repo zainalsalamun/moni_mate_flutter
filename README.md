@@ -159,3 +159,21 @@ flutter pub get
 
 # Jalankan app
 flutter run
+
+# Build APK
+flutter build apk --debug
+
+# Build APK Release
+flutter build apk --release
+
+# Build APK Release (split per abi)
+flutter build apk --release --split-per-abi
+
+# Build APK Release (split per abi & obfuscate)
+flutter build apk --release --split-per-abi --obfuscate --split-debug-info=./debug-info
+
+# Build App Bundle
+flutter build appbundle --release
+
+
+
