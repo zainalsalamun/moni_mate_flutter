@@ -79,6 +79,7 @@ lib/
 ┣ theme/
 ┃ ┗ app_theme.dart
 ┗ main.dart
+
 ---
 
 ## 🧾 Preview (Screenshots)
