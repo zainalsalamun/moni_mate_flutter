@@ -22,6 +22,7 @@ dependencies:
   csv: ^6.0.0
   share_plus: ^10.0.2
   get_storage: ^2.1.1
+  lottie: ^2.3.1     
 
 
 dev_dependencies:
@@ -30,8 +31,20 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   build_runner: ^2.4.6
   hive_generator: ^2.0.1
+  flutter_native_splash: ^2.2.12
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/images/monimate_logo.png
+
+
+flutter_native_splash:
+  color: "#48C6EF"                # background color native splash (ocean toska)
+  image: assets/images/monimate_logo.png  
+  android: true
+  ios: true
+  android_gravity: center
+  ios_content_mode: center
+  web: false
