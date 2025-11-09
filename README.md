@@ -122,11 +122,11 @@ lib/
 
 ## 👨‍💻 Dibuat oleh
 
-**Zainal Salamun (Bang Jay)**  
+**Zainal Salamun**  
 Android & Flutter Developer  
 💼 7+ tahun pengalaman di Android, Kotlin, & Flutter  
 🌍 Indonesia  
-📬 [LinkedIn](https://linkedin.com) • [Threads](https://www.threads.net)  
+📬 [LinkedIn](https://www.linkedin.com/in/zainal-salamun-660a9598/) • [Threads](https://www.threads.com/@zainalsalamun)  
 
 ---
 
