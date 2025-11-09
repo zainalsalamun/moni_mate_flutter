@@ -1,6 +1,6 @@
 # 💰 MoniMate — Personal Finance Tracker (Offline)
 
-> *Project iseng di waktu luang, tapi berasa fintech beneran 💸*
+> *Project iseng di waktu luang, tapi berasa fintech beneran *
 
 ---
 
@@ -149,7 +149,7 @@ Android & Flutter Developer
 
 ```bash
 # Clone project
-git clone https://github.com/yourusername/monimate.git
+git clone https://github.com/zainalsalamun/moni_mate_flutter
 
 # Masuk ke folder
 cd monimate
