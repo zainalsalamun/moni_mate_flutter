@@ -1,6 +1,6 @@
 # 💰 MoniMate — Personal Finance Tracker (Offline)
 
-> *Project iseng di waktu luang, tapi berasa fintech beneran *
+> Project iseng di waktu luang, tapi berasa fintech beneran
 
 ---
 
