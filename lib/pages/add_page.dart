@@ -1,8 +1,21 @@
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:monimate/data/controller/transaction_controller.dart';
 
-class AddPage extends StatelessWidget {
+class AddPage extends StatefulWidget {
   const AddPage({super.key});
+
+  @override
+  State<AddPage> createState() => _AddPageState();
+}
+
+class _AddPageState extends State<AddPage> {
+  final TransactionController controller = Get.find();
+
+  String type = 'expense';
+  String category = 'makan';
+  final TextEditingController nominalC = TextEditingController();
+  final TextEditingController descC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -10,13 +23,21 @@ class AddPage extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         ToggleButtons(
-          isSelected: const [false, true],
+          isSelected: [type == 'income', type == 'expense'],
           borderRadius: BorderRadius.circular(14),
-          children: const [Padding(padding: EdgeInsets.all(10), child: Text('Pemasukan')), Padding(padding: EdgeInsets.all(10), child: Text('Pengeluaran'))],
-          onPressed: (_){},
+          onPressed: (i) {
+            setState(() => type = i == 0 ? 'income' : 'expense');
+          },
+          children: const [
+            Padding(padding: EdgeInsets.all(10), child: Text('Pemasukan')),
+            Padding(padding: EdgeInsets.all(10), child: Text('Pengeluaran')),
+          ],
         ),
         const SizedBox(height: 16),
+
+        // Nominal
         TextField(
+          controller: nominalC,
           keyboardType: TextInputType.number,
           decoration: InputDecoration(
             labelText: 'Nominal',
@@ -25,30 +46,54 @@ class AddPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+
+        // Kategori
         DropdownButtonFormField<String>(
+          value: category,
           items: const [
             DropdownMenuItem(value: 'makan', child: Text('🍔 Makan')),
             DropdownMenuItem(value: 'transport', child: Text('🚗 Transport')),
             DropdownMenuItem(value: 'hiburan', child: Text('🎮 Hiburan')),
             DropdownMenuItem(value: 'gaji', child: Text('💼 Pemasukan')),
           ],
-          onChanged: (_){},
+          onChanged: (v) => setState(() => category = v!),
           decoration: InputDecoration(
             labelText: 'Kategori',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
         const SizedBox(height: 12),
-        OutlinedButton.icon(onPressed: (){}, icon: const Icon(Icons.calendar_month), label: const Text('3 Nov 2025')),
-        const SizedBox(height: 12),
+
+        // Deskripsi
         TextField(
+          controller: descC,
           decoration: InputDecoration(
             labelText: 'Deskripsi (opsional)',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
         const SizedBox(height: 16),
-        ElevatedButton(onPressed: (){}, child: const Text('Simpan Transaksi')),
+
+        ElevatedButton.icon(
+          icon: const Icon(Icons.save_outlined),
+          label: const Text('Simpan Transaksi'),
+          onPressed: () {
+            final amount = double.tryParse(
+                    nominalC.text.replaceAll('.', '').replaceAll(',', '.')) ??
+                0;
+            if (amount <= 0) {
+              Get.snackbar(
+                  'Nominal tidak valid', 'Masukkan nominal yang benar');
+              return;
+            }
+
+            controller.addTransaction(type, category, amount, descC.text);
+            Get.snackbar('Berhasil', 'Transaksi disimpan!');
+            nominalC.clear();
+            descC.clear();
+            FocusScope.of(context).unfocus();
+          },
+        ),
       ],
     );
   }
