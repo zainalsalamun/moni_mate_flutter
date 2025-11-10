@@ -4,7 +4,7 @@
 
 ---
 
-## 🧩 Deskripsi
+## Deskripsi
 
 **MoniMate** adalah aplikasi pencatat keuangan pribadi berbasis **Flutter**, yang bisa digunakan **sepenuhnya offline**.  
 Didesain dengan gaya **modern fintech UI/UX** agar nyaman digunakan sehari-hari, ringan, dan tetap elegan di Light maupun Dark mode.
@@ -13,7 +13,7 @@ Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menam
 
 ---
 
-## 🧠 Tujuan Project
+## Tujuan Project
 
 - Melatih implementasi **offline-first architecture** (tanpa backend).
 - Eksperimen dengan **GetX** untuk state management dan **Hive** untuk database lokal.
@@ -116,7 +116,7 @@ lib/
 ## 🧠 Insight Dev
 
 > “Project iseng di waktu luang, tapi siapa tahu bisa bantu orang lain mengatur keuangannya.”  
-> — **Bang Jay**
+> — **Zainal Salamun**
 
 ---
 
