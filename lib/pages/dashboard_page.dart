@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/utils/date_formater.dart';
+import 'package:monimate/utils/format_currency.dart';
 import '../theme/app_theme.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -30,7 +32,8 @@ class DashboardPage extends StatelessWidget {
                         ?.copyWith(color: Colors.white70)),
                 const SizedBox(height: 6),
                 Text(
-                  'Rp ${(c.totalIncome.value - c.totalExpense.value).toStringAsFixed(0)}',
+                  CurrencyFormat.format(
+                      c.totalIncome.value - c.totalExpense.value),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                       color: Colors.white, fontWeight: FontWeight.w700),
                 ),
@@ -69,21 +72,38 @@ class DashboardPage extends StatelessWidget {
                     ...c.transactions.reversed.take(5).map(
                           (t) => ListTile(
                             leading: Text(
-                                t.category == 'gaji'
-                                    ? '💼'
-                                    : t.category == 'makan'
-                                        ? '🍔'
-                                        : t.category == 'transport'
-                                            ? '🚗'
-                                            : '🎮',
-                                style: const TextStyle(fontSize: 20)),
+                              t.category == 'gaji'
+                                  ? '💼'
+                                  : t.category == 'makan'
+                                      ? '🍔'
+                                      : t.category == 'transport'
+                                          ? '🚗'
+                                          : t.category == 'hiburan'
+                                              ? '🎮'
+                                              : t.category == 'belanja'
+                                                  ? '🛍️'
+                                                  : t.category == 'kesehatan'
+                                                      ? '💊'
+                                                      : t.category ==
+                                                              'pendidikan'
+                                                          ? '📚'
+                                                          : t.category ==
+                                                                  'tagihan'
+                                                              ? '💡'
+                                                              : '🧩',
+                              style: const TextStyle(fontSize: 20),
+                            ),
                             title: Text(t.description.isEmpty
                                 ? t.category.capitalizeFirst!
                                 : t.description),
+                            // subtitle: Text(
+                            //     '${t.date.day}/${t.date.month}/${t.date.year}'),
                             subtitle: Text(
-                                '${t.date.day}/${t.date.month}/${t.date.year}'),
+                              DateFormatter.format(t.date),
+                              style: const TextStyle(color: Colors.grey),
+                            ),
                             trailing: Text(
-                              '${t.type == 'income' ? '+' : '-'} Rp ${t.amount.toStringAsFixed(0)}',
+                              '${t.type == 'income' ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
                               style: TextStyle(
                                 color: t.type == 'income'
                                     ? Colors.green
@@ -108,8 +128,11 @@ class _MiniStat extends StatelessWidget {
   final double value;
   final Color color;
 
-  const _MiniStat(
-      {required this.label, required this.value, required this.color});
+  const _MiniStat({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -118,8 +141,10 @@ class _MiniStat extends StatelessWidget {
       children: [
         Icon(Icons.circle, color: color, size: 10),
         const SizedBox(width: 6),
-        Text('$label: Rp ${value.toStringAsFixed(0)}',
-            style: const TextStyle(color: Colors.white70)),
+        Text(
+          '$label: ${CurrencyFormat.format(value)}',
+          style: const TextStyle(color: Colors.white70),
+        ),
       ],
     );
   }

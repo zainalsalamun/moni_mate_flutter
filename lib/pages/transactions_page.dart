@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/pages/shell.dart';
+import 'package:monimate/utils/date_formater.dart';
+import 'package:monimate/utils/format_currency.dart';
 
 class TransactionsPage extends StatelessWidget {
   const TransactionsPage({super.key});
@@ -84,8 +86,23 @@ class TransactionsPage extends StatelessWidget {
             case 'transport':
               icon = Icons.directions_car_outlined;
               break;
+            case 'hiburan':
+              icon = Icons.videogame_asset_outlined;
+              break;
+            case 'belanja':
+              icon = Icons.shopping_bag_outlined;
+              break;
+            case 'kesehatan':
+              icon = Icons.local_hospital_outlined;
+              break;
+            case 'pendidikan':
+              icon = Icons.school_outlined;
+              break;
+            case 'tagihan':
+              icon = Icons.receipt_long_outlined;
+              break;
             default:
-              icon = Icons.local_play_outlined;
+              icon = Icons.extension_outlined;
           }
 
           return Card(
@@ -109,11 +126,11 @@ class TransactionsPage extends StatelessWidget {
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
               subtitle: Text(
-                '${t.date.day}/${t.date.month}/${t.date.year}',
+                DateFormatter.format(t.date),
                 style: const TextStyle(color: Colors.grey),
               ),
               trailing: Text(
-                '${isIncome ? '+' : '-'} Rp ${t.amount.toStringAsFixed(0)}',
+                '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
                 style: TextStyle(
                   color: isIncome ? Colors.green : Colors.redAccent,
                   fontWeight: FontWeight.w600,

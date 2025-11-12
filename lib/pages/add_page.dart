@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/utils/format_currency.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -36,18 +37,43 @@ class _AddPageState extends State<AddPage> {
         const SizedBox(height: 16),
 
         // Nominal
+        // TextField(
+        //   controller: nominalC,
+        //   keyboardType: TextInputType.number,
+        //   decoration: InputDecoration(
+        //     labelText: 'Nominal',
+        //     hintText: 'Rp 0',
+        //     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        //   ),
+        // ),
         TextField(
           controller: nominalC,
           keyboardType: TextInputType.number,
+          onChanged: (value) {
+            final cleanText = value.replaceAll(RegExp(r'[^0-9]'), '');
+            if (cleanText.isEmpty) {
+              nominalC.text = '';
+              nominalC.selection = const TextSelection.collapsed(offset: 0);
+              return;
+            }
+
+            final amount = double.tryParse(cleanText) ?? 0;
+            final formatted =
+                CurrencyFormat.format(amount).replaceAll('Rp ', '');
+
+            nominalC.value = TextEditingValue(
+              text: formatted,
+              selection: TextSelection.collapsed(offset: formatted.length),
+            );
+          },
           decoration: InputDecoration(
             labelText: 'Nominal',
-            hintText: 'Rp 0',
+            prefixText: 'Rp ',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
         const SizedBox(height: 12),
 
-        // Kategori
         DropdownButtonFormField<String>(
           value: category,
           items: const [
@@ -55,6 +81,11 @@ class _AddPageState extends State<AddPage> {
             DropdownMenuItem(value: 'transport', child: Text('🚗 Transport')),
             DropdownMenuItem(value: 'hiburan', child: Text('🎮 Hiburan')),
             DropdownMenuItem(value: 'gaji', child: Text('💼 Pemasukan')),
+            DropdownMenuItem(value: 'belanja', child: Text('🛍️ Belanja')),
+            DropdownMenuItem(value: 'kesehatan', child: Text('💊 Kesehatan')),
+            DropdownMenuItem(value: 'pendidikan', child: Text('📚 Pendidikan')),
+            DropdownMenuItem(value: 'tagihan', child: Text('💡 Tagihan')),
+            DropdownMenuItem(value: 'lainnya', child: Text('🧩 Lainnya')),
           ],
           onChanged: (v) => setState(() => category = v!),
           decoration: InputDecoration(
@@ -62,6 +93,7 @@ class _AddPageState extends State<AddPage> {
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
+
         const SizedBox(height: 12),
 
         // Deskripsi
