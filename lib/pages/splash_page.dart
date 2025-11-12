@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/date_symbol_data_local.dart'; // ⬅️ Tambahkan import ini
 import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
-import '../data/services/hive_service.dart';
+import 'package:monimate/data/services/hive_service.dart';
+
 import 'shell.dart';
 
 class SplashPage extends StatefulWidget {
@@ -21,28 +23,27 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   Future<void> _initEverything() async {
-    // inisialisasi yang perlu dijalankan sebelum tampilkan UI utama
     try {
+      await initializeDateFormatting('id_ID', null);
+
       await HiveService.init();
-      await Future.delayed(const Duration(milliseconds: 500)); // buat smooth
-      // register controller setelah Hive ready
+
       Get.put(TransactionController());
       Get.put(ThemeController());
+
+      await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
-      // log error, tapi tetap lanjutkan supaya user tidak tertahan
       debugPrint('Init error: $e');
     }
 
-    // beri waktu untuk animasi splash ~1s lalu pindah
     Timer(const Duration(milliseconds: 900), () {
-      // Ganti ke Shell (replace)
       Get.offAll(() => const Shell());
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final primary = const Color(0xFF48C6EF);
+    const primary = Color(0xFF48C6EF);
     return Scaffold(
       backgroundColor: primary,
       body: SafeArea(
@@ -50,12 +51,11 @@ class _SplashPageState extends State<SplashPage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Kalau pakai Lottie:
-              // Lottie.asset('assets/lottie/monimate_splash.json', width: 160, height: 160, fit: BoxFit.contain),
-
-              // Jika tidak pakai Lottie, pakai logo static + simple animation
-              Image.asset('assets/images/monimate_logo.png',
-                  width: 140, height: 140),
+              Image.asset(
+                'assets/images/monimate_logo.png',
+                width: 140,
+                height: 140,
+              ),
               const SizedBox(height: 18),
               const Text(
                 'MoniMate',
@@ -73,7 +73,7 @@ class _SplashPageState extends State<SplashPage> {
                   color: Colors.white,
                   backgroundColor: Colors.white24,
                 ),
-              )
+              ),
             ],
           ),
         ),
