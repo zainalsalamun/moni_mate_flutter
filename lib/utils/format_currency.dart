@@ -4,7 +4,7 @@ class CurrencyFormat {
   static String format(double amount) {
     final formatCurrency = NumberFormat.currency(
       locale: 'id_ID',
-      symbol: 'Rp ',
+      symbol: 'Rp. ',
       decimalDigits: 0,
     );
     return formatCurrency.format(amount);
