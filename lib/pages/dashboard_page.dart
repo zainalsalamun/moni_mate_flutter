@@ -96,8 +96,6 @@ class DashboardPage extends StatelessWidget {
                             title: Text(t.description.isEmpty
                                 ? t.category.capitalizeFirst!
                                 : t.description),
-                            // subtitle: Text(
-                            //     '${t.date.day}/${t.date.month}/${t.date.year}'),
                             subtitle: Text(
                               DateFormatter.format(t.date),
                               style: const TextStyle(color: Colors.grey),
