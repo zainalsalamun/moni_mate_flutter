@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/utils/format_currency.dart';
 
 class StatsPage extends StatelessWidget {
   const StatsPage({super.key});
@@ -102,7 +103,7 @@ class StatsPage extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Expanded(child: Text(e.key.capitalizeFirst!)),
-                        Text('Rp ${e.value.toStringAsFixed(0)}'),
+                        Text(CurrencyFormat.format(e.value)),
                       ],
                     );
                   }),
