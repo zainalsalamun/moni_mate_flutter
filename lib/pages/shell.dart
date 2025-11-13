@@ -38,7 +38,6 @@ class _ShellState extends State<Shell> {
               transitionBuilder: (child, anim) =>
                   FadeTransition(opacity: anim, child: child),
               child: KeyedSubtree(
-                // biar AnimatedSwitcher detect perubahan
                 key: ValueKey<int>(shellC.index.value),
                 child: pages[shellC.index.value],
               ),
@@ -48,22 +47,35 @@ class _ShellState extends State<Shell> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(20),
-          child: Obx(() => NavigationBar(
-                destinations: const [
-                  NavigationDestination(
-                      icon: Icon(Icons.home_outlined), label: 'Home'),
-                  NavigationDestination(
-                      icon: Icon(Icons.list_alt_outlined), label: 'Transaksi'),
-                  NavigationDestination(
-                      icon: Icon(Icons.add_circle_outline), label: 'Tambah'),
-                  NavigationDestination(
-                      icon: Icon(Icons.bar_chart_outlined), label: 'Statistik'),
-                  NavigationDestination(
-                      icon: Icon(Icons.settings_outlined), label: 'Pengaturan'),
-                ],
-                selectedIndex: shellC.index.value,
-                onDestinationSelected: (i) => shellC.changeTab(i),
-                height: 64,
+          child: Obx(() => NavigationBarTheme(
+                data: NavigationBarThemeData(
+                  labelTextStyle: MaterialStateProperty.all(
+                    Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                  ),
+                ),
+                child: NavigationBar(
+                  destinations: const [
+                    NavigationDestination(
+                        icon: Icon(Icons.home_outlined), label: 'Home'),
+                    NavigationDestination(
+                        icon: Icon(Icons.list_alt_outlined),
+                        label: 'Transaksi'),
+                    NavigationDestination(
+                        icon: Icon(Icons.add_circle_outline), label: 'Tambah'),
+                    NavigationDestination(
+                        icon: Icon(Icons.bar_chart_outlined),
+                        label: 'Statistik'),
+                    NavigationDestination(
+                        icon: Icon(Icons.settings_outlined),
+                        label: 'Pengaturan'),
+                  ],
+                  selectedIndex: shellC.index.value,
+                  onDestinationSelected: (i) => shellC.changeTab(i),
+                  height: 64,
+                ),
               )),
         ),
       ),
