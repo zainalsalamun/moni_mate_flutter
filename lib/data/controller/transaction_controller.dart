@@ -9,7 +9,7 @@ class TransactionController extends GetxController {
   final RxDouble totalIncome = 0.0.obs;
   final RxDouble totalExpense = 0.0.obs;
 
-  var filterType = 'monthly'.obs;
+  final RxString filterType = "daily".obs;
 
   @override
   void onInit() {
