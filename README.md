@@ -82,29 +82,14 @@ Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menam
 ## 🧾 Preview (Screenshots)
 ## Versi Light Mode
 
-| Dashboard | Add Transaksi | Statistik | Settings |
-|------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/dashboard_light.png) | ![Add](assets/screenshots/add_light.png) | ![Stats](assets/screenshots/stats_light.png) | ![Settings](assets/screenshots/settings_light.png) |
-
-
-## Versi Dark Mode
-
-| Dashboard | Add Transaksi | Statistik | Settings |
-|------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/dashboard_dark.png) | ![Add](assets/screenshots/add_dark.png) | ![Stats](assets/screenshots/stats_dark.png) | ![Settings](assets/screenshots/settings_dark.png) |
-
-
-## Versi Light Mode ios
-
-| Dashboard | Add Transaksi | Statistik | Settings |
-|------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/ios/dashboard_ios_light.png) | ![Add](assets/screenshots/ios/add_ios_light.png) | ![Stats](assets/screenshots/ios/stats_ios_light.png) | ![Settings](assets/screenshots/ios/settings_ios_light.png) |
-
-## Versi Dark Mode ios
-
-| Dashboard | Add Transaksi | Statistik | Settings |
-|------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/ios/dashboard_ios_dark.png) | ![Add](assets/screenshots/ios/add_ios_dark.png) | ![Stats](assets/screenshots/ios/stats_ios_dark.png) | ![Settings](assets/screenshots/ios/settings_ios_dark.png) |
+Versi Light Mode
+<table> <tr> <td><img src="assets/screenshots/dashboard_light.png" width="250"></td> <td><img src="assets/screenshots/add_light.png" width="250"></td> <td><img src="assets/screenshots/stats_light.png" width="250"></td> <td><img src="assets/screenshots/settings_light.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
+Versi Dark Mode
+<table> <tr> <td><img src="assets/screenshots/dashboard_dark.png" width="250"></td> <td><img src="assets/screenshots/add_dark.png" width="250"></td> <td><img src="assets/screenshots/stats_dark.png" width="250"></td> <td><img src="assets/screenshots/settings_dark.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
+Versi Light Mode iOS
+<table> <tr> <td><img src="assets/screenshots/ios/dashboard_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/add_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/stats_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/settings_ios_light.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
+Versi Dark Mode iOS
+<table> <tr> <td><img src="assets/screenshots/ios/dashboard_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/add_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/stats_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/settings_ios_dark.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
 
 > 📸 *Ganti dengan screenshot asli setelah build release.*
 
