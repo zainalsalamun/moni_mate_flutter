@@ -60,25 +60,21 @@ Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menam
 
 ## 🧰 Struktur Proyek
 
-lib/
-┣ controllers/
-┃ ┗ transaction_controller.dart
-┣ data/
-┃ ┗ models/
-┃ ┗ transaction_model.dart
-┣ pages/
-┃ ┣ dashboard_page.dart
-┃ ┣ transactions_page.dart
-┃ ┣ add_page.dart
-┃ ┣ stats_page.dart
-┃ ┣ settings_page.dart
-┃ ┗ shell.dart
-┣ services/
-┃ ┣ hive_service.dart
-┃ ┗ export_service.dart
-┣ theme/
-┃ ┗ app_theme.dart
-┗ main.dart
+| Lokasi             | File / Folder                 | Deskripsi                                    |
+| ------------------ | ----------------------------- | -------------------------------------------- |
+| `lib/controllers/` | `transaction_controller.dart` | Logic bisnis & state GetX untuk transaksi    |
+| `lib/data/models/` | `transaction_model.dart`      | Model data transaksi                         |
+| `lib/pages/`       | `dashboard_page.dart`         | Halaman dashboard ringkasan                  |
+|                    | `transactions_page.dart`      | Daftar transaksi                             |
+|                    | `add_page.dart`               | Form tambah transaksi                        |
+|                    | `stats_page.dart`             | Statistik & grafik                           |
+|                    | `settings_page.dart`          | Pengaturan aplikasi                          |
+|                    | `shell.dart`                  | Navigation shell (bottom nav / layout utama) |
+| `lib/services/`    | `hive_service.dart`           | CRUD & penyimpanan lokal Hive                |
+|                    | `export_service.dart`         | Export data (CSV, PDF, dll)                  |
+| `lib/theme/`       | `app_theme.dart`              | Tema warna & styling                         |
+| `lib/main.dart`    | –                             | Entry point Flutter                          |
+
 
 
 ---
