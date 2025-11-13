@@ -36,24 +36,17 @@ class _AddPageState extends State<AddPage> {
         ),
         const SizedBox(height: 16),
 
-        // Nominal
-        // TextField(
-        //   controller: nominalC,
-        //   keyboardType: TextInputType.number,
-        //   decoration: InputDecoration(
-        //     labelText: 'Nominal',
-        //     hintText: 'Rp 0',
-        //     border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        //   ),
-        // ),
         TextField(
           controller: nominalC,
           keyboardType: TextInputType.number,
           onChanged: (value) {
             final cleanText = value.replaceAll(RegExp(r'[^0-9]'), '');
+
             if (cleanText.isEmpty) {
-              nominalC.text = '';
-              nominalC.selection = const TextSelection.collapsed(offset: 0);
+              nominalC.value = const TextEditingValue(
+                text: '',
+                selection: TextSelection.collapsed(offset: 0),
+              );
               return;
             }
 
@@ -61,23 +54,26 @@ class _AddPageState extends State<AddPage> {
             final formatted =
                 CurrencyFormat.format(amount).replaceAll('Rp ', '');
 
-            nominalC.value = TextEditingValue(
-              text: formatted,
-              selection: TextSelection.collapsed(offset: formatted.length),
-            );
+            if (value != formatted) {
+              nominalC.value = TextEditingValue(
+                text: formatted,
+                selection: TextSelection.collapsed(offset: formatted.length),
+              );
+            }
           },
           decoration: InputDecoration(
             labelText: 'Nominal',
-            prefixText: 'Rp ',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
           ),
         ),
+
         const SizedBox(height: 12),
 
         DropdownButtonFormField<String>(
           value: category,
           items: const [
             DropdownMenuItem(value: 'makan', child: Text('🍔 Makan')),
+            DropdownMenuItem(value: 'minum', child: Text('🥤 Minum')),
             DropdownMenuItem(value: 'transport', child: Text('🚗 Transport')),
             DropdownMenuItem(value: 'hiburan', child: Text('🎮 Hiburan')),
             DropdownMenuItem(value: 'gaji', child: Text('💼 Pemasukan')),
@@ -110,9 +106,9 @@ class _AddPageState extends State<AddPage> {
           icon: const Icon(Icons.save_outlined),
           label: const Text('Simpan Transaksi'),
           onPressed: () {
-            final amount = double.tryParse(
-                    nominalC.text.replaceAll('.', '').replaceAll(',', '.')) ??
-                0;
+            final clean = nominalC.text.replaceAll(RegExp(r'[^0-9]'), '');
+            final amount = double.tryParse(clean) ?? 0;
+
             if (amount <= 0) {
               Get.snackbar(
                   'Nominal tidak valid', 'Masukkan nominal yang benar');
@@ -120,7 +116,9 @@ class _AddPageState extends State<AddPage> {
             }
 
             controller.addTransaction(type, category, amount, descC.text);
+
             Get.snackbar('Berhasil', 'Transaksi disimpan!');
+
             nominalC.clear();
             descC.clear();
             FocusScope.of(context).unfocus();
