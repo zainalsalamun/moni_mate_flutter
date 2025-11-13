@@ -98,7 +98,7 @@ Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menam
 
 | Dashboard | Add Transaksi | Statistik | Settings |
 |------------|----------------|------------|------------|
-| ![Dashboard](assets/screenshots/ios/dashboard__ios_light.png) | ![Add](assets/screenshots/ios/add_ios_light.png) | ![Stats](assets/screenshots/ios/stats_ios_light.png) | ![Settings](assets/screenshots/ios/settings_ios_light.png) |
+| ![Dashboard](assets/screenshots/ios/dashboard_ios_light.png) | ![Add](assets/screenshots/ios/add_ios_light.png) | ![Stats](assets/screenshots/ios/stats_ios_light.png) | ![Settings](assets/screenshots/ios/settings_ios_light.png) |
 
 ## Versi Dark Mode ios
 
