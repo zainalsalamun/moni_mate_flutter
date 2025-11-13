@@ -44,23 +44,21 @@ class TransactionController extends GetxController {
     return transactions.where((t) {
       final date = t.date;
 
-      // HARIAN
       if (filterType.value == 'daily') {
         return date.year == now.year &&
             date.month == now.month &&
             date.day == now.day;
       }
 
-      // MINGGUAN
       if (filterType.value == 'weekly') {
-        final start = now.subtract(Duration(days: now.weekday - 1)); // Senin
-        final end = start.add(const Duration(days: 6)); // Minggu
+        final start = now.subtract(Duration(days: now.weekday - 1));
+        final end = start.add(const Duration(days: 6));
 
         return date.isAfter(start.subtract(const Duration(days: 1))) &&
             date.isBefore(end.add(const Duration(days: 1)));
       }
 
-      // BULANAN
+      //
       return date.month == now.month && date.year == now.year;
     }).toList();
   }
@@ -75,6 +73,10 @@ class TransactionController extends GetxController {
       final key = _formatGroupDate(t.date);
       groups.putIfAbsent(key, () => []);
       groups[key]!.add(t);
+    }
+
+    if (filterType.value == "daily") {
+      groups.putIfAbsent("Hari Ini", () => []);
     }
 
     return groups;
@@ -111,10 +113,11 @@ class TransactionController extends GetxController {
     double expense = 0;
 
     for (var t in transactions) {
-      if (t.type == 'income')
+      if (t.type == 'income') {
         income += t.amount;
-      else
+      } else {
         expense += t.amount;
+      }
     }
 
     totalIncome.value = income;
