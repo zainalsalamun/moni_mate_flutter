@@ -64,7 +64,7 @@ class StatsPage extends StatelessWidget {
                 children: [
                   const Text('Pengeluaran per Kategori',
                       style: TextStyle(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 16),
                   SizedBox(
                     height: 200,
                     child: PieChart(
@@ -129,13 +129,13 @@ class StatsPage extends StatelessWidget {
                     child: BarChart(
                       BarChartData(
                         borderData: FlBorderData(show: false),
-                        gridData: FlGridData(show: false),
+                        gridData: const FlGridData(show: false),
                         titlesData: FlTitlesData(
-                          leftTitles: AxisTitles(
+                          leftTitles: const AxisTitles(
                               sideTitles: SideTitles(showTitles: false)),
-                          topTitles: AxisTitles(
+                          topTitles: const AxisTitles(
                               sideTitles: SideTitles(showTitles: false)),
-                          rightTitles: AxisTitles(
+                          rightTitles: const AxisTitles(
                               sideTitles: SideTitles(showTitles: false)),
                           bottomTitles: AxisTitles(
                             sideTitles: SideTitles(
@@ -187,6 +187,16 @@ class StatsPage extends StatelessWidget {
         return const Color(0xFF22C55E);
       case 'gaji':
         return const Color(0xFFF59E0B);
+      case 'belanja':
+        return const Color(0xFFE879F9);
+      case 'kesehatan':
+        return const Color(0xFFFB7185);
+      case 'pendidikan':
+        return const Color(0xFF8B5CF6);
+      case 'tagihan':
+        return const Color(0xFFFFA500);
+      case 'minum':
+        return const Color(0xFF654444);
       default:
         return Colors.grey;
     }
