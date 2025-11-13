@@ -184,6 +184,35 @@ class TransactionsPage extends StatelessWidget {
           final title = entry.key;
           final list = entry.value;
 
+          if (c.filterType.value == "daily" &&
+              title == "Hari Ini" &&
+              list.isEmpty) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 12),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 60,
+                  color:
+                      Theme.of(context).colorScheme.primary.withOpacity(0.35),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  "Belum ada transaksi hari ini",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.7),
+                      ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            );
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -194,7 +223,7 @@ class TransactionsPage extends StatelessWidget {
                     ),
               ),
               const SizedBox(height: 8),
-              ...list.map((t) => _transactionTile(context, c, t)).toList(),
+              ...list.map((t) => _transactionTile(context, c, t)),
               const SizedBox(height: 20),
             ],
           );
