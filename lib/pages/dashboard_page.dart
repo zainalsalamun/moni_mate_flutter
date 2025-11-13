@@ -76,21 +76,24 @@ class DashboardPage extends StatelessWidget {
                                   ? '💼'
                                   : t.category == 'makan'
                                       ? '🍔'
-                                      : t.category == 'transport'
-                                          ? '🚗'
-                                          : t.category == 'hiburan'
-                                              ? '🎮'
-                                              : t.category == 'belanja'
-                                                  ? '🛍️'
-                                                  : t.category == 'kesehatan'
-                                                      ? '💊'
+                                      : t.category == 'minum'
+                                          ? '🥤'
+                                          : t.category == 'transport'
+                                              ? '🚗'
+                                              : t.category == 'hiburan'
+                                                  ? '🎮'
+                                                  : t.category == 'belanja'
+                                                      ? '🛍️'
                                                       : t.category ==
-                                                              'pendidikan'
-                                                          ? '📚'
+                                                              'kesehatan'
+                                                          ? '💊'
                                                           : t.category ==
-                                                                  'tagihan'
-                                                              ? '💡'
-                                                              : '🧩',
+                                                                  'pendidikan'
+                                                              ? '📚'
+                                                              : t.category ==
+                                                                      'tagihan'
+                                                                  ? '💡'
+                                                                  : '🧩',
                               style: const TextStyle(fontSize: 20),
                             ),
                             title: Text(t.description.isEmpty
