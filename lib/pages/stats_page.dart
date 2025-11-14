@@ -62,8 +62,10 @@ class StatsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Pengeluaran per Kategori',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
+                  const Text(
+                    'Pengeluaran per Kategori',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   const SizedBox(height: 16),
                   SizedBox(
                     height: 200,
@@ -71,26 +73,35 @@ class StatsPage extends StatelessWidget {
                       PieChartData(
                         centerSpaceRadius: 40,
                         sectionsSpace: 2,
-                        sections: categoryTotals.entries.map((e) {
-                          final color = _categoryColor(e.key);
-                          return PieChartSectionData(
-                            color: color,
-                            value: e.value,
-                            title: e.key.capitalizeFirst,
-                            radius: 70,
-                            titleStyle: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          );
-                        }).toList(),
+                        sections: () {
+                          final total =
+                              categoryTotals.values.fold(0.0, (a, b) => a + b);
+
+                          return categoryTotals.entries.map((e) {
+                            final color = _categoryColor(e.key);
+                            final percent =
+                                total == 0 ? 0 : (e.value / total) * 100;
+
+                            return PieChartSectionData(
+                              color: color,
+                              value: e.value,
+                              title: "${percent.toStringAsFixed(0)}%",
+                              radius: 70,
+                              titleStyle: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            );
+                          }).toList();
+                        }(),
                       ),
                     ),
                   ),
                   const SizedBox(height: 12),
                   ...categoryTotals.entries.map((e) {
                     final color = _categoryColor(e.key);
+
                     return Row(
                       children: [
                         Container(
@@ -102,7 +113,9 @@ class StatsPage extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Expanded(child: Text(e.key.capitalizeFirst!)),
+                        Expanded(
+                          child: Text(e.key.capitalizeFirst!),
+                        ),
                         Text(CurrencyFormat.format(e.value)),
                       ],
                     );
