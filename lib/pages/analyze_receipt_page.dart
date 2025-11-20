@@ -19,9 +19,6 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
     _processImage();
   }
 
-  // ===========================================================
-  // PROCESS OCR
-  // ===========================================================
   Future<void> _processImage() async {
     final recognizer = TextRecognizer();
     final input = InputImage.fromFilePath(widget.imagePath);
@@ -31,28 +28,21 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
 
     recognizer.close();
 
-    // Parse struk
     final result = _parseStruk(rawText);
 
-    // sedikit delay biar smooth
     await Future.delayed(const Duration(seconds: 1));
 
-    // pindah ke hasil
     Get.off(() => ReceiptResultPage(
           result: result,
           imagePath: widget.imagePath,
         ));
   }
 
-  // ===========================================================
-  // PARSE STRUK — Dengan extractTotal versi final
-  // ===========================================================
   Map<String, dynamic> _parseStruk(String raw) {
     final upper = raw.toUpperCase();
 
     final total = _extractTotal(upper);
 
-    // detect tanggal
     final date1 = RegExp(r"\d{2}/\d{2}/\d{4}");
     final date2 = RegExp(
         r"\d{1,2}\s+(JANUARI|FEBRUARI|MARET|APRIL|MEI|JUNI|JULI|AGUSTUS|SEPTEMBER|OKTOBER|NOVEMBER|DESEMBER)\s+\d{4}");
@@ -60,7 +50,6 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
     String? tanggal =
         date1.firstMatch(upper)?.group(0) ?? date2.firstMatch(upper)?.group(0);
 
-    // detect merchant
     String merchant = "Tidak diketahui";
     if (upper.contains("INDOMARET")) merchant = "Indomaret";
     if (upper.contains("ALFAMART")) merchant = "Alfamart";
@@ -78,27 +67,21 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
     };
   }
 
-  // ===========================================================
-  // _extractTotal — Versi Paling Akurat
-  // ===========================================================
   String? _extractTotal(String text) {
     final lines = text.split('\n');
 
-    // Cari baris yang mengandung kata TOTAL
     for (final line in lines) {
       final upper = line.toUpperCase();
 
       if (upper.contains("TOTAL") ||
           upper.contains("JUMLAH") ||
           upper.contains("BAYAR")) {
-        // Ambil angka termasuk "56.200" atau "56,200"
         final reg = RegExp(r"(\d[\d\.\,]*)");
         final match = reg.firstMatch(upper);
 
         if (match != null) {
           String raw = match.group(1)!;
 
-          // Rapikan format
           raw = raw.replaceAll('.', '').replaceAll(',', '.');
 
           return raw;
@@ -106,7 +89,6 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
       }
     }
 
-    // Fallback: cari angka terbesar
     final allNums = RegExp(r"\d[\d\.\,]+").allMatches(text);
     if (allNums.isNotEmpty) {
       String raw = allNums.last.group(0)!;
@@ -117,9 +99,6 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
     return null;
   }
 
-  // ===========================================================
-  // UI — Loading + Grid Overlay
-  // ===========================================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -178,9 +157,6 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
   }
 }
 
-// ===========================================================
-// GRID OVERLAY
-// ===========================================================
 class _ScanGridPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
