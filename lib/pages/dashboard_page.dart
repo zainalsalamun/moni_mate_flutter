@@ -15,7 +15,6 @@ class DashboardPage extends StatelessWidget {
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Card saldo utama
           Container(
             decoration: BoxDecoration(
               gradient: AppTheme.oceanGradient(),
@@ -55,8 +54,6 @@ class DashboardPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Daftar transaksi terbaru
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
