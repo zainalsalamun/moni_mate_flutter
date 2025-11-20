@@ -53,44 +53,132 @@ class StatsPage extends StatelessWidget {
                 ?.copyWith(fontWeight: FontWeight.w600),
           ),
           const SizedBox(height: 16),
+          // Card(
+          //   elevation: 2,
+          //   shape:
+          //       RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          //   child: Padding(
+          //     padding: const EdgeInsets.all(16),
+          //     child: Column(
+          //       crossAxisAlignment: CrossAxisAlignment.start,
+          //       children: [
+          //         const Text(
+          //           'Pengeluaran per Kategori',
+          //           style: TextStyle(fontWeight: FontWeight.w600),
+          //         ),
+          //         const SizedBox(height: 16),
+          //         SizedBox(
+          //           height: 200,
+          //           child: PieChart(
+          //             PieChartData(
+          //               centerSpaceRadius: 40,
+          //               sectionsSpace: 2,
+          //               sections: () {
+          //                 final total =
+          //                     categoryTotals.values.fold(0.0, (a, b) => a + b);
+
+          //                 return categoryTotals.entries.map((e) {
+          //                   final color = _categoryColor(e.key);
+          //                   final percent =
+          //                       total == 0 ? 0 : (e.value / total) * 100;
+
+          //                   return PieChartSectionData(
+          //                     color: color,
+          //                     value: e.value,
+          //                     title: "${percent.toStringAsFixed(0)}%",
+          //                     radius: 70,
+          //                     titleStyle: const TextStyle(
+          //                       color: Colors.white,
+          //                       fontSize: 12,
+          //                       fontWeight: FontWeight.bold,
+          //                     ),
+          //                   );
+          //                 }).toList();
+          //               }(),
+          //             ),
+          //           ),
+          //         ),
+          //         const SizedBox(height: 12),
+          //         ...categoryTotals.entries.map((e) {
+          //           final color = _categoryColor(e.key);
+
+          //           return Row(
+          //             children: [
+          //               Container(
+          //                 width: 12,
+          //                 height: 12,
+          //                 decoration: BoxDecoration(
+          //                   color: color,
+          //                   borderRadius: BorderRadius.circular(4),
+          //                 ),
+          //               ),
+          //               const SizedBox(width: 8),
+          //               Expanded(
+          //                 child: Text(e.key.capitalizeFirst!),
+          //               ),
+          //               Text(CurrencyFormat.format(e.value)),
+          //             ],
+          //           );
+          //         }),
+          //       ],
+          //     ),
+          //   ),
+          // ),
           Card(
-            elevation: 2,
+            elevation: 3,
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Pengeluaran per Kategori',
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                  Text(
+                    "Pengeluaran Bulan Ini",
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.w700),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 4),
+                  Text(
+                    CurrencyFormat.format(
+                      categoryTotals.values.fold(0.0, (a, b) => a + b),
+                    ),
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.redAccent,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
                   SizedBox(
-                    height: 200,
+                    height: 260,
                     child: PieChart(
                       PieChartData(
-                        centerSpaceRadius: 40,
-                        sectionsSpace: 2,
+                        centerSpaceRadius: 60,
+                        sectionsSpace: 4,
+                        startDegreeOffset: -90,
+                        pieTouchData: PieTouchData(enabled: true),
                         sections: () {
                           final total =
                               categoryTotals.values.fold(0.0, (a, b) => a + b);
 
                           return categoryTotals.entries.map((e) {
-                            final color = _categoryColor(e.key);
                             final percent =
                                 total == 0 ? 0 : (e.value / total) * 100;
+                            final color = _categoryColor(e.key);
 
                             return PieChartSectionData(
                               color: color,
                               value: e.value,
+                              radius: 90,
+                              showTitle: true,
                               title: "${percent.toStringAsFixed(0)}%",
-                              radius: 70,
                               titleStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 13,
                               ),
                             );
                           }).toList();
@@ -98,28 +186,47 @@ class StatsPage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  ...categoryTotals.entries.map((e) {
-                    final color = _categoryColor(e.key);
+                  const SizedBox(height: 30),
+                  Column(
+                    children: categoryTotals.entries.map((e) {
+                      final color = _categoryColor(e.key);
 
-                    return Row(
-                      children: [
-                        Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            color: color,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                      return Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 12),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(e.key.capitalizeFirst!),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                e.key.capitalizeFirst!,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                            Text(
+                              CurrencyFormat.format(e.value),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700),
+                            ),
+                          ],
                         ),
-                        Text(CurrencyFormat.format(e.value)),
-                      ],
-                    );
-                  }),
+                      );
+                    }).toList(),
+                  ),
                 ],
               ),
             ),
