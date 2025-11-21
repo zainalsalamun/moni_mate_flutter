@@ -1,8 +1,6 @@
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
-import 'package:monimate/pages/scan_receipt_page.dart';
 import 'package:monimate/utils/clean_currency.dart';
 import 'package:monimate/utils/format_currency.dart';
 
@@ -109,27 +107,27 @@ class _AddPageState extends State<AddPage> {
             FocusScope.of(context).unfocus();
           },
         ),
-        const SizedBox(height: 12),
-        ElevatedButton.icon(
-          icon: const Icon(Icons.receipt_long),
-          label: const Text("Scan Struk"),
-          onPressed: () async {
-            final cameras = await availableCameras();
+        // const SizedBox(height: 12),
+        // ElevatedButton.icon(
+        //   icon: const Icon(Icons.receipt_long),
+        //   label: const Text("Scan Struk"),
+        //   onPressed: () async {
+        //     final cameras = await availableCameras();
 
-            final result = await Get.to(
-                () => ScanReceiptPage(camera: cameras.first),
-                routeName: "/scan");
+        //     final result = await Get.to(
+        //         () => ScanReceiptPage(camera: cameras.first),
+        //         routeName: "/scan");
 
-            if (result != null) {
-              final amount = result["amount"] ?? 0.0;
-              final merchant = result["merchant"] ?? "";
+        //     if (result != null) {
+        //       final amount = result["amount"] ?? 0.0;
+        //       final merchant = result["merchant"] ?? "";
 
-              nominalC.text =
-                  CurrencyFormat.format(amount).replaceAll("Rp. ", "");
-              descC.text = merchant;
-            }
-          },
-        ),
+        //       nominalC.text =
+        //           CurrencyFormat.format(amount).replaceAll("Rp. ", "");
+        //       descC.text = merchant;
+        //     }
+        //   },
+        // ),
       ],
     );
   }
