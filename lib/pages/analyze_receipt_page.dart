@@ -1,8 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'receipt_result_page.dart';
+// import 'package:get/get.dart';
+// import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+// import 'receipt_result_page.dart';
 
 class AnalyzeReceiptPage extends StatefulWidget {
   final String imagePath;
@@ -20,84 +20,84 @@ class _AnalyzeReceiptPageState extends State<AnalyzeReceiptPage> {
   }
 
   Future<void> _processImage() async {
-    final recognizer = TextRecognizer();
-    final input = InputImage.fromFilePath(widget.imagePath);
+    // final recognizer = TextRecognizer();
+    // final input = InputImage.fromFilePath(widget.imagePath);
 
-    final text = await recognizer.processImage(input);
-    final rawText = text.text;
+    // final text = await recognizer.processImage(input);
+    // final rawText = text.text;
 
-    recognizer.close();
+    // recognizer.close();
 
-    final result = _parseStruk(rawText);
+    // final result = _parseStruk(rawText);
 
     await Future.delayed(const Duration(seconds: 1));
 
-    Get.off(() => ReceiptResultPage(
-          result: result,
-          imagePath: widget.imagePath,
-        ));
+    // Get.off(() => ReceiptResultPage(
+    //       result: result,
+    //       imagePath: widget.imagePath,
+    //     ));
   }
 
-  Map<String, dynamic> _parseStruk(String raw) {
-    final upper = raw.toUpperCase();
+  // Map<String, dynamic> _parseStruk(String raw) {
+  //   final upper = raw.toUpperCase();
 
-    final total = _extractTotal(upper);
+  //   final total = _extractTotal(upper);
 
-    final date1 = RegExp(r"\d{2}/\d{2}/\d{4}");
-    final date2 = RegExp(
-        r"\d{1,2}\s+(JANUARI|FEBRUARI|MARET|APRIL|MEI|JUNI|JULI|AGUSTUS|SEPTEMBER|OKTOBER|NOVEMBER|DESEMBER)\s+\d{4}");
+  //   final date1 = RegExp(r"\d{2}/\d{2}/\d{4}");
+  //   final date2 = RegExp(
+  //       r"\d{1,2}\s+(JANUARI|FEBRUARI|MARET|APRIL|MEI|JUNI|JULI|AGUSTUS|SEPTEMBER|OKTOBER|NOVEMBER|DESEMBER)\s+\d{4}");
 
-    String? tanggal =
-        date1.firstMatch(upper)?.group(0) ?? date2.firstMatch(upper)?.group(0);
+  //   String? tanggal =
+  //       date1.firstMatch(upper)?.group(0) ?? date2.firstMatch(upper)?.group(0);
 
-    String merchant = "Tidak diketahui";
-    if (upper.contains("INDOMARET")) merchant = "Indomaret";
-    if (upper.contains("ALFAMART")) merchant = "Alfamart";
-    if (upper.contains("MINIMARKET")) merchant = "Minimarket";
-    if (upper.contains("ALFAMIDI")) merchant = "Alfamidi";
-    if (upper.contains("PERTAMAX") || upper.contains("PERTAMINA")) {
-      merchant = "SPBU Pertamina";
-    }
+  //   String merchant = "Tidak diketahui";
+  //   if (upper.contains("INDOMARET")) merchant = "Indomaret";
+  //   if (upper.contains("ALFAMART")) merchant = "Alfamart";
+  //   if (upper.contains("MINIMARKET")) merchant = "Minimarket";
+  //   if (upper.contains("ALFAMIDI")) merchant = "Alfamidi";
+  //   if (upper.contains("PERTAMAX") || upper.contains("PERTAMINA")) {
+  //     merchant = "SPBU Pertamina";
+  //   }
 
-    return {
-      "total": total,
-      "tanggal": tanggal,
-      "merchant": merchant,
-      "raw": raw,
-    };
-  }
+  //   return {
+  //     "total": total,
+  //     "tanggal": tanggal,
+  //     "merchant": merchant,
+  //     "raw": raw,
+  //   };
+  // }
 
-  String? _extractTotal(String text) {
-    final lines = text.split('\n');
+  // String? _extractTotal(String text) {
+  //   final lines = text.split('\n');
 
-    for (final line in lines) {
-      final upper = line.toUpperCase();
+  //   for (final line in lines) {
+  //     final upper = line.toUpperCase();
 
-      if (upper.contains("TOTAL") ||
-          upper.contains("JUMLAH") ||
-          upper.contains("BAYAR")) {
-        final reg = RegExp(r"(\d[\d\.\,]*)");
-        final match = reg.firstMatch(upper);
+  //     if (upper.contains("TOTAL") ||
+  //         upper.contains("JUMLAH") ||
+  //         upper.contains("BAYAR")) {
+  //       final reg = RegExp(r"(\d[\d\.\,]*)");
+  //       final match = reg.firstMatch(upper);
 
-        if (match != null) {
-          String raw = match.group(1)!;
+  //       if (match != null) {
+  //         String raw = match.group(1)!;
 
-          raw = raw.replaceAll('.', '').replaceAll(',', '.');
+  //         raw = raw.replaceAll('.', '').replaceAll(',', '.');
 
-          return raw;
-        }
-      }
-    }
+  //         return raw;
+  //       }
+  //     }
+  //   }
 
-    final allNums = RegExp(r"\d[\d\.\,]+").allMatches(text);
-    if (allNums.isNotEmpty) {
-      String raw = allNums.last.group(0)!;
-      raw = raw.replaceAll('.', '').replaceAll(',', '.');
-      return raw;
-    }
+  //   final allNums = RegExp(r"\d[\d\.\,]+").allMatches(text);
+  //   if (allNums.isNotEmpty) {
+  //     String raw = allNums.last.group(0)!;
+  //     raw = raw.replaceAll('.', '').replaceAll(',', '.');
+  //     return raw;
+  //   }
 
-    return null;
-  }
+  //   return null;
+  // }
 
   @override
   Widget build(BuildContext context) {
