@@ -84,6 +84,80 @@ class _StatsPageState extends State<StatsPage> {
     });
   }
 
+  // Widget _buildViewToggle(BuildContext context) {
+  //   return Container(
+  //     padding: const EdgeInsets.all(4),
+  //     decoration: BoxDecoration(
+  //       color: Colors.grey.shade200,
+  //       borderRadius: BorderRadius.circular(24),
+  //     ),
+  //     child: Row(
+  //       children: [
+  //         Expanded(
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               if (currentView != "summary") {
+  //                 setState(() => currentView = "summary");
+  //               }
+  //             },
+  //             child: AnimatedContainer(
+  //               duration: const Duration(milliseconds: 180),
+  //               curve: Curves.easeInOut,
+  //               padding: const EdgeInsets.symmetric(vertical: 10),
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 color: currentView == "summary"
+  //                     ? Theme.of(context).colorScheme.primary
+  //                     : Colors.transparent,
+  //               ),
+  //               alignment: Alignment.center,
+  //               child: Text(
+  //                 "Ringkasan",
+  //                 style: TextStyle(
+  //                   fontWeight: FontWeight.w600,
+  //                   color: currentView == "summary"
+  //                       ? Colors.white
+  //                       : Colors.black87,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: GestureDetector(
+  //             onTap: () {
+  //               if (currentView != "calendar") {
+  //                 setState(() => currentView = "calendar");
+  //               }
+  //             },
+  //             child: AnimatedContainer(
+  //               duration: const Duration(milliseconds: 180),
+  //               curve: Curves.easeInOut,
+  //               padding: const EdgeInsets.symmetric(vertical: 10),
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(20),
+  //                 color: currentView == "calendar"
+  //                     ? Theme.of(context).colorScheme.primary
+  //                     : Colors.transparent,
+  //               ),
+  //               alignment: Alignment.center,
+  //               child: Text(
+  //                 "Kalender",
+  //                 style: TextStyle(
+  //                   fontWeight: FontWeight.w600,
+  //                   color: currentView == "calendar"
+  //                       ? Colors.white
+  //                       : Colors.black87,
+  //                 ),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   Widget _buildViewToggle(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(4),
@@ -100,24 +174,29 @@ class _StatsPageState extends State<StatsPage> {
                   setState(() => currentView = "summary");
                 }
               },
-              child: AnimatedContainer(
+              child: AnimatedScale(
+                scale: currentView == "summary" ? 1.05 : 1.0,
                 duration: const Duration(milliseconds: 180),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: currentView == "summary"
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.transparent,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Ringkasan",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                curve: Curves.easeOutBack,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
                     color: currentView == "summary"
-                        ? Colors.white
-                        : Colors.black87,
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Ringkasan",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: currentView == "summary"
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
                   ),
                 ),
               ),
@@ -130,24 +209,29 @@ class _StatsPageState extends State<StatsPage> {
                   setState(() => currentView = "calendar");
                 }
               },
-              child: AnimatedContainer(
+              child: AnimatedScale(
+                scale: currentView == "calendar" ? 1.05 : 1.0,
                 duration: const Duration(milliseconds: 180),
-                curve: Curves.easeInOut,
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: currentView == "calendar"
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.transparent,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Kalender",
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
+                curve: Curves.easeOutBack,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
                     color: currentView == "calendar"
-                        ? Colors.white
-                        : Colors.black87,
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.transparent,
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Kalender",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: currentView == "calendar"
+                          ? Colors.white
+                          : Colors.black87,
+                    ),
                   ),
                 ),
               ),
