@@ -67,10 +67,8 @@ class ReceiptResultPage extends StatelessWidget {
                             borderRadius: BorderRadius.circular(16)),
                       ),
                       onPressed: () {
-                        // Bersihkan stack sampai ke AddPage
                         Get.until((route) => route.settings.name == "/add");
 
-                        // Kirim result ke AddPage
                         Get.back(result: {
                           "amount": amount,
                           "merchant": merchant,
