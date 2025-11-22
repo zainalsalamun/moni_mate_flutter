@@ -78,10 +78,7 @@ class SettingsPage extends StatelessWidget {
                     ],
                   );
                 }),
-
                 const SizedBox(height: 16),
-
-                //Backup Data (hapus semua)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -124,10 +121,7 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 16),
-
-                //Export CSV
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -165,10 +159,7 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         ),
-
         const SizedBox(height: 12),
-
-        // Tentang
         const Card(
           child: ListTile(
             title: Text(
