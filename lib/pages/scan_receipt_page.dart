@@ -43,8 +43,6 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
       body: Stack(
         children: [
           Center(child: CameraPreview(controller)),
-
-          // Capture Button
           Positioned(
             bottom: 40,
             left: 0,
