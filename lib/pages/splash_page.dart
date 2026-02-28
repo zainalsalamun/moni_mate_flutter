@@ -4,12 +4,13 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart'; // ⬅️ Tambahkan import ini
 import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/data/services/seeder_service.dart';
 import 'package:monimate/data/services/hive_service.dart';
 
 import 'shell.dart';
 
 class SplashPage extends StatefulWidget {
-  const SplashPage({Key? key}) : super(key: key);
+  const SplashPage({super.key});
 
   @override
   State<SplashPage> createState() => _SplashPageState();
@@ -30,6 +31,9 @@ class _SplashPageState extends State<SplashPage> {
 
       Get.put(TransactionController());
       Get.put(ThemeController());
+
+      // Seed dummy transaction data
+      await SeederService.seedTransactions();
 
       await Future.delayed(const Duration(milliseconds: 500));
     } catch (e) {
