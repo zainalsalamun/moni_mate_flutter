@@ -1,24 +1,30 @@
-# 💰 MoniMate — Personal Finance Tracker (Offline)
+# 💰 MoniMate — Personal Finance Tracker (AI Powered)
 
-> Project iseng di waktu luang, tapi berasa fintech beneran
-
----
-
-## Deskripsi
-
-**MoniMate** adalah aplikasi pencatat keuangan pribadi berbasis **Flutter**, yang bisa digunakan **sepenuhnya offline**.  
-Didesain dengan gaya **modern fintech UI/UX** agar nyaman digunakan sehari-hari, ringan, dan tetap elegan di Light maupun Dark mode.
-
-Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menampilkan statistik keuangan, serta melakukan backup ke file CSV tanpa koneksi internet.
+> Kelola keuanganmu dengan cerdas, bahkan tanpa koneksi internet.
 
 ---
 
-## Tujuan Project
+## 🌟 Deskripsi
 
-- Melatih implementasi **offline-first architecture** (tanpa backend).
-- Eksperimen dengan **GetX** untuk state management dan **Hive** untuk database lokal.
-- Mendesain **UI fintech** yang clean, smooth, dan responsif.
-- Membuat pondasi app keuangan pribadi yang bisa dikembangkan lebih lanjut.
+**MoniMate** adalah aplikasi pencatat keuangan pribadi berbasis **Flutter** yang mengutamakan privasi dengan pendekatan **offline-first**. Aplikasi ini didesain dengan antarmuka **Fintech Modern** yang elegan, mendukung Light/Dark mode, dan kini dilengkapi dengan teknologi **AI Receipt Scanner** untuk pencatatan transaksi yang super cepat.
+
+Aplikasi ini memudahkan pengguna untuk:
+1. Mencatat pemasukan dan pengeluaran secara manual maupun otomatis via AI.
+2. Memantau kesehatan keuangan melalui grafik statistik yang interaktif.
+3. Melakukan backup data ke file CSV.
+4. Menjalankan seluruh fungsi secara aman tanpa data keluar dari perangkat (Offline).
+
+---
+
+## 🔥 Fitur Unggulan
+
+- 🧠 **AI Receipt Scanner** — Scan struk belanja menggunakan kamera. AI akan otomatis mendeteksi total belanja (nominal) dan nama toko (merchant) secara lokal.
+- 🌊 **Modern Fintech UI** — Antarmuka premium dengan gradasi Ocean Toska, animasi yang halus, dan layout responsif.
+- 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark).
+- 📊 **Smart Statistics** — Visualisasi pengeluaran bulanan menggunakan *Pie Chart* dan tren mingguan dengan *Bar Chart*.
+- 📅 **Calendar View** — Lihat riwayat transaksi berdasarkan tanggal dengan mudah lewat antarmuka kalender.
+- 🔒 **Privacy Focused** — Data disimpan secara lokal menggunakan database Hive yang cepat dan aman.
+- 📤 **Data Export** — Ekspor seluruh riwayat transaksi ke format CSV untuk keperluan laporan eksternal.
 
 ---
 
@@ -26,148 +32,75 @@ Aplikasi ini memudahkan pengguna untuk mencatat pemasukan dan pengeluaran, menam
 
 | Komponen | Teknologi |
 |----------|------------|
-| Framework | Flutter (3.24+) |
-| State Management | GetX |
-| Local Database | Hive |
-| Storage Preference | GetStorage |
-| Chart Visualization | fl_chart |
-| Export & Share | csv, share_plus |
-| Font | Google Fonts (Poppins) |
-
----
-
-## 🎨 UI / UX Highlight
-
-- 🌊 **Ocean Toska Theme** — warna utama MoniMate (#48C6EF → #6F86D6)
-- 🌗 **Dark & Light Mode** — dengan auto status bar brightness
-- 🧭 **Rounded Bottom Navigation** — gaya fintech modern
-- 🧾 **Empty State Elegan** — “Belum Ada Transaksi” dengan CTA interaktif
-- 💡 **Responsive Layout** — cocok di berbagai ukuran layar
-
----
-
-## 💼 Fitur Utama
-
-✅ Tambah, edit, dan hapus transaksi harian  
-✅ Klasifikasi transaksi (pemasukan / pengeluaran)  
-✅ Statistik pengeluaran per kategori (Pie Chart & Bar Chart)  
-✅ Mode Gelap & Terang dengan penyimpanan otomatis  
-✅ Export CSV & Clear Data  
-✅ Tampilan Empty State dengan ilustrasi  
-✅ Desain fintech modern dan ringan
+| **Core Framework** | Flutter (3.24+) |
+| **State Management** | GetX |
+| **Local Database** | Hive |
+| **AI OCR Engine** | Google ML Kit (Text Recognition) |
+| **Charts** | fl_chart |
+| **State Persistence** | GetStorage |
+| **UI Components** | Google Fonts (Outfit), Lucide Icons |
 
 ---
 
 ## 🧰 Struktur Proyek
 
-| Lokasi             | File / Folder                 | Deskripsi                                    |
-| ------------------ | ----------------------------- | -------------------------------------------- |
-| `lib/controllers/` | `transaction_controller.dart` | Logic bisnis & state GetX untuk transaksi    |
-| `lib/data/models/` | `transaction_model.dart`      | Model data transaksi                         |
-| `lib/pages/`       | `dashboard_page.dart`         | Halaman dashboard ringkasan                  |
-|                    | `transactions_page.dart`      | Daftar transaksi                             |
-|                    | `add_page.dart`               | Form tambah transaksi                        |
-|                    | `stats_page.dart`             | Statistik & grafik                           |
-|                    | `settings_page.dart`          | Pengaturan aplikasi                          |
-|                    | `shell.dart`                  | Navigation shell (bottom nav / layout utama) |
-| `lib/services/`    | `hive_service.dart`           | CRUD & penyimpanan lokal Hive                |
-|                    | `export_service.dart`         | Export data (CSV, PDF, dll)                  |
-| `lib/theme/`       | `app_theme.dart`              | Tema warna & styling                         |
-| `lib/main.dart`    | –                             | Entry point Flutter                          |
-
-
+| Folder | Deskripsi |
+| --- | --- |
+| `lib/data/` | Berisi model data, controller GetX, dan layanan inti (Hive, AI Scanner, Export). |
+| `lib/pages/` | Seluruh halaman utama: Dashboard, Histori, Statistik, Tambah (Scan), dan Pengaturan. |
+| `lib/theme/` | Konfigurasi tema warna, gradasi, dan gaya teks aplikasi. |
+| `lib/utils/` | Fungsi pembantu untuk konversi mata uang, pemformatan tanggal, dan pembersihan teks. |
 
 ---
 
 ## 🧾 Preview (Screenshots)
-## Versi Light Mode
 
-Versi Light Mode
-<table> <tr> <td><img src="assets/screenshots/dashboard_light.png" width="250"></td> <td><img src="assets/screenshots/add_light.png" width="250"></td> <td><img src="assets/screenshots/stats_light.png" width="250"></td> <td><img src="assets/screenshots/settings_light.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
-Versi Dark Mode
-<table> <tr> <td><img src="assets/screenshots/dashboard_dark.png" width="250"></td> <td><img src="assets/screenshots/add_dark.png" width="250"></td> <td><img src="assets/screenshots/stats_dark.png" width="250"></td> <td><img src="assets/screenshots/settings_dark.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
-Versi Light Mode iOS
-<table> <tr> <td><img src="assets/screenshots/ios/dashboard_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/add_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/stats_ios_light.png" width="250"></td> <td><img src="assets/screenshots/ios/settings_ios_light.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
-Versi Dark Mode iOS
-<table> <tr> <td><img src="assets/screenshots/ios/dashboard_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/add_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/stats_ios_dark.png" width="250"></td> <td><img src="assets/screenshots/ios/settings_ios_dark.png" width="250"></td> </tr> <tr> <th>Dashboard</th> <th>Add Transaksi</th> <th>Statistik</th> <th>Settings</th> </tr> </table>
-
-> 📸 *Ganti dengan screenshot asli setelah build release.*
-
----
-
-## 🚀 Rencana Pengembangan
-
-- 📆 Filter transaksi berdasarkan tanggal & kategori  
-- 📊 Laporan bulanan otomatis di Dashboard  
-- 🗂️ Import CSV (restore backup)  
-- 🔔 Notifikasi harian “Catat pengeluaranmu hari ini!”  
-- 🧭 Onboarding screen & splash logo MoniMate  
-- 🔐 Keamanan (PIN / biometric lock)  
-- ☁️ Sinkronisasi ke cloud (Firebase / Supabase)
+Versi Light & Dark Mode
+<table> 
+  <tr> 
+    <td><img src="assets/screenshots/dashboard_light.png" width="230"></td> 
+    <td><img src="assets/screenshots/add_light.png" width="230"></td> 
+    <td><img src="assets/screenshots/stats_light.png" width="230"></td> 
+    <td><img src="assets/screenshots/settings_light.png" width="230"></td> 
+  </tr> 
+  <tr> 
+    <th>Dashboard</th> <th>AI Scanner / Add</th> <th>Statistik</th> <th>Settings</th> 
+  </tr> 
+</table>
 
 ---
 
-## 🧠 Insight Dev
-
-> “Project iseng di waktu luang, tapi siapa tahu bisa bantu orang lain mengatur keuangannya.”  
-> — **Zainal Salamun**
-
----
-
-## 👨‍💻 Dibuat oleh
+## 👨‍💻 Kontributor
 
 **Zainal Salamun**  
 Android & Flutter Developer  
-💼 7+ tahun pengalaman di Android, Kotlin, & Flutter  
+💼 7+ tahun pengalaman di ekosistem Mobile Development.  
 🌍 Indonesia  
-📬 [LinkedIn](https://www.linkedin.com/in/zainal-salamun-660a9598/) • [Threads](https://www.threads.com/@zainalsalamun)  
+📬 [LinkedIn](https://www.linkedin.com/in/zainal-salamun-660a9598/) • [Threads](https://www.threads.com/@zainalsalamun)
+
+---
+
+## 🛠️ Cara Menjalankan
+
+1. **Clone & Install**:
+   ```bash
+   git clone https://github.com/zainalsalamun/moni_mate_flutter
+   cd moni_mate_flutter
+   flutter pub get
+   ```
+
+2. **Jalankan Aplikasi**:
+   ```bash
+   flutter run
+   ```
+
+3. **Build APK (Release)**:
+   ```bash
+   flutter build apk --release
+   ```
 
 ---
 
 ## 🏷️ Tagline
 
-> **MoniMate** — *Teman keuangan pribadimu, selalu siap bahkan tanpa internet.*
-
----
-
-## 🛠️ Flutter Info
-
-![Flutter](https://img.shields.io/badge/Flutter-3.24+-blue?logo=flutter)
-![Dart](https://img.shields.io/badge/Dart-3.0-blue?logo=dart)
-![License](https://img.shields.io/badge/License-MIT-green.svg)
-![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS-lightgrey.svg)
-
----
-
-## 📦 Cara Menjalankan
-
-```bash
-# Clone project
-git clone https://github.com/zainalsalamun/moni_mate_flutter
-
-# Masuk ke folder
-cd monimate
-
-# Install dependency
-flutter pub get
-
-# Jalankan app
-flutter run
-
-# Build APK
-flutter build apk --debug
-
-# Build APK Release
-flutter build apk --release
-
-# Build APK Release (split per abi)
-flutter build apk --release --split-per-abi
-
-# Build APK Release (split per abi & obfuscate)
-flutter build apk --release --split-per-abi --obfuscate --split-debug-info=./debug-info
-
-# Build App Bundle
-flutter build appbundle --release
-
-
-
+> **MoniMate** — *Teman cerdas finansialmu, kapan saja, di mana saja, bahkan tanpa sinyal.*
