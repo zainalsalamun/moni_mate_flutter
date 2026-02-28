@@ -528,11 +528,12 @@ class _AddPageState extends State<AddPage> {
                               const SizedBox(height: 32),
                               SizedBox(
                                 width: double.infinity,
-                                height: 48,
+                                height: 56,
                                 child: ElevatedButton(
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor:
                                         Theme.of(context).colorScheme.primary,
+                                    foregroundColor: Colors.white,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(16),
                                     ),
