@@ -205,22 +205,29 @@ class TransactionsPage extends StatelessWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const SizedBox(height: 12),
-                Icon(
-                  Icons.calendar_today_outlined,
-                  size: 60,
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.35),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.calendar_today_rounded,
+                    size: 48,
+                    color:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                  ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 20),
                 Text(
-                  "Belum ada transaksi hari ini",
+                  "Belum Ada Transaksi Hari Ini",
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.bold,
                         color: Theme.of(context)
                             .colorScheme
                             .onSurface
-                            .withOpacity(0.7),
+                            .withOpacity(0.8),
                       ),
                 ),
                 const SizedBox(height: 20),

@@ -30,7 +30,48 @@ class _StatsPageState extends State<StatsPage> {
   Widget build(BuildContext context) {
     return Obx(() {
       if (c.transactions.isEmpty) {
-        return const Center(child: Text('Belum ada data untuk ditampilkan.'));
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.auto_graph_rounded,
+                  size: 80,
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Belum Ada Statistik',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.8),
+                    ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'Catat transaksi Anda terlebih dahulu\nuntuk melihat ringkasan keuangan di sini.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.5),
+                      height: 1.5,
+                    ),
+              ),
+            ],
+          ),
+        );
       }
 
       final expenseList =

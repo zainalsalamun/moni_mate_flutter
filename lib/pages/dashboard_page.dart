@@ -157,11 +157,46 @@ class DashboardPage extends StatelessWidget {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.receipt_long_outlined,
-                          size: 64, color: Colors.grey.withOpacity(0.3)),
-                      const SizedBox(height: 16),
-                      const Text('Belum ada transaksi',
-                          style: TextStyle(color: Colors.grey)),
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.receipt_long_rounded,
+                          size: 64,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(
+                        'Belum Ada Transaksi',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.8),
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Mulai catat keuangan Anda sekarang.',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5),
+                            ),
+                      ),
                     ],
                   ),
                 ),
