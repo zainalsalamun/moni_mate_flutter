@@ -12,7 +12,7 @@ class ShellController extends GetxController {
 }
 
 class Shell extends StatefulWidget {
-  const Shell({Key? key}) : super(key: key);
+  const Shell({super.key});
 
   @override
   State<Shell> createState() => _ShellState();
@@ -43,42 +43,71 @@ class _ShellState extends State<Shell> {
               ),
             )),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: Obx(() => NavigationBarTheme(
-                data: NavigationBarThemeData(
-                  labelTextStyle: MaterialStateProperty.all(
-                    Theme.of(context).textTheme.labelSmall?.copyWith(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
-                  ),
+      extendBody: true, // Make body extend behind the navigation bar
+      bottomNavigationBar: Obx(() => Container(
+            margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            decoration: BoxDecoration(
+              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Theme.of(context).shadowColor.withOpacity(0.05),
+                  blurRadius: 24,
+                  offset: const Offset(0, 8),
+                )
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  splashColor: Colors.transparent,
+                  highlightColor: Colors.transparent,
                 ),
-                child: NavigationBar(
-                  destinations: const [
-                    NavigationDestination(
-                        icon: Icon(Icons.home_outlined), label: 'Home'),
-                    NavigationDestination(
-                        icon: Icon(Icons.list_alt_outlined),
-                        label: 'Transaksi'),
-                    NavigationDestination(
-                        icon: Icon(Icons.add_circle_outline), label: 'Tambah'),
-                    NavigationDestination(
-                        icon: Icon(Icons.bar_chart_outlined),
-                        label: 'Statistik'),
-                    NavigationDestination(
-                        icon: Icon(Icons.settings_outlined),
-                        label: 'Pengaturan'),
+                child: BottomNavigationBar(
+                  currentIndex: shellC.index.value,
+                  onTap: (i) => shellC.changeTab(i),
+                  showSelectedLabels: true,
+                  showUnselectedLabels: false,
+                  items: [
+                    _buildNavItem(
+                        Icons.home_filled, Icons.home_outlined, 'Home'),
+                    _buildNavItem(Icons.receipt_long,
+                        Icons.receipt_long_outlined, 'Histori'),
+                    _buildNavItem(
+                        Icons.add_circle, Icons.add_circle_outline, 'Tambah'),
+                    _buildNavItem(
+                        Icons.bar_chart, Icons.bar_chart_outlined, 'Stat'),
+                    _buildNavItem(
+                        Icons.settings, Icons.settings_outlined, 'Setting'),
                   ],
-                  selectedIndex: shellC.index.value,
-                  onDestinationSelected: (i) => shellC.changeTab(i),
-                  height: 64,
                 ),
-              )),
+              ),
+            ),
+          )),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      IconData activeIcon, IconData icon, String label) {
+    return BottomNavigationBarItem(
+      icon: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Icon(icon, size: 24),
+      ),
+      activeIcon: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(activeIcon,
+              size: 24, color: Theme.of(context).colorScheme.primary),
         ),
       ),
+      label: label,
     );
   }
 }

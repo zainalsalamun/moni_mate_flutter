@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/data/models/transaction_model.dart';
+import 'package:monimate/pages/shell.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 import '../theme/app_theme.dart';
@@ -11,139 +13,324 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.find<TransactionController>();
+    final shellC = Get.find<ShellController>();
+
     return Obx(() {
-      return ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: AppTheme.oceanGradient(),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total Saldo',
-                    style: Theme.of(context)
-                        .textTheme
-                        .labelLarge
-                        ?.copyWith(color: Colors.white70)),
-                const SizedBox(height: 6),
-                Text(
-                  CurrencyFormat.format(
-                      c.totalIncome.value - c.totalExpense.value),
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: Colors.white, fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 10),
-                Wrap(
-                  spacing: 24,
-                  children: [
-                    _MiniStat(
-                        label: 'Pemasukan',
-                        value: c.totalIncome.value,
-                        color: Colors.greenAccent),
-                    _MiniStat(
-                        label: 'Pengeluaran',
-                        value: c.totalExpense.value,
-                        color: Colors.redAccent),
-                  ],
-                )
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
+      return CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Transaksi Terbaru',
-                      style: TextStyle(fontWeight: FontWeight.w600)),
-                  const SizedBox(height: 8),
-                  if (c.transactions.isEmpty)
-                    const Text('Belum ada transaksi')
-                  else
-                    ...c.transactions.reversed.take(5).map(
-                          (t) => ListTile(
-                            leading: Text(
-                              t.category == 'gaji'
-                                  ? '💼'
-                                  : t.category == 'makan'
-                                      ? '🍔'
-                                      : t.category == 'minum'
-                                          ? '🥤'
-                                          : t.category == 'transport'
-                                              ? '🚗'
-                                              : t.category == 'hiburan'
-                                                  ? '🎮'
-                                                  : t.category == 'belanja'
-                                                      ? '🛍️'
-                                                      : t.category ==
-                                                              'kesehatan'
-                                                          ? '💊'
-                                                          : t.category ==
-                                                                  'pendidikan'
-                                                              ? '📚'
-                                                              : t.category ==
-                                                                      'tagihan'
-                                                                  ? '💡'
-                                                                  : '🧩',
-                              style: const TextStyle(fontSize: 20),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Halo, Selamat Beraktivitas!',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.6),
+                            fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'MoniMate',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -0.5,
                             ),
-                            title: Text(t.description.isEmpty
-                                ? t.category.capitalizeFirst!
-                                : t.description),
-                            subtitle: Text(
-                              DateFormatter.format(t.date),
-                              style: const TextStyle(color: Colors.grey),
-                            ),
-                            trailing: Text(
-                              '${t.type == 'income' ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
-                              style: TextStyle(
-                                color: t.type == 'income'
-                                    ? Colors.green
-                                    : Colors.red,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ),
+                      ),
+                    ],
+                  ),
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor:
+                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                    child: Icon(Icons.person_rounded,
+                        color: Theme.of(context).colorScheme.primary),
+                  )
                 ],
               ),
             ),
           ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: AppTheme.oceanGradient(),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.oceanGradient()
+                          .colors
+                          .first
+                          .withOpacity(0.35),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    )
+                  ],
+                ),
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Total Saldo',
+                      style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      CurrencyFormat.format(
+                          c.totalIncome.value - c.totalExpense.value),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -1,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _StatCard(
+                            label: 'Pemasukan',
+                            value: c.totalIncome.value,
+                            icon: Icons.arrow_downward_rounded,
+                            color: Colors.greenAccent,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _StatCard(
+                            label: 'Pengeluaran',
+                            value: c.totalExpense.value,
+                            icon: Icons.arrow_upward_rounded,
+                            color: Colors.redAccent,
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Transaksi Terbaru',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                  TextButton(
+                    onPressed: () =>
+                        shellC.changeTab(1), // Go to transactions page
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: const Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    child: const Text('Lihat Semua'),
+                  )
+                ],
+              ),
+            ),
+          ),
+          if (c.transactions.isEmpty)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(40),
+                child: Center(
+                  child: Column(
+                    children: [
+                      Icon(Icons.receipt_long_outlined,
+                          size: 64, color: Colors.grey.withOpacity(0.3)),
+                      const SizedBox(height: 16),
+                      const Text('Belum ada transaksi',
+                          style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                    final list = c.transactions.reversed.take(5).toList();
+                    if (index >= list.length) return null;
+                    final t = list[index];
+                    return _TransactionTileItem(t: t);
+                  },
+                  childCount:
+                      c.transactions.length > 5 ? 5 : c.transactions.length,
+                ),
+              ),
+            ),
+          const SliverToBoxAdapter(
+              child: SizedBox(height: 100)), // Bottom padding
         ],
       );
     });
   }
 }
 
-class _MiniStat extends StatelessWidget {
+class _StatCard extends StatelessWidget {
   final String label;
   final double value;
+  final IconData icon;
   final Color color;
 
-  const _MiniStat({
+  const _StatCard({
     required this.label,
     required this.value,
+    required this.icon,
     required this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.circle, color: color, size: 10),
-        const SizedBox(width: 6),
-        Text(
-          '$label: ${CurrencyFormat.format(value)}',
-          style: const TextStyle(color: Colors.white70),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(icon, color: color, size: 16),
+          ),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600),
+                ),
+                Text(
+                  CurrencyFormat.format(value),
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _TransactionTileItem extends StatelessWidget {
+  final TransactionModel t;
+  const _TransactionTileItem({required this.t});
+
+  String _emoji(String key) {
+    switch (key) {
+      case 'makan':
+        return '🍔';
+      case 'minum':
+        return '🥤';
+      case 'transport':
+        return '🚗';
+      case 'hiburan':
+        return '🎮';
+      case 'gaji':
+        return '💼';
+      case 'belanja':
+        return '🛍️';
+      case 'kesehatan':
+        return '💊';
+      case 'pendidikan':
+        return '📚';
+      case 'tagihan':
+        return '💡';
+      default:
+        return '🧩';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isIncome = t.type == 'income';
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF2D3748)
+                : const Color(0xFFEDF2F7)),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: isIncome
+                ? Colors.greenAccent.withOpacity(0.15)
+                : Colors.redAccent.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(14),
+          ),
+          alignment: Alignment.center,
+          child: Text(_emoji(t.category), style: const TextStyle(fontSize: 22)),
         ),
-      ],
+        title: Text(
+          t.description.isEmpty ? t.category.capitalizeFirst! : t.description,
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            DateFormatter.format(t.date),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 12),
+          ),
+        ),
+        trailing: Text(
+          '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: isIncome ? Colors.green : Colors.redAccent,
+          ),
+        ),
+      ),
     );
   }
 }

@@ -132,28 +132,43 @@ class TransactionsPage extends StatelessWidget {
       BuildContext context, TransactionController c, TransactionModel t) {
     final isIncome = t.type == 'income';
 
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF2D3748)
+                : const Color(0xFFEDF2F7)),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: CircleAvatar(
-          radius: 22,
-          backgroundColor: isIncome
-              ? Colors.greenAccent.withOpacity(0.2)
-              : Colors.redAccent.withOpacity(0.2),
-          child: Text(
-            _emoji(t.category),
-            style: const TextStyle(fontSize: 22),
+        leading: Container(
+          width: 48,
+          height: 48,
+          decoration: BoxDecoration(
+            color: isIncome
+                ? Colors.greenAccent.withOpacity(0.15)
+                : Colors.redAccent.withOpacity(0.15),
+            borderRadius: BorderRadius.circular(14),
           ),
+          alignment: Alignment.center,
+          child: Text(_emoji(t.category), style: const TextStyle(fontSize: 22)),
         ),
         title: Text(
           t.description.isEmpty ? t.category.capitalizeFirst! : t.description,
-          style: const TextStyle(fontWeight: FontWeight.w700),
+          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
-        subtitle: Text(
-          DateFormatter.format(t.date),
-          style: const TextStyle(color: Colors.grey),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(
+            DateFormatter.format(t.date),
+            style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 12),
+          ),
         ),
         trailing: Text(
           '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',

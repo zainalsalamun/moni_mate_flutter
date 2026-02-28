@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/data/services/hive_service.dart';
+import 'package:monimate/data/models/category_model.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:uuid/uuid.dart';
 
@@ -10,6 +11,11 @@ class TransactionController extends GetxController {
   final RxDouble totalExpense = 0.0.obs;
 
   final RxString filterType = "daily".obs;
+
+  // RxList untuk category custom
+  final RxList<CategoryModel> customExpenseCategories = <CategoryModel>[].obs;
+  final RxList<CategoryModel> customIncomeCategories = <CategoryModel>[].obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -20,6 +26,30 @@ class TransactionController extends GetxController {
     final all = HiveService.getAll();
     transactions.assignAll(all);
     calculateTotals();
+    loadCategories();
+  }
+
+  void loadCategories() {
+    customExpenseCategories
+        .assignAll(HiveService.getCustomCategories('expense'));
+    customIncomeCategories.assignAll(HiveService.getCustomCategories('income'));
+  }
+
+  void addCustomCategory(String type, String name, String emoji) {
+    final cat = CategoryModel(
+      id: const Uuid().v4(),
+      type: type,
+      name: name,
+      emoji: emoji,
+      isCustom: true,
+    );
+    HiveService.addCategory(cat);
+    loadCategories();
+  }
+
+  void deleteCustomCategory(String id) {
+    HiveService.deleteCategory(id);
+    loadCategories();
   }
 
   void addTransaction(
