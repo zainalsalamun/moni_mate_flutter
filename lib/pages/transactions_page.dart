@@ -75,9 +75,10 @@ class TransactionsPage extends StatelessWidget {
 
   Widget _filterBar(BuildContext context, TransactionController c) {
     final items = [
-      {"id": "daily", "label": "Harian"},
-      {"id": "weekly", "label": "Mingguan"},
-      {"id": "monthly", "label": "Bulanan"},
+      {"id": "all", "label": "Semua"},
+      {"id": "daily", "label": "7 Hari"},
+      {"id": "weekly", "label": "30 Hari"},
+      {"id": "monthly", "label": "Bulan Ini"},
     ];
 
     return Obx(
@@ -112,11 +113,15 @@ class TransactionsPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                   ),
                   alignment: Alignment.center,
-                  child: Text(
-                    e["label"]!,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: selected ? Colors.white : Colors.black87,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      e["label"]!,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
+                        color: selected ? Colors.white : Colors.black87,
+                      ),
                     ),
                   ),
                 ),
@@ -170,12 +175,15 @@ class TransactionsPage extends StatelessWidget {
                 fontSize: 12),
           ),
         ),
-        trailing: Text(
-          '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: isIncome ? Colors.green : Colors.redAccent,
+        trailing: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: isIncome ? Colors.green : Colors.redAccent,
+            ),
           ),
         ),
         onLongPress: () => c.deleteTransaction(t.id),
