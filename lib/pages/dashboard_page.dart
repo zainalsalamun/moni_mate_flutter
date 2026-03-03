@@ -87,14 +87,17 @@ class DashboardPage extends StatelessWidget {
                           fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      CurrencyFormat.format(
-                          c.totalIncome.value - c.totalExpense.value),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 34,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: -1,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        CurrencyFormat.format(
+                            c.totalIncome.value - c.totalExpense.value),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 34,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -1,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -208,7 +211,7 @@ class DashboardPage extends StatelessWidget {
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
-                    final list = c.transactions.reversed.take(5).toList();
+                    final list = c.recentTransactions.take(5).toList();
                     if (index >= list.length) return null;
                     final t = list[index];
                     return _TransactionTileItem(t: t);
@@ -247,40 +250,47 @@ class _StatCard extends StatelessWidget {
         color: Colors.white.withOpacity(0.15),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: color, size: 16),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: color, size: 14),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
                   label,
                   style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  CurrencyFormat.format(value),
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w700),
+                    color: Colors.white70,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-              ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              CurrencyFormat.format(value),
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 15,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.2,
+              ),
             ),
-          )
+          ),
         ],
       ),
     );
@@ -357,12 +367,15 @@ class _TransactionTileItem extends StatelessWidget {
                 fontSize: 12),
           ),
         ),
-        trailing: Text(
-          '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
-          style: TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: isIncome ? Colors.green : Colors.redAccent,
+        trailing: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            '${isIncome ? '+' : '-'} ${CurrencyFormat.format(t.amount)}',
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              color: isIncome ? Colors.green : Colors.redAccent,
+            ),
           ),
         ),
       ),
