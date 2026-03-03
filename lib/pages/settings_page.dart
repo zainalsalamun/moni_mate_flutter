@@ -12,161 +12,253 @@ class SettingsPage extends StatelessWidget {
     final c = Get.find<TransactionController>();
     final themeC = Get.find<ThemeController>();
 
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Obx(() {
-                  final isDark = themeC.themeMode.value == ThemeMode.dark;
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Tema',
-                              style: TextStyle(fontWeight: FontWeight.w600)),
-                          SizedBox(height: 4),
-                          Text('Light / Dark',
-                              style: TextStyle(color: Colors.grey)),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            tooltip: 'Mode Terang',
-                            onPressed: () {
-                              themeC.toggleTheme(false);
-                              Get.snackbar(
-                                'Tema Berubah',
-                                'Mode Terang Aktif ☀️',
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 2),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.wb_sunny_outlined,
-                              color:
-                                  !isDark ? Colors.amber : Colors.grey.shade500,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            tooltip: 'Mode Gelap',
-                            onPressed: () {
-                              themeC.toggleTheme(true);
-                              Get.snackbar(
-                                'Tema Berubah',
-                                'Mode Gelap Aktif 🌙',
-                                snackPosition: SnackPosition.BOTTOM,
-                                duration: const Duration(seconds: 2),
-                              );
-                            },
-                            icon: Icon(
-                              Icons.nightlight_round,
-                              color: isDark
-                                  ? Colors.blueAccent
-                                  : Colors.grey.shade500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Backup Data',
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        SizedBox(height: 4),
-                        Text('Simpan data ke file lokal',
-                            style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                    OutlinedButton(
-                      onPressed: () async {
-                        final confirm = await Get.dialog<bool>(
-                          AlertDialog(
-                            title: const Text('Konfirmasi'),
-                            content: const Text(
-                                'Yakin ingin menghapus semua data transaksi?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Get.back(result: false),
-                                child: const Text('Batal'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () => Get.back(result: true),
-                                child: const Text('Hapus'),
-                              ),
-                            ],
-                          ),
-                        );
-                        if (confirm == true) {
-                          c.clearAll();
-                          Get.snackbar('Data dihapus',
-                              'Semua transaksi berhasil dihapus.');
-                        }
-                      },
-                      child: const Text('Backup'),
-                    ),
-                  ],
+    return Scaffold(
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 120,
+            floating: false,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(
+                'Pengaturan',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Export CSV',
-                            style: TextStyle(fontWeight: FontWeight.w600)),
-                        SizedBox(height: 4),
-                        Text('Bagikan riwayat transaksi',
-                            style: TextStyle(color: Colors.grey)),
-                      ],
-                    ),
-                    OutlinedButton(
-                      onPressed: () async {
-                        if (c.transactions.isEmpty) {
-                          Get.snackbar('Tidak ada data',
-                              'Belum ada transaksi untuk diexport');
-                          return;
-                        }
-
-                        Get.snackbar('Menyiapkan...',
-                            'Membuat file CSV, tunggu sebentar');
-                        final path =
-                            await ExportService.exportToCsv(c.transactions);
-                        await ExportService.shareCsv(path);
-                        Get.snackbar('Berhasil',
-                            'File berhasil diexport dan siap dibagikan');
-                      },
-                      child: const Text('Export'),
-                    ),
-                  ],
-                ),
-              ],
+              ),
+              centerTitle: false,
+              titlePadding: const EdgeInsets.only(left: 20, bottom: 16),
             ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            elevation: 0,
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSectionHeader(context, "Tampilan"),
+                    _buildSettingCard(
+                      context,
+                      child: Obx(() {
+                        final isDark = themeC.themeMode.value == ThemeMode.dark;
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn(
+                                "Mode Gelap", "Ubah nuansa aplikasi"),
+                            Switch.adaptive(
+                              value: isDark,
+                              activeColor:
+                                  Theme.of(context).colorScheme.primary,
+                              onChanged: (val) {
+                                themeC.toggleTheme(val);
+                                Get.snackbar(
+                                  'Tema Berubah',
+                                  val
+                                      ? 'Mode Gelap Aktif 🌙'
+                                      : 'Mode Terang Aktif ☀️',
+                                  snackPosition: SnackPosition.TOP,
+                                  backgroundColor: Theme.of(context)
+                                      .colorScheme
+                                      .primary
+                                      .withOpacity(0.9),
+                                  colorText: Colors.white,
+                                  margin: const EdgeInsets.all(16),
+                                );
+                              },
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, "Data & Riwayat"),
+                    _buildSettingCard(
+                      context,
+                      child: InkWell(
+                        onTap: () async {
+                          if (c.transactions.isEmpty) {
+                            Get.snackbar('Tidak ada data',
+                                'Belum ada transaksi untuk dieksport',
+                                snackPosition: SnackPosition.TOP);
+                            return;
+                          }
+                          Get.snackbar('Menyiapkan...',
+                              'Membuat file CSV, tunggu sebentar',
+                              snackPosition: SnackPosition.TOP);
+                          final path =
+                              await ExportService.exportToCsv(c.transactions);
+                          await ExportService.shareCsv(path);
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn("Export CSV",
+                                "Bagikan riwayat sebagai file Excel"),
+                            Icon(Icons.ios_share_rounded,
+                                color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildSettingCard(
+                      context,
+                      child: InkWell(
+                        onTap: () async {
+                          final confirm = await Get.dialog<bool>(
+                            AlertDialog(
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20)),
+                              title: const Text('Hapus Semua Data?'),
+                              content: const Text(
+                                  'Tindakan ini tidak bisa dibatalkan. Semua riwayat transaksi akan hilang permanen.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Get.back(result: false),
+                                  child: Text('Batal',
+                                      style: TextStyle(
+                                          color: Colors.grey.shade600)),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.redAccent,
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
+                                  ),
+                                  onPressed: () => Get.back(result: true),
+                                  child: const Text('Hapus Sekarang',
+                                      style: TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            ),
+                          );
+                          if (confirm == true) {
+                            c.clearAll();
+                            Get.snackbar(
+                                'Terhapus', 'Semua data berhasil dibersihkan',
+                                backgroundColor: Colors.redAccent,
+                                colorText: Colors.white,
+                                snackPosition: SnackPosition.TOP);
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn(
+                                "Reset Data", "Hapus semua riwayat transaksi",
+                                isDestructive: true),
+                            const Icon(Icons.delete_sweep_rounded,
+                                color: Colors.redAccent),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, "Informasi"),
+                    _buildSettingCard(
+                      context,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(Icons.info_outline_rounded,
+                                color: Theme.of(context).colorScheme.primary),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('MoniMate App',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16)),
+                                Text('Versi 1.1.0 • Stable Build',
+                                    style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 13)),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 100),
+                  ],
+                ),
+              ),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 12),
+      child: Text(
+        title.toUpperCase(),
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w800,
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.7),
+          letterSpacing: 1.2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingCard(BuildContext context, {required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardTheme.color ??
+            Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withOpacity(0.05)
+              : Colors.black.withOpacity(0.05),
+        ),
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildInfoColumn(String title, String subtitle,
+      {bool isDestructive = false}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 15,
+            color: isDestructive ? Colors.redAccent : null,
           ),
         ),
-        const SizedBox(height: 12),
-        const Card(
-          child: ListTile(
-            title: Text(
-              'Tentang MoniMate',
-              style: TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text('v1.0.0 • Teman keuangan pribadimu 💰'),
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.grey.shade500,
           ),
         ),
       ],
