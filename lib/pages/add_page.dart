@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/utils/clean_currency.dart';
 import 'package:monimate/utils/format_currency.dart';
+import 'package:monimate/data/services/receipt_scanner_service.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -19,6 +20,31 @@ class _AddPageState extends State<AddPage> {
 
   final TextEditingController nominalC = TextEditingController();
   final TextEditingController descC = TextEditingController();
+
+  bool isScanning = false;
+
+  Future<void> _startScan() async {
+    final result = await ReceiptScannerService.scanReceipt();
+    if (result != null) {
+      setState(() {
+        if (result['amount'] != null) {
+          nominalC.text =
+              CurrencyFormat.format(result['amount']).replaceAll("Rp. ", "");
+        }
+        if (result['merchant'] != null && result['merchant'].isNotEmpty) {
+          descC.text = result['merchant'];
+        }
+      });
+
+      Get.snackbar(
+        "Scan Berhasil",
+        "Data struk telah disalin ke form.",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.blueAccent,
+        colorText: Colors.white,
+      );
+    }
+  }
 
   // Kategori default berdasarkan tipe transaksi
   final List<Map<String, String>> expenseCategories = [
@@ -70,6 +96,22 @@ class _AddPageState extends State<AddPage> {
         title: const Text('Tambah Transaksi'),
         elevation: 0,
         backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            tooltip: "Scan Struk (AI)",
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(Icons.document_scanner_rounded,
+                  color: Theme.of(context).colorScheme.primary),
+            ),
+            onPressed: _startScan,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -616,7 +658,7 @@ class _AddPageState extends State<AddPage> {
                               .titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold)),
                       IconButton(
-                          onPressed: () => Get.back(),
+                          onPressed: () => Navigator.pop(context),
                           icon: const Icon(Icons.close))
                     ],
                   ),
@@ -682,7 +724,7 @@ class _AddPageState extends State<AddPage> {
 
                         controller.addCustomCategory(
                             type, nameCatC.text, emojiCatC.text);
-                        Get.back(); // Tutup modal
+                        Navigator.pop(context); // Tutup modal
                         Get.snackbar("Berhasil",
                             "Kategori '${nameCatC.text}' ditambahkan!",
                             backgroundColor: Colors.green,
