@@ -26,6 +26,8 @@ class _StatsPageState extends State<StatsPage> {
     DateTime.now().day,
   );
 
+  DateTime _selectedMonth = DateTime(DateTime.now().year, DateTime.now().month);
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -74,8 +76,30 @@ class _StatsPageState extends State<StatsPage> {
         );
       }
 
+      // Filter by selected month
+      final monthTransactions = c.transactions.where((t) {
+        return t.date.year == _selectedMonth.year &&
+            t.date.month == _selectedMonth.month;
+      }).toList();
+
+      if (monthTransactions.isEmpty && currentView == "summary") {
+        return Column(
+          children: [
+            const SizedBox(height: 16),
+            _buildMonthSelector(context),
+            const SizedBox(height: 50),
+            _buildEmptyMonthState(context),
+          ],
+        );
+      }
+
       final expenseList =
-          c.transactions.where((t) => t.type == 'expense').toList();
+          monthTransactions.where((t) => t.type == 'expense').toList();
+      final incomeList =
+          monthTransactions.where((t) => t.type == 'income').toList();
+
+      final totalExpense = expenseList.fold(0.0, (sum, t) => sum + t.amount);
+      final totalIncome = incomeList.fold(0.0, (sum, t) => sum + t.amount);
 
       final Map<String, double> categoryTotals = {};
       for (var t in expenseList) {
@@ -83,46 +107,103 @@ class _StatsPageState extends State<StatsPage> {
             (categoryTotals[t.category] ?? 0) + t.amount;
       }
 
-      final now = DateTime.now();
-      final recent7Days =
-          List.generate(7, (i) => now.subtract(Duration(days: 6 - i)));
-      final dailyTotals = <double>[];
-
-      for (var d in recent7Days) {
-        final dayTotal = expenseList
-            .where((t) =>
-                t.date.day == d.day &&
-                t.date.month == d.month &&
-                t.date.year == d.year)
+      // Bar Chart Logic for the selected month
+      // We'll show weekly totals or just 4 segments for the month
+      final daysInMonth =
+          DateUtils.getDaysInMonth(_selectedMonth.year, _selectedMonth.month);
+      final weeklyTotals = List.generate(4, (i) {
+        final start = i * 7 + 1;
+        final end = (i == 3) ? daysInMonth : (i + 1) * 7;
+        return expenseList
+            .where((t) => t.date.day >= start && t.date.day <= end)
             .fold(0.0, (sum, t) => sum + t.amount);
-        dailyTotals.add(dayTotal);
-      }
+      });
 
       return ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Text(
-            'Statistik Keuangan',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 12),
+          _buildMonthSelector(context),
+          const SizedBox(height: 20),
           _buildViewToggle(context),
-          const SizedBox(height: 16),
+          const SizedBox(height: 20),
           if (currentView == "summary")
             _buildSummaryView(
               context,
               categoryTotals: categoryTotals,
-              recent7Days: recent7Days,
-              dailyTotals: dailyTotals,
+              totalIncome: totalIncome,
+              totalExpense: totalExpense,
+              weeklyTotals: weeklyTotals,
             )
           else
             _buildCalendarView(context),
+          const SizedBox(height: 100),
         ],
       );
     });
+  }
+
+  Widget _buildMonthSelector(BuildContext context) {
+    final monthName = DateFormatter.formatMonth(_selectedMonth);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left_rounded),
+            onPressed: () {
+              setState(() {
+                _selectedMonth =
+                    DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+              });
+            },
+          ),
+          Column(
+            children: [
+              Text(
+                monthName,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              Text(
+                _selectedMonth.year.toString(),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+            ],
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right_rounded),
+            onPressed: () {
+              setState(() {
+                _selectedMonth =
+                    DateTime(_selectedMonth.year, _selectedMonth.month + 1);
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyMonthState(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Icon(Icons.search_off_rounded,
+              size: 80, color: Colors.grey.withOpacity(0.3)),
+          const SizedBox(height: 16),
+          Text(
+            "Tidak ada transaksi di bulan ini",
+            style: TextStyle(
+                color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildViewToggle(BuildContext context) {
@@ -212,113 +293,126 @@ class _StatsPageState extends State<StatsPage> {
   Widget _buildSummaryView(
     BuildContext context, {
     required Map<String, double> categoryTotals,
-    required List<DateTime> recent7Days,
-    required List<double> dailyTotals,
+    required double totalIncome,
+    required double totalExpense,
+    required List<double> weeklyTotals,
   }) {
     return Column(
       children: [
+        // Cash Flow Overview
+        Row(
+          children: [
+            Expanded(
+              child: _buildSimpleStatCard(
+                context,
+                title: "Pemasukan",
+                amount: totalIncome,
+                color: Colors.green,
+                icon: Icons.south_west_rounded,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildSimpleStatCard(
+                context,
+                title: "Pengeluaran",
+                amount: totalExpense,
+                color: Colors.redAccent,
+                icon: Icons.north_east_rounded,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
         Card(
           elevation: 3,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Pengeluaran Bulan Ini",
+                  "Distribusi Pengeluaran",
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                      ?.copyWith(fontWeight: FontWeight.w800),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  CurrencyFormat.format(
-                    categoryTotals.values.fold(0.0, (a, b) => a + b),
-                  ),
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.redAccent,
-                  ),
-                ),
-                const SizedBox(height: 20),
-                SizedBox(
-                  height: 260,
-                  child: PieChart(
-                    PieChartData(
-                      centerSpaceRadius: 60,
-                      sectionsSpace: 4,
-                      startDegreeOffset: -90,
-                      pieTouchData: PieTouchData(enabled: true),
-                      sections: () {
-                        final total =
-                            categoryTotals.values.fold(0.0, (a, b) => a + b);
-
-                        return categoryTotals.entries.map((e) {
-                          final percent =
-                              total == 0 ? 0 : (e.value / total) * 100;
-                          final color = _categoryColor(e.key);
-
+                const SizedBox(height: 24),
+                if (categoryTotals.isEmpty)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text("Tidak ada pengeluaran"),
+                    ),
+                  )
+                else ...[
+                  SizedBox(
+                    height: 200,
+                    child: PieChart(
+                      PieChartData(
+                        centerSpaceRadius: 50,
+                        sectionsSpace: 4,
+                        startDegreeOffset: -90,
+                        pieTouchData: PieTouchData(enabled: true),
+                        sections: categoryTotals.entries.map((e) {
+                          final percent = totalExpense == 0
+                              ? 0
+                              : (e.value / totalExpense) * 100;
                           return PieChartSectionData(
-                            color: color,
+                            color: _categoryColor(e.key),
                             value: e.value,
-                            radius: 90,
+                            radius: 60,
                             showTitle: true,
                             title: "${percent.toStringAsFixed(0)}%",
                             titleStyle: const TextStyle(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
-                              fontSize: 13,
+                              fontSize: 12,
                             ),
                           );
-                        }).toList();
-                      }(),
+                        }).toList(),
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 30),
-                Column(
-                  children: categoryTotals.entries.map((e) {
-                    final color = _categoryColor(e.key);
-
-                    return Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8, horizontal: 12),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 14,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: color,
-                              borderRadius: BorderRadius.circular(4),
+                  const SizedBox(height: 32),
+                  Column(
+                    children: categoryTotals.entries.map((e) {
+                      final color = _categoryColor(e.key);
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 12,
+                              height: 12,
+                              decoration: BoxDecoration(
+                                  color: color, shape: BoxShape.circle),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                          Expanded(
-                            child: Text(
-                              e.key.capitalizeFirst!,
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.w600),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                e.key.capitalizeFirst!,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
+                              ),
                             ),
-                          ),
-                          Text(
-                            CurrencyFormat.format(e.value),
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                ),
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                CurrencyFormat.format(e.value),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ],
               ],
             ),
           ),
@@ -327,17 +421,18 @@ class _StatsPageState extends State<StatsPage> {
         Card(
           elevation: 2,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('Tren Pengeluaran 7 Hari Terakhir',
-                    style: TextStyle(fontWeight: FontWeight.w600)),
-                const SizedBox(height: 12),
+                const Text('Tren Mingguan',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w800, fontSize: 16)),
+                const SizedBox(height: 24),
                 SizedBox(
-                  height: 200,
+                  height: 180,
                   child: BarChart(
                     BarChartData(
                       borderData: FlBorderData(show: false),
@@ -353,26 +448,23 @@ class _StatsPageState extends State<StatsPage> {
                           sideTitles: SideTitles(
                             showTitles: true,
                             getTitlesWidget: (v, meta) {
-                              final idx = v.toInt();
-                              if (idx >= 0 && idx < recent7Days.length) {
-                                final day = recent7Days[idx].day;
-                                return Text('$day',
-                                    style: const TextStyle(fontSize: 10));
-                              }
-                              return const SizedBox.shrink();
+                              return Text('M${v.toInt() + 1}',
+                                  style: const TextStyle(
+                                      fontSize: 10, color: Colors.grey));
                             },
                           ),
                         ),
                       ),
-                      barGroups: List.generate(dailyTotals.length, (i) {
+                      barGroups: List.generate(weeklyTotals.length, (i) {
                         return BarChartGroupData(
                           x: i,
                           barRods: [
                             BarChartRodData(
-                              toY: dailyTotals[i],
-                              color: Colors.blueAccent,
-                              width: 14,
-                              borderRadius: BorderRadius.circular(6),
+                              toY: weeklyTotals[i],
+                              color: Theme.of(context).colorScheme.primary,
+                              width: 24,
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(6)),
                             ),
                           ],
                         );
@@ -385,6 +477,43 @@ class _StatsPageState extends State<StatsPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildSimpleStatCard(BuildContext context,
+      {required String title,
+      required double amount,
+      required Color color,
+      required IconData icon}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 16, color: color),
+              const SizedBox(width: 8),
+              Text(title,
+                  style: TextStyle(
+                      color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          FittedBox(
+            child: Text(
+              CurrencyFormat.format(amount),
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, fontSize: 16, color: color),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
