@@ -44,43 +44,46 @@ class _ShellState extends State<Shell> {
             )),
       ),
       extendBody: true, // Make body extend behind the navigation bar
-      bottomNavigationBar: Obx(() => Container(
-            margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            decoration: BoxDecoration(
-              color: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
-              borderRadius: BorderRadius.circular(24),
-              boxShadow: [
-                BoxShadow(
-                  color: Theme.of(context).shadowColor.withOpacity(0.05),
-                  blurRadius: 24,
-                  offset: const Offset(0, 8),
-                )
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(24),
-              child: Theme(
-                data: Theme.of(context).copyWith(
-                  splashColor: Colors.transparent,
-                  highlightColor: Colors.transparent,
-                ),
-                child: BottomNavigationBar(
-                  currentIndex: shellC.index.value,
-                  onTap: (i) => shellC.changeTab(i),
-                  showSelectedLabels: true,
-                  showUnselectedLabels: false,
-                  items: [
-                    _buildNavItem(
-                        Icons.home_filled, Icons.home_outlined, 'Home'),
-                    _buildNavItem(Icons.receipt_long,
-                        Icons.receipt_long_outlined, 'Histori'),
-                    _buildNavItem(
-                        Icons.add_circle, Icons.add_circle_outline, 'Tambah'),
-                    _buildNavItem(
-                        Icons.bar_chart, Icons.bar_chart_outlined, 'Stat'),
-                    _buildNavItem(
-                        Icons.settings, Icons.settings_outlined, 'Setting'),
-                  ],
+      bottomNavigationBar: Obx(() => SafeArea(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+              decoration: BoxDecoration(
+                color:
+                    Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: Theme.of(context).shadowColor.withOpacity(0.05),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  )
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Theme(
+                  data: Theme.of(context).copyWith(
+                    splashColor: Colors.transparent,
+                    highlightColor: Colors.transparent,
+                  ),
+                  child: BottomNavigationBar(
+                    currentIndex: shellC.index.value,
+                    onTap: (i) => shellC.changeTab(i),
+                    showSelectedLabels: true,
+                    showUnselectedLabels: false,
+                    items: [
+                      _buildNavItem(
+                          Icons.home_filled, Icons.home_outlined, 'Home'),
+                      _buildNavItem(Icons.receipt_long,
+                          Icons.receipt_long_outlined, 'Histori'),
+                      _buildNavItem(
+                          Icons.add_circle, Icons.add_circle_outline, 'Tambah'),
+                      _buildNavItem(
+                          Icons.bar_chart, Icons.bar_chart_outlined, 'Stat'),
+                      _buildNavItem(
+                          Icons.settings, Icons.settings_outlined, 'Setting'),
+                    ],
+                  ),
                 ),
               ),
             ),
