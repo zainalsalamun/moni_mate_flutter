@@ -28,8 +28,8 @@ class _AddPageState extends State<AddPage> {
     if (result != null) {
       setState(() {
         if (result['amount'] != null) {
-          nominalC.text =
-              CurrencyFormat.format(result['amount']).replaceAll("Rp. ", "");
+          nominalC.text = CurrencyFormat.format(result['amount'])
+              .replaceAll(RegExp(r'Rp\.?\s*'), '');
         }
         if (result['merchant'] != null && result['merchant'].isNotEmpty) {
           descC.text = result['merchant'];
@@ -250,8 +250,8 @@ class _AddPageState extends State<AddPage> {
                       ),
                       onChanged: (value) {
                         final clean = cleanCurrency(value);
-                        final formatted =
-                            CurrencyFormat.format(clean).replaceAll("Rp. ", "");
+                        final formatted = CurrencyFormat.format(clean)
+                            .replaceAll(RegExp(r'Rp\.?\s*'), '');
 
                         if (value != formatted) {
                           nominalC.value = TextEditingValue(
