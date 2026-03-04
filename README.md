@@ -94,9 +94,26 @@ Android & Flutter Developer
    flutter run
    ```
 
-3. **Build APK (Release)**:
+3. **Build APK untuk Android**:
    ```bash
+   # Build APK Universal (ukuran lebih besar)
    flutter build apk --release
+
+   # Build APK terpisah berdasarkan arsitektur (ukuran lebih kecil dan efisien)
+   flutter build apk --split-per-abi
+
+   # Build APK untuk arsitektur spesifik (contoh: ARM64 untuk HP modern)
+   flutter build apk --target-platform android-arm64 --release
+   ```
+
+4. **Build AppBundle (AAB) untuk Google Play Store**:
+   ```bash
+   flutter build appbundle --release
+   ```
+
+5. **Build iOS (IPA) untuk App Store**:
+   ```bash
+   flutter build ipa --release
    ```
 
 ---
