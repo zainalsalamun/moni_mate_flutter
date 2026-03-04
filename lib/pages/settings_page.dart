@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import '../data/services/export_service.dart';
+import 'recurring_manager_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -74,6 +75,23 @@ class SettingsPage extends StatelessWidget {
                           ],
                         );
                       }),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, "Otomasi & Keuangan"),
+                    _buildSettingCard(
+                      context,
+                      child: InkWell(
+                        onTap: () => Get.to(() => const RecurringManagerPage()),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn("Transaksi Rutin",
+                                "Atur jadwal bayar tagihan otomatis"),
+                            Icon(Icons.event_repeat_rounded,
+                                color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     _buildSectionHeader(context, "Data & Riwayat"),
