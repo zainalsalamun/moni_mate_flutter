@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart'; // ⬅️ Tambahkan import ini
 import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/data/controller/recurring_controller.dart';
 // import 'package:monimate/data/services/seeder_service.dart';
 import 'package:monimate/data/services/hive_service.dart';
 
@@ -30,6 +31,7 @@ class _SplashPageState extends State<SplashPage> {
       await HiveService.init();
 
       Get.put(TransactionController());
+      Get.put(RecurringController());
       Get.put(ThemeController());
 
       // Seed dummy transaction data
