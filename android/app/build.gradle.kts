@@ -38,6 +38,17 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
+
+    applicationVariants.all {
+        val variantName = name
+        val version = flutter.versionName
+        outputs.all {
+            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+            val originalName = outputImpl.outputFileName
+            // Mengganti nama APK yang default "app-" menjadi "MoniMate-v[version]-"
+            outputImpl.outputFileName = originalName.replace("app-", "MoniMate-v${version}-")
+        }
+    }
 }
 
 flutter {
