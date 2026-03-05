@@ -4,6 +4,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/utils/clean_currency.dart';
 import 'package:monimate/utils/format_currency.dart';
 import 'package:monimate/data/services/receipt_scanner_service.dart';
+import 'package:monimate/features/budget/controller/budget_controller.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -218,7 +219,7 @@ class _AddPageState extends State<AddPage> {
               child: Row(
                 children: [
                   Text(
-                    'Rp',
+                    'Rp.',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
@@ -515,6 +516,30 @@ class _AddPageState extends State<AddPage> {
                         colorText: Colors.white,
                         margin: const EdgeInsets.all(16));
                     return;
+                  }
+
+                  // Strict Mode Check
+                  if (type == 'expense' &&
+                      Get.isRegistered<BudgetController>()) {
+                    final budgetC = Get.find<BudgetController>();
+                    if (budgetC.isStrictMode.value) {
+                      final usage = budgetC.budgetUsages.firstWhereOrNull((u) =>
+                          u.budget.categoryId.toLowerCase() ==
+                          category.toLowerCase());
+                      if (usage != null &&
+                          usage.currentUsage + amount >
+                              usage.budget.monthlyLimit) {
+                        Get.snackbar(
+                          "Strict Mode Aktif 🔒",
+                          "Transaksi ini melebihi budget ${category.capitalizeFirst}. Silakan sesuaikan budget atau matikan Strict Mode.",
+                          snackPosition: SnackPosition.TOP,
+                          backgroundColor: Colors.redAccent,
+                          colorText: Colors.white,
+                          duration: const Duration(seconds: 4),
+                        );
+                        return;
+                      }
+                    }
                   }
 
                   controller.addTransaction(type, category, amount, descC.text);
