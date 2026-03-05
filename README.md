@@ -19,9 +19,17 @@ Aplikasi ini memudahkan pengguna untuk:
 ## 🔥 Fitur Unggulan
 
 - 🧠 **AI Receipt Scanner** — Scan struk belanja menggunakan kamera. AI akan otomatis mendeteksi total belanja (nominal) dan nama toko (merchant) secara lokal.
-- 🌊 **Modern Fintech UI** — Antarmuka premium dengan gradasi Ocean Toska, animasi yang halus, dan layout responsif.
-- 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark).
+- 🎯 **Smart Budgeting** — Atur budget bulanan per kategori. Pantau penggunaan secara real-time dengan progress bar interaktif:
+  - 🟢 < 70%: Hemat (Ocean Toska)
+  - 🟠 70-90%: Waspada (Orange)
+  - 🔴 > 90%: Bahaya (Red + Shake Animation)
+- 🔒 **Strict Mode** — Fitur keamanan finansial level pro yang mencegah pencatatan transaksi jika sudah melebihi budget yang ditentukan.
+- 💡 **AI Financial Insights** — Analisis otomatis perilaku keuangan (analisis akhir pekan, tren pengeluaran bulanan, dan deteksi kebiasaan ngopi).
+- 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
+- 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
+- 🌊 **Modern Fintech UI** — Antarmuka premium dengan gradasi Ocean Toska, pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi yang halus, dan layout responsif.
 - 📊 **Smart Statistics** — Visualisasi pengeluaran bulanan menggunakan *Pie Chart* dan tren mingguan dengan *Bar Chart*.
+- 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark).
 - 📅 **Calendar View** — Lihat riwayat transaksi berdasarkan tanggal dengan mudah lewat antarmuka kalender.
 - 🔒 **Privacy Focused** — Data disimpan secara lokal menggunakan database Hive yang cepat dan aman.
 - 📤 **Data Export** — Ekspor seluruh riwayat transaksi ke format CSV untuk keperluan laporan eksternal.
@@ -36,6 +44,8 @@ Aplikasi ini memudahkan pengguna untuk:
 | **State Management** | GetX |
 | **Local Database** | Hive |
 | **AI OCR Engine** | Google ML Kit (Text Recognition) |
+| **Local Notifications** | flutter_local_notifications |
+| **Animation & Feedback** | confetti, vibration |
 | **Charts** | fl_chart |
 | **State Persistence** | GetStorage |
 | **UI Components** | Google Fonts (Outfit), Lucide Icons |
@@ -46,10 +56,11 @@ Aplikasi ini memudahkan pengguna untuk:
 
 | Folder | Deskripsi |
 | --- | --- |
-| `lib/data/` | Berisi model data, controller GetX, dan layanan inti (Hive, AI Scanner, Export). |
-| `lib/pages/` | Seluruh halaman utama: Dashboard, Histori, Statistik, Tambah (Scan), dan Pengaturan. |
+| `lib/features/budget/` | **[NEW]** Sistem budget pintar, AI insights engine, dan UI monitoring budget. |
+| `lib/data/` | Model data utama, controller (Mutasi, Rutinitas), dan layanan (Hive, Export). |
+| `lib/pages/` | Halaman Dashboard, Statistik, Kalender, dan Pengaturan. |
 | `lib/theme/` | Konfigurasi tema warna, gradasi, dan gaya teks aplikasi. |
-| `lib/utils/` | Fungsi pembantu untuk konversi mata uang, pemformatan tanggal, dan pembersihan teks. |
+| `lib/utils/` | Fungsi format mata uang, tanggal, dan helper pembersihan teks. |
 
 ---
 
