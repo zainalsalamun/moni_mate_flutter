@@ -5,6 +5,7 @@ import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/pages/shell.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
+import '../features/budget/view/budget_section.dart';
 import '../theme/app_theme.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -127,6 +128,9 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
           ),
+          const SliverToBoxAdapter(
+            child: BudgetSection(),
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
@@ -222,7 +226,7 @@ class DashboardPage extends StatelessWidget {
               ),
             ),
           const SliverToBoxAdapter(
-              child: SizedBox(height: 100)), // Bottom padding
+              child: SizedBox(height: 120)), // Bottom padding
         ],
       );
     });
