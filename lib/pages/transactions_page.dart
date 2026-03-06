@@ -199,7 +199,7 @@ class TransactionsPage extends StatelessWidget {
   }) {
     return ListView(
       key: key,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
       children: [
         _filterBar(context, c),
         const SizedBox(height: 20),
