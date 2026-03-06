@@ -1,8 +1,8 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/models/recurring_transaction_model.dart';
 import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/data/services/notification_service.dart';
 import 'package:uuid/uuid.dart';
 
 class RecurringController extends GetxController {
@@ -113,17 +113,12 @@ class RecurringController extends GetxController {
         rec.save();
         hasExecuted = true;
 
-        // Custom Notif/Snack ringan untuk user
-        Future.delayed(const Duration(milliseconds: 500), () {
-          Get.snackbar(
-            "Transaksi Rutin Ditambahkan",
-            "${rec.title} telah dicatat ke Mutasi kamu.",
-            backgroundColor: Theme.of(Get.context!).colorScheme.primary,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
-            margin: const EdgeInsets.all(16),
-          );
-        });
+        // Custom Notif untuk user (System Level, lebih aman dibanding Overlay Snack saat startup)
+        NotificationService.showNotification(
+          id: rec.hashCode,
+          title: "Transaksi Rutin Ditambahkan",
+          body: "${rec.title} telah dicatat ke Mutasi kamu.",
+        );
       }
     }
 

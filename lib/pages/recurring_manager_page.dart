@@ -299,7 +299,7 @@ class RecurringManagerPage extends StatelessWidget {
                     controller: nominalC,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(
-                        labelText: 'Nominal (Rp)', prefixText: 'Rp '),
+                        labelText: 'Nominal (Rp)', prefixText: 'Rp. '),
                     onChanged: (value) {
                       final clean = cleanCurrency(value);
                       final formatted = CurrencyFormat.format(clean)
