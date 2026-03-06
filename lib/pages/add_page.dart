@@ -642,7 +642,9 @@ class _AddPageState extends State<AddPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 100), // Bottom padding for navigation bar
+            const SizedBox(
+                height:
+                    120), // Increased bottom padding for floating navigation bar
           ],
         ),
       ),
@@ -660,105 +662,202 @@ class _AddPageState extends State<AddPage> {
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) {
-          return Padding(
+          return Container(
             padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom),
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
             child: Container(
               decoration: BoxDecoration(
                 color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(24)),
+                    const BorderRadius.vertical(top: Radius.circular(32)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, -5),
+                  )
+                ],
               ),
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Tambah Kategori Baru',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleLarge
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                      IconButton(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close))
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    children: [
-                      // Input Emoji
-                      Container(
-                        width: 70,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            color: Theme.of(context).cardTheme.color),
-                        child: TextField(
-                          controller: emojiCatC,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 28),
-                          maxLength: 2,
-                          decoration: const InputDecoration(
-                              counterText: '',
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              contentPadding:
-                                  EdgeInsets.symmetric(vertical: 16)),
+                      // Handle Bar
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 5,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
-                      const SizedBox(width: 16),
-                      // Input Name
-                      Expanded(
-                        child: TextField(
-                          controller: nameCatC,
-                          decoration: InputDecoration(
-                            labelText: 'Nama Kategori',
-                            hintText: 'Misal: Asuransi',
-                            filled: true,
-                            fillColor: Theme.of(context).cardTheme.color,
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide.none),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Tambah Kategori Baru',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                      fontWeight: FontWeight.w800,
+                                      letterSpacing: -0.5)),
+                          Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              onPressed: () => Navigator.pop(context),
+                              icon: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.05),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.close, size: 20),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+
+                      Text(
+                        'Icon & Nama',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withOpacity(0.5),
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      Row(
+                        children: [
+                          // Input Emoji
+                          Container(
+                            width: 72,
+                            height: 64,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context).cardTheme.color,
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.05),
+                                )),
+                            child: TextField(
+                              controller: emojiCatC,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 32),
+                              maxLength: 2,
+                              decoration: const InputDecoration(
+                                  counterText: '',
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  contentPadding:
+                                      EdgeInsets.symmetric(vertical: 12)),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          // Input Name
+                          Expanded(
+                            child: Container(
+                              height: 64,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Theme.of(context).cardTheme.color,
+                                border: Border.all(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withOpacity(0.05),
+                                ),
+                              ),
+                              child: TextField(
+                                controller: nameCatC,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600),
+                                decoration: InputDecoration(
+                                  hintText: 'Misal: Asuransi',
+                                  hintStyle: TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.3)),
+                                  filled: true,
+                                  fillColor: Colors.transparent,
+                                  border: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 20, vertical: 20),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18)),
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                          ),
+                          onPressed: () {
+                            if (nameCatC.text.isEmpty ||
+                                emojiCatC.text.isEmpty) {
+                              Get.snackbar(
+                                  "Error", "Nama dan Emoji tidak boleh kosong",
+                                  backgroundColor: Colors.redAccent,
+                                  colorText: Colors.white,
+                                  margin: const EdgeInsets.all(16));
+                              return;
+                            }
+
+                            controller.addCustomCategory(
+                                type, nameCatC.text, emojiCatC.text);
+                            Navigator.pop(context); // Tutup modal
+                            Get.snackbar("Berhasil",
+                                "Kategori '${nameCatC.text}' ditambahkan!",
+                                backgroundColor: Colors.green,
+                                colorText: Colors.white,
+                                margin: const EdgeInsets.all(16));
+                          },
+                          child: const Text(
+                            'Simpan Kategori',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700),
                           ),
                         ),
                       )
                     ],
                   ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      onPressed: () {
-                        if (nameCatC.text.isEmpty || emojiCatC.text.isEmpty) {
-                          Get.snackbar(
-                              "Error", "Nama dan Emoji tidak boleh kosong",
-                              backgroundColor: Colors.redAccent,
-                              colorText: Colors.white);
-                          return;
-                        }
-
-                        controller.addCustomCategory(
-                            type, nameCatC.text, emojiCatC.text);
-                        Navigator.pop(context); // Tutup modal
-                        Get.snackbar("Berhasil",
-                            "Kategori '${nameCatC.text}' ditambahkan!",
-                            backgroundColor: Colors.green,
-                            colorText: Colors.white);
-                      },
-                      child: const Text('Simpan Kategori'),
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
           );
