@@ -136,7 +136,7 @@ class _StatsPageState extends State<StatsPage> {
             )
           else
             _buildCalendarView(context),
-          const SizedBox(height: 100),
+          const SizedBox(height: 120),
         ],
       );
     });
