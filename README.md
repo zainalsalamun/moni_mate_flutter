@@ -9,16 +9,16 @@
 **MoniMate** adalah aplikasi pencatat keuangan pribadi berbasis **Flutter** yang mengutamakan privasi dengan pendekatan **offline-first**. Aplikasi ini didesain dengan antarmuka **Fintech Modern** yang elegan, mendukung Light/Dark mode, dan kini dilengkapi dengan teknologi **AI Receipt Scanner** untuk pencatatan transaksi yang super cepat.
 
 Aplikasi ini memudahkan pengguna untuk:
-1. Mencatat pemasukan dan pengeluaran secara manual maupun otomatis via AI.
-2. Memantau kesehatan keuangan melalui grafik statistik yang interaktif.
+1. Mencatat pemasukan dan pengeluaran secara manual maupun otomatis via Hybrid AI (Gemini + ML Kit).
+2. Memantau kesehatan keuangan melalui grafik statistik yang interaktif dan dashboard modern.
 3. Melakukan backup data ke file CSV.
-4. Menjalankan seluruh fungsi secara aman tanpa data keluar dari perangkat (Offline).
+4. Menjalankan fungsi utama secara offline (dengan dukungan AI cerdas saat online).
 
 ---
 
 ## 🔥 Fitur Unggulan
 
-- 🧠 **AI Receipt Scanner** — Scan struk belanja menggunakan kamera. AI akan otomatis mendeteksi total belanja (nominal) dan nama toko (merchant) secara lokal.
+- 🧠 **Hybrid AI Receipt Scanner** — Scan struk belanja menggunakan kamera. Menggunakan **Google Gemini API** untuk ekstraksi data dengan akurasi tinggi (nominal dan nama merchant), dan otomatis *fallback* ke **Google ML Kit** (offline) jika terjadi masalah koneksi atau limit API.
 - 🎯 **Smart Budgeting** — Atur budget bulanan per kategori. Pantau penggunaan secara real-time dengan progress bar interaktif:
   - 🟢 < 70%: Hemat (Ocean Toska)
   - 🟠 70-90%: Waspada (Orange)
@@ -27,7 +27,7 @@ Aplikasi ini memudahkan pengguna untuk:
 - 💡 **AI Financial Insights** — Analisis otomatis perilaku keuangan (analisis akhir pekan, tren pengeluaran bulanan, dan deteksi kebiasaan ngopi).
 - 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
 - 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
-- 🌊 **Modern Fintech UI** — Antarmuka premium dengan gradasi Ocean Toska, pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi yang halus, dan layout responsif.
+- 🌊 **Modern Fintech UI** — Antarmuka premium dengan kombinasi warna *Ocean Toska* (`#0288D1` & `#4FC3F7`), pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi yang halus, dan layout responsif untuk pengalaman pengguna yang maksimal.
 - 📊 **Smart Statistics** — Visualisasi pengeluaran bulanan menggunakan *Pie Chart* dan tren mingguan dengan *Bar Chart*.
 - 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark).
 - 📅 **Calendar View** — Lihat riwayat transaksi berdasarkan tanggal dengan mudah lewat antarmuka kalender.
@@ -43,7 +43,7 @@ Aplikasi ini memudahkan pengguna untuk:
 | **Core Framework** | Flutter (3.24+) |
 | **State Management** | GetX |
 | **Local Database** | Hive |
-| **AI OCR Engine** | Google ML Kit (Text Recognition) |
+| **AI Engine** | Google Gemini API & Google ML Kit (Text Recognition) |
 | **Local Notifications** | flutter_local_notifications |
 | **Animation & Feedback** | confetti, vibration |
 | **Charts** | fl_chart |
