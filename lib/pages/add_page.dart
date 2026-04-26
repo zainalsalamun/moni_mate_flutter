@@ -25,25 +25,49 @@ class _AddPageState extends State<AddPage> {
   bool isScanning = false;
 
   Future<void> _startScan() async {
-    final result = await ReceiptScannerService.scanReceipt();
-    if (result != null) {
-      setState(() {
-        if (result['amount'] != null) {
-          nominalC.text = CurrencyFormat.format(result['amount'])
-              .replaceAll(RegExp(r'Rp\.?\s*'), '');
-        }
-        if (result['merchant'] != null && result['merchant'].isNotEmpty) {
-          descC.text = result['merchant'];
-        }
-      });
+    setState(() {
+      isScanning = true;
+    });
 
-      Get.snackbar(
-        "Scan Berhasil",
-        "Data struk telah disalin ke form.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.blueAccent,
-        colorText: Colors.white,
+    try {
+      // Navigasi ke halaman ReceiptScannerPage, dan tunggu hasilnya
+      final result = await ReceiptScannerService.scanReceipt();
+
+      if (result != null) {
+        setState(() {
+          if (result['amount'] != null) {
+            nominalC.text = CurrencyFormat.format(result['amount'])
+                .replaceAll(RegExp(r'Rp\.?\s*'), '');
+          }
+          if (result['merchant'] != null && result['merchant'].isNotEmpty) {
+            descC.text = result['merchant'];
+          }
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Scan Berhasil: Data struk telah disalin ke form."),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Gagal Scan: ${e.toString().replaceAll('Exception: ', '')}"),
+          backgroundColor: Colors.redAccent,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 5),
+        ),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          isScanning = false;
+        });
+      }
     }
   }
 
@@ -103,13 +127,24 @@ class _AddPageState extends State<AddPage> {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                color: isScanning 
+                    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.05) 
+                    : Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: Icon(Icons.document_scanner_rounded,
-                  color: Theme.of(context).colorScheme.primary),
+              child: isScanning 
+                  ? SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    )
+                  : Icon(Icons.document_scanner_rounded,
+                      color: Theme.of(context).colorScheme.primary),
             ),
-            onPressed: _startScan,
+            onPressed: isScanning ? null : _startScan,
           ),
           const SizedBox(width: 8),
         ],
@@ -219,7 +254,7 @@ class _AddPageState extends State<AddPage> {
               child: Row(
                 children: [
                   Text(
-                    'Rp.',
+                    'Rp',
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
