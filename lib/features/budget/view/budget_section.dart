@@ -35,12 +35,19 @@ class BudgetSection extends StatelessWidget {
                 ),
                 GestureDetector(
                   onTap: () => Get.to(() => const BudgetManagePage()),
-                  child: Text(
-                    'Set Budget 🎯',
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Set Budget',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(Icons.arrow_forward_rounded,
+                          size: 16, color: Theme.of(context).colorScheme.primary),
+                    ],
                   ),
                 )
               ],
