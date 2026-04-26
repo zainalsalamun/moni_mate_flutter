@@ -201,7 +201,7 @@ class _BudgetManagePageState extends State<BudgetManagePage> {
             keyboardType: TextInputType.number,
             decoration: InputDecoration(
               hintText: 'Limit Budget (Rp)',
-              prefixText: 'Rp. ',
+              prefixText: 'Rp ',
               filled: true,
               fillColor: Theme.of(context).canvasColor,
               border:
@@ -294,7 +294,8 @@ class _BudgetManagePageState extends State<BudgetManagePage> {
   }
 
   void _showEditBudget(BudgetModel budget) {
-    _limitController.text = budget.monthlyLimit.toStringAsFixed(0);
+    _limitController.text = CurrencyFormat.format(budget.monthlyLimit)
+        .replaceAll(RegExp(r'Rp\.?\s*'), '');
     selectedCategory = budget.categoryId;
 
     Get.bottomSheet(
