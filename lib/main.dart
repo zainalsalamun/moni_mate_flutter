@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:monimate/pages/splash_page.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Load environment variables dari file .env
+  await dotenv.load(fileName: ".env");
 
   // Set system UI style for a more premium edge-to-edge look
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
