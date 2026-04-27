@@ -34,25 +34,48 @@ class DashboardPage extends StatelessWidget {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onSurface
-                                .withOpacity(0.6),
+                                .withOpacity(0.5),
                             fontWeight: FontWeight.w500),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        'MoniMate',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: -0.5,
+                      RichText(
+                        text: TextSpan(
+                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.5,
+                              ),
+                          children: [
+                            TextSpan(
+                              text: 'Moni',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurface),
                             ),
+                            TextSpan(
+                              text: 'Mate',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor:
-                        Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                    child: Icon(Icons.person_rounded,
-                        color: Theme.of(context).colorScheme.primary),
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        )
+                      ],
+                    ),
+                    child: const Icon(Icons.person_rounded,
+                        color: Colors.white, size: 28),
                   )
                 ],
               ),
@@ -81,24 +104,39 @@ class DashboardPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Total Saldo',
+                      'TOTAL SALDO',
                       style: TextStyle(
                           color: Colors.white70,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500),
+                          fontSize: 12,
+                          letterSpacing: 1.5,
+                          fontWeight: FontWeight.w600),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     FittedBox(
                       fit: BoxFit.scaleDown,
-                      child: Text(
-                        CurrencyFormat.format(
-                            c.totalIncome.value - c.totalExpense.value),
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 34,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -1,
-                        ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          const Text(
+                            'Rp ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            CurrencyFormat.format(
+                                c.totalIncome.value - c.totalExpense.value).replaceAll('Rp ', '').trim(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 42,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -249,10 +287,11 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.15),
+        color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,12 +299,12 @@ class _StatCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(4),
+                width: 8,
+                height: 8,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(8),
+                  color: color,
+                  shape: BoxShape.circle,
                 ),
-                child: Icon(icon, color: color, size: 14),
               ),
               const SizedBox(width: 8),
               Expanded(
@@ -273,8 +312,8 @@ class _StatCard extends StatelessWidget {
                   label,
                   style: const TextStyle(
                     color: Colors.white70,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -282,16 +321,15 @@ class _StatCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
-              CurrencyFormat.format(value),
+              CurrencyFormat.format(value).replaceAll('Rp ', '').trim(),
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 15,
+                fontSize: 20,
                 fontWeight: FontWeight.w800,
-                letterSpacing: -0.2,
               ),
             ),
           ),
