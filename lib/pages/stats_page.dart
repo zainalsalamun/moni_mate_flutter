@@ -687,7 +687,7 @@ class _StatsPageState extends State<StatsPage> {
   String _emoji(String key) {
     switch (key) {
       case 'makan':
-        return '🍔';
+        return '🍲';
       case 'minum':
         return '🥤';
       case 'transport':
