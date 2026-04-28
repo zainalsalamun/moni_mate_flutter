@@ -265,7 +265,7 @@ class TransactionsPage extends StatelessWidget {
   String _emoji(String key) {
     switch (key) {
       case 'makan':
-        return '🍔';
+        return '🍲';
       case 'minum':
         return '🥤';
       case 'transport':
