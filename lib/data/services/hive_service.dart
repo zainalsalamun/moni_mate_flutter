@@ -2,6 +2,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
 import '../models/recurring_transaction_model.dart';
+import '../models/goal_model.dart';
+import '../models/contribution_model.dart';
 import '../../features/budget/model/budget_model.dart';
 
 class HiveService {
@@ -9,6 +11,8 @@ class HiveService {
   static const String categoryBoxName = 'categories';
   static const String recurringBoxName = 'recurring_transactions';
   static const String budgetBoxName = 'budgets';
+  static const String goalBoxName = 'goals';
+  static const String contributionBoxName = 'contributions';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -17,11 +21,15 @@ class HiveService {
     Hive.registerAdapter(RecurringTransactionModelAdapter());
     Hive.registerAdapter(BudgetModelAdapter());
     Hive.registerAdapter(BudgetPeriodAdapter());
+    Hive.registerAdapter(GoalModelAdapter());
+    Hive.registerAdapter(ContributionModelAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
     await Hive.openBox<RecurringTransactionModel>(recurringBoxName);
     await Hive.openBox<BudgetModel>(budgetBoxName);
+    await Hive.openBox<GoalModel>(goalBoxName);
+    await Hive.openBox<ContributionModel>(contributionBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -86,5 +94,36 @@ class HiveService {
 
   static Future<void> deleteBudget(String id) async {
     await budgetBox.delete(id);
+  }
+
+  // Financial Goals Functionality
+  static Box<GoalModel> get goalBox => Hive.box<GoalModel>(goalBoxName);
+  static Box<ContributionModel> get contributionBox => Hive.box<ContributionModel>(contributionBoxName);
+
+  static Future<void> addGoal(GoalModel goal) async {
+    await goalBox.put(goal.id, goal);
+  }
+
+  static List<GoalModel> getAllGoals() {
+    return goalBox.values.toList();
+  }
+
+  static Future<void> deleteGoal(String id) async {
+    await goalBox.delete(id);
+  }
+
+  static Future<void> addContribution(ContributionModel contribution) async {
+    await contributionBox.put(contribution.id, contribution);
+  }
+
+  static List<ContributionModel> getContributionsForGoal(String goalId) {
+    return contributionBox.values.where((c) => c.goalId == goalId).toList();
+  }
+
+  static Future<void> deleteContributionsByGoalId(String goalId) async {
+    final contributions = contributionBox.values.where((c) => c.goalId == goalId).toList();
+    for (var c in contributions) {
+      await c.delete();
+    }
   }
 }
