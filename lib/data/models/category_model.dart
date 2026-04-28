@@ -14,7 +14,7 @@ class CategoryModel extends HiveObject {
   String name; // nama kategori 'Makan', 'Gaji'
 
   @HiveField(3)
-  String emoji; // icon/emoji kategori '🍔', '💼'
+  String emoji; // icon/emoji kategori '🍲', '💼'
 
   @HiveField(4)
   bool isCustom; // default category (false) or user created (true)
