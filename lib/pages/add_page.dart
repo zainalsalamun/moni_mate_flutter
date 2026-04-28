@@ -56,7 +56,8 @@ class _AddPageState extends State<AddPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Gagal Scan: ${e.toString().replaceAll('Exception: ', '')}"),
+          content:
+              Text("Gagal Scan: ${e.toString().replaceAll('Exception: ', '')}"),
           backgroundColor: Colors.redAccent,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 5),
@@ -73,7 +74,7 @@ class _AddPageState extends State<AddPage> {
 
   // Kategori default berdasarkan tipe transaksi
   final List<Map<String, String>> expenseCategories = [
-    {'value': 'makan', 'label': '🍔 Makan', 'color': 'FFF59E0B'},
+    {'value': 'makan', 'label': '🍲 Makan', 'color': 'FFF59E0B'},
     {'value': 'minum', 'label': '🥤 Minum', 'color': 'FF3B82F6'},
     {'value': 'transport', 'label': '🚗 Transport', 'color': 'FF10B981'},
     {'value': 'hiburan', 'label': '🎮 Hiburan', 'color': 'FF8B5CF6'},
@@ -127,12 +128,12 @@ class _AddPageState extends State<AddPage> {
             icon: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: isScanning 
-                    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.05) 
+                color: isScanning
+                    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.05)
                     : Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: isScanning 
+              child: isScanning
                   ? SizedBox(
                       width: 24,
                       height: 24,
