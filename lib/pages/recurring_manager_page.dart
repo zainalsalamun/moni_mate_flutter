@@ -180,7 +180,7 @@ class RecurringManagerPage extends StatelessWidget {
           final isDark = Theme.of(context).brightness == Brightness.dark;
 
           final expenseDropdown = [
-            {'value': 'makan', 'label': '🍔 Makan'},
+            {'value': 'makan', 'label': '🍲 Makan'},
             {'value': 'minum', 'label': '🥤 Minum'},
             {'value': 'transport', 'label': '🚗 Transport'},
             {'value': 'tagihan', 'label': '💡 Tagihan'},
