@@ -179,7 +179,7 @@ class TransactionController extends GetxController {
 
     switch (name) {
       case 'makan':
-        return '🍔';
+        return '🍲';
       case 'minum':
         return '🥤';
       case 'transport':
