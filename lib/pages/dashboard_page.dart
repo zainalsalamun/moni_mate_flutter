@@ -6,6 +6,7 @@ import 'package:monimate/pages/shell.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 import '../features/budget/view/budget_section.dart';
+import '../features/financial_goals/views/goals_section.dart';
 import '../theme/app_theme.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -40,7 +41,10 @@ class DashboardPage extends StatelessWidget {
                       const SizedBox(height: 4),
                       RichText(
                         text: TextSpan(
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: -0.5,
                               ),
@@ -48,7 +52,8 @@ class DashboardPage extends StatelessWidget {
                             TextSpan(
                               text: 'Moni',
                               style: TextStyle(
-                                  color: Theme.of(context).colorScheme.onSurface),
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface),
                             ),
                             TextSpan(
                               text: 'Mate',
@@ -68,7 +73,10 @@ class DashboardPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.3),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
                         )
@@ -128,7 +136,9 @@ class DashboardPage extends StatelessWidget {
                           ),
                           Text(
                             CurrencyFormat.format(
-                                c.totalIncome.value - c.totalExpense.value).replaceAll('Rp ', '').trim(),
+                                    c.totalIncome.value - c.totalExpense.value)
+                                .replaceAll('Rp ', '')
+                                .trim(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 42,
@@ -168,6 +178,9 @@ class DashboardPage extends StatelessWidget {
           ),
           const SliverToBoxAdapter(
             child: BudgetSection(),
+          ),
+          SliverToBoxAdapter(
+            child: GoalsSection(),
           ),
           SliverToBoxAdapter(
             child: Padding(
@@ -346,7 +359,7 @@ class _TransactionTileItem extends StatelessWidget {
   String _emoji(String key) {
     switch (key) {
       case 'makan':
-        return '🍔';
+        return '🍲';
       case 'minum':
         return '🥤';
       case 'transport':
