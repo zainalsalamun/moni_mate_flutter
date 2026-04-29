@@ -23,13 +23,15 @@ class BudgetModelAdapter extends TypeAdapter<BudgetModel> {
       startMonth: fields[3] as DateTime,
       isActive: fields[4] as bool,
       period: fields[5] as BudgetPeriod,
+      updatedAt: fields[6] as DateTime?,
+      isSynced: fields[7] == null ? false : fields[7] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, BudgetModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class BudgetModelAdapter extends TypeAdapter<BudgetModel> {
       ..writeByte(4)
       ..write(obj.isActive)
       ..writeByte(5)
-      ..write(obj.period);
+      ..write(obj.period)
+      ..writeByte(6)
+      ..write(obj.updatedAt)
+      ..writeByte(7)
+      ..write(obj.isSynced);
   }
 
   @override
