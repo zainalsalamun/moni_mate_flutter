@@ -22,6 +22,12 @@ class TransactionModel extends HiveObject {
   @HiveField(5)
   DateTime date;
 
+  @HiveField(6)
+  DateTime? updatedAt;
+
+  @HiveField(7, defaultValue: false)
+  bool isSynced;
+
   TransactionModel({
     required this.id,
     required this.type,
@@ -29,5 +35,7 @@ class TransactionModel extends HiveObject {
     required this.amount,
     required this.description,
     required this.date,
+    this.updatedAt,
+    this.isSynced = false,
   });
 }
