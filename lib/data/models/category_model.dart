@@ -19,11 +19,19 @@ class CategoryModel extends HiveObject {
   @HiveField(4)
   bool isCustom; // default category (false) or user created (true)
 
+  @HiveField(5)
+  DateTime? updatedAt;
+
+  @HiveField(6, defaultValue: false)
+  bool isSynced;
+
   CategoryModel({
     required this.id,
     required this.type,
     required this.name,
     required this.emoji,
     this.isCustom = false,
+    this.updatedAt,
+    this.isSynced = false,
   });
 }
