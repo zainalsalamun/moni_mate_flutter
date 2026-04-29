@@ -30,6 +30,12 @@ class BudgetModel extends HiveObject {
   @HiveField(5)
   BudgetPeriod period;
 
+  @HiveField(6)
+  DateTime? updatedAt;
+
+  @HiveField(7, defaultValue: false)
+  bool isSynced;
+
   BudgetModel({
     required this.id,
     required this.categoryId,
@@ -37,5 +43,7 @@ class BudgetModel extends HiveObject {
     required this.startMonth,
     this.isActive = true,
     this.period = BudgetPeriod.monthly,
+    this.updatedAt,
+    this.isSynced = false,
   });
 }
