@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/services/notification_service.dart';
+import 'package:monimate/data/controller/sync_controller.dart';
 import '../model/budget_model.dart';
 import '../engine/budget_engine.dart';
 import 'package:uuid/uuid.dart';
@@ -46,6 +47,8 @@ class BudgetController extends GetxController {
       final existing = budgets[existingIndex];
       existing.monthlyLimit = limit;
       existing.period = period;
+      existing.updatedAt = DateTime.now();
+      existing.isSynced = false;
       existing.save();
       budgets[existingIndex] = existing;
     } else {
@@ -60,12 +63,14 @@ class BudgetController extends GetxController {
       budgets.add(budget);
     }
     updateUsage();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   void deleteBudget(String id) {
     HiveService.deleteBudget(id);
     budgets.removeWhere((b) => b.id == id);
     updateUsage();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   // Set alert flags to prevent multiple notifications in one session
