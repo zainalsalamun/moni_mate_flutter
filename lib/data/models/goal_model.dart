@@ -32,6 +32,12 @@ class GoalModel extends HiveObject {
   @HiveField(8)
   DateTime createdAt;
 
+  @HiveField(9)
+  DateTime? updatedAt;
+
+  @HiveField(10, defaultValue: false)
+  bool isSynced;
+
   GoalModel({
     String? id,
     required this.title,
@@ -42,6 +48,8 @@ class GoalModel extends HiveObject {
     this.iconPath = '', 
     this.colorHex = '#E1F5FE',
     DateTime? createdAt,
+    this.updatedAt,
+    this.isSynced = false,
   })  : id = id ?? const Uuid().v4(),
         createdAt = createdAt ?? DateTime.now();
         
