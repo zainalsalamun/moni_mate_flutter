@@ -26,13 +26,15 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       iconPath: fields[6] as String,
       colorHex: fields[7] as String,
       createdAt: fields[8] as DateTime?,
+      updatedAt: fields[9] as DateTime?,
+      isSynced: fields[10] == null ? false : fields[10] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, GoalModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class GoalModelAdapter extends TypeAdapter<GoalModel> {
       ..writeByte(7)
       ..write(obj.colorHex)
       ..writeByte(8)
-      ..write(obj.createdAt);
+      ..write(obj.createdAt)
+      ..writeByte(9)
+      ..write(obj.updatedAt)
+      ..writeByte(10)
+      ..write(obj.isSynced);
   }
 
   @override
