@@ -29,13 +29,15 @@ class RecurringTransactionModelAdapter
       interval: fields[8] as int,
       nextExecutionDate: fields[9] as DateTime,
       isActive: fields[10] as bool,
+      updatedAt: fields[11] as DateTime?,
+      isSynced: fields[12] == null ? false : fields[12] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, RecurringTransactionModel obj) {
     writer
-      ..writeByte(11)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -57,7 +59,11 @@ class RecurringTransactionModelAdapter
       ..writeByte(9)
       ..write(obj.nextExecutionDate)
       ..writeByte(10)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(11)
+      ..write(obj.updatedAt)
+      ..writeByte(12)
+      ..write(obj.isSynced);
   }
 
   @override

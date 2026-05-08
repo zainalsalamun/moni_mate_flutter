@@ -37,6 +37,12 @@ class RecurringTransactionModel extends HiveObject {
   @HiveField(10)
   bool isActive;
 
+  @HiveField(11)
+  DateTime? updatedAt;
+
+  @HiveField(12, defaultValue: false)
+  bool isSynced;
+
   RecurringTransactionModel({
     required this.id,
     required this.title,
@@ -49,5 +55,7 @@ class RecurringTransactionModel extends HiveObject {
     required this.interval,
     required this.nextExecutionDate,
     required this.isActive,
+    this.updatedAt,
+    this.isSynced = false,
   });
 }
