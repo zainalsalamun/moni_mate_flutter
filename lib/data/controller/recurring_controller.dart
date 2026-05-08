@@ -4,6 +4,7 @@ import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/services/notification_service.dart';
 import 'package:uuid/uuid.dart';
+import 'package:monimate/data/controller/sync_controller.dart';
 
 class RecurringController extends GetxController {
   final RxList<RecurringTransactionModel> recurrings =
@@ -44,6 +45,7 @@ class RecurringController extends GetxController {
     HiveService.addRecurringTransaction(rec);
     recurrings.add(rec);
     checkAndExecuteRecurring();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   void toggleActive(String id, bool val) {
@@ -51,14 +53,18 @@ class RecurringController extends GetxController {
     if (idx != -1) {
       final rec = recurrings[idx];
       rec.isActive = val;
+      rec.updatedAt = DateTime.now();
+      rec.isSynced = false;
       rec.save(); // HiveObject save
       recurrings.refresh();
+      if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
     }
   }
 
   void deleteRecurring(String id) {
     HiveService.deleteRecurringTransaction(id);
     recurrings.removeWhere((e) => e.id == id);
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   // --- OFFLINE SCHEDULER ENGINE ---
