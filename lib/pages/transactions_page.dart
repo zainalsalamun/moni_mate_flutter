@@ -4,6 +4,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/pages/shell.dart';
 import 'package:monimate/theme/app_theme.dart';
+import 'package:monimate/utils/category_icon.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 
@@ -150,20 +151,16 @@ class TransactionsPage extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: isIncome
-                ? Colors.greenAccent.withOpacity(0.15)
-                : Colors.redAccent.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(14),
+        leading: CategoryIcon(
+          category: c.getCategoryName(t.category),
+          containerSize: 48,
+          border: Border.all(
+            color: CategoryIcon.getColor(c.getCategoryName(t.category)),
+            width: 1.5,
           ),
-          alignment: Alignment.center,
-          child: Text(_emoji(t.category), style: const TextStyle(fontSize: 22)),
         ),
         title: Text(
-          t.description.isEmpty ? t.category.capitalizeFirst! : t.description,
+          t.description.isEmpty ? c.getCategoryName(t.category) : t.description,
           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
         subtitle: Padding(
@@ -260,30 +257,5 @@ class TransactionsPage extends StatelessWidget {
         }),
       ],
     );
-  }
-
-  String _emoji(String key) {
-    switch (key) {
-      case 'makan':
-        return '🍲';
-      case 'minum':
-        return '🥤';
-      case 'transport':
-        return '🚗';
-      case 'hiburan':
-        return '🎮';
-      case 'gaji':
-        return '💼';
-      case 'belanja':
-        return '🛍️';
-      case 'kesehatan':
-        return '💊';
-      case 'pendidikan':
-        return '📚';
-      case 'tagihan':
-        return '💡';
-      default:
-        return '🧩';
-    }
   }
 }
