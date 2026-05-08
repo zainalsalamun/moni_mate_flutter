@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/models/transaction_model.dart';
+import 'package:monimate/utils/category_icon.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -362,7 +363,7 @@ class _StatsPageState extends State<StatsPage> {
                               ? 0
                               : (e.value / totalExpense) * 100;
                           return PieChartSectionData(
-                            color: _categoryColor(e.key),
+                            color: CategoryIcon.getColor(c.getCategoryName(e.key)),
                             value: e.value,
                             radius: 60,
                             showTitle: true,
@@ -380,7 +381,7 @@ class _StatsPageState extends State<StatsPage> {
                   const SizedBox(height: 32),
                   Column(
                     children: categoryTotals.entries.map((e) {
-                      final color = _categoryColor(e.key);
+                      final color = CategoryIcon.getColor(c.getCategoryName(e.key));
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -394,7 +395,7 @@ class _StatsPageState extends State<StatsPage> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                e.key.capitalizeFirst!,
+                                c.getCategoryName(e.key),
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w600),
                               ),
@@ -618,7 +619,6 @@ class _StatsPageState extends State<StatsPage> {
           Column(
             children: selectedEvents.map((t) {
               final isIncome = t.type == 'income';
-              final emoji = _emoji(t.category);
 
               return Card(
                 elevation: 1,
@@ -627,13 +627,16 @@ class _StatsPageState extends State<StatsPage> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: ListTile(
-                  leading: Text(
-                    emoji,
-                    style: const TextStyle(fontSize: 24),
+                  leading: CategoryIcon(
+                    category: c.getCategoryName(t.category),
+                    size: 24,
+                    backgroundColor: isIncome
+                        ? Colors.greenAccent.withOpacity(0.15)
+                        : Colors.redAccent.withOpacity(0.15),
                   ),
                   title: Text(
                     t.description.isEmpty
-                        ? t.category.capitalizeFirst!
+                        ? c.getCategoryName(t.category)
                         : t.description,
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
@@ -659,53 +662,4 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Color _categoryColor(String key) {
-    switch (key) {
-      case 'makan':
-        return const Color(0xFF6F86D6);
-      case 'transport':
-        return const Color(0xFF48C6EF);
-      case 'hiburan':
-        return const Color(0xFF22C55E);
-      case 'gaji':
-        return const Color(0xFFF59E0B);
-      case 'belanja':
-        return const Color(0xFFE879F9);
-      case 'kesehatan':
-        return const Color(0xFFFB7185);
-      case 'pendidikan':
-        return const Color(0xFF8B5CF6);
-      case 'tagihan':
-        return const Color(0xFFFFA500);
-      case 'minum':
-        return const Color(0xFF654444);
-      default:
-        return Colors.grey;
-    }
-  }
-
-  String _emoji(String key) {
-    switch (key) {
-      case 'makan':
-        return '🍲';
-      case 'minum':
-        return '🥤';
-      case 'transport':
-        return '🚗';
-      case 'hiburan':
-        return '🎮';
-      case 'gaji':
-        return '💼';
-      case 'belanja':
-        return '🛍️';
-      case 'kesehatan':
-        return '💊';
-      case 'pendidikan':
-        return '📚';
-      case 'tagihan':
-        return '💡';
-      default:
-        return '🧩';
-    }
-  }
 }
