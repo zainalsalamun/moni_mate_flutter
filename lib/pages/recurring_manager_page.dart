@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/recurring_controller.dart';
+import 'package:monimate/utils/category_icon.dart';
 import 'package:monimate/utils/format_currency.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/clean_currency.dart';
-import 'package:monimate/data/controller/transaction_controller.dart';
 
 class RecurringManagerPage extends StatelessWidget {
   const RecurringManagerPage({super.key});
@@ -15,8 +15,6 @@ class RecurringManagerPage extends StatelessWidget {
       Get.put(RecurringController());
     }
     final c = Get.find<RecurringController>();
-    final txC =
-        Get.find<TransactionController>(); // For category emoji & colors
 
     return Scaffold(
       appBar: AppBar(
@@ -86,15 +84,12 @@ class RecurringManagerPage extends StatelessWidget {
                 child: ListTile(
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  leading: CircleAvatar(
+                  leading: CategoryIcon.circle(
+                    category: rec.category,
+                    radius: 24,
                     backgroundColor: isIncome
                         ? Colors.green.withOpacity(0.15)
                         : Colors.redAccent.withOpacity(0.15),
-                    radius: 24,
-                    child: Text(
-                      txC.getEmoji(rec.category),
-                      style: const TextStyle(fontSize: 22),
-                    ),
                   ),
                   title: Text(
                     rec.title,
@@ -180,18 +175,18 @@ class RecurringManagerPage extends StatelessWidget {
           final isDark = Theme.of(context).brightness == Brightness.dark;
 
           final expenseDropdown = [
-            {'value': 'makan', 'label': '🍲 Makan'},
-            {'value': 'minum', 'label': '🥤 Minum'},
-            {'value': 'transport', 'label': '🚗 Transport'},
-            {'value': 'tagihan', 'label': '💡 Tagihan'},
-            {'value': 'hiburan', 'label': '🎮 Hiburan'},
-            {'value': 'lainnya', 'label': '🧩 Lainnya'},
+            {'value': 'makan', 'label': 'Makan'},
+            {'value': 'minum', 'label': 'Minum'},
+            {'value': 'transport', 'label': 'Transport'},
+            {'value': 'tagihan', 'label': 'Tagihan'},
+            {'value': 'hiburan', 'label': 'Hiburan'},
+            {'value': 'lainnya', 'label': 'Lainnya'},
           ];
           final incomeDropdown = [
-            {'value': 'gaji', 'label': '💼 Gaji'},
-            {'value': 'bonus', 'label': '🎁 Bonus'},
-            {'value': 'investasi', 'label': '📈 Investasi'},
-            {'value': 'lainnya_masuk', 'label': '🧩 Lainnya'},
+            {'value': 'gaji', 'label': 'Gaji'},
+            {'value': 'bonus', 'label': 'Bonus'},
+            {'value': 'investasi', 'label': 'Investasi'},
+            {'value': 'lainnya_masuk', 'label': 'Lainnya'},
           ];
 
           final currentDropdown =
