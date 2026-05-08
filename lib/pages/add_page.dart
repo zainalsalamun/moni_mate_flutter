@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/utils/category_icon.dart';
 import 'package:monimate/utils/clean_currency.dart';
 import 'package:monimate/utils/format_currency.dart';
 import 'package:monimate/data/services/receipt_scanner_service.dart';
@@ -74,24 +75,24 @@ class _AddPageState extends State<AddPage> {
 
   // Kategori default berdasarkan tipe transaksi
   final List<Map<String, String>> expenseCategories = [
-    {'value': 'makan', 'label': '🍲 Makan', 'color': 'FFF59E0B'},
-    {'value': 'minum', 'label': '🥤 Minum', 'color': 'FF3B82F6'},
-    {'value': 'transport', 'label': '🚗 Transport', 'color': 'FF10B981'},
-    {'value': 'hiburan', 'label': '🎮 Hiburan', 'color': 'FF8B5CF6'},
-    {'value': 'belanja', 'label': '🛍️ Belanja', 'color': 'FFEC4899'},
-    {'value': 'kesehatan', 'label': '💊 Kesehatan', 'color': 'FFEF4444'},
-    {'value': 'pendidikan', 'label': '📚 Pendidikan', 'color': 'FF6366F1'},
-    {'value': 'tagihan', 'label': '💡 Tagihan', 'color': 'FFF59E0B'},
-    {'value': 'lainnya', 'label': '🧩 Lainnya', 'color': 'FF6B7280'},
+    {'value': 'makan', 'name': 'Makan'},
+    {'value': 'minum', 'name': 'Minum'},
+    {'value': 'transport', 'name': 'Transport'},
+    {'value': 'hiburan', 'name': 'Hiburan'},
+    {'value': 'belanja', 'name': 'Belanja'},
+    {'value': 'kesehatan', 'name': 'Kesehatan'},
+    {'value': 'pendidikan', 'name': 'Pendidikan'},
+    {'value': 'tagihan', 'name': 'Tagihan'},
+    {'value': 'lainnya', 'name': 'Lainnya'},
   ];
 
   final List<Map<String, String>> incomeCategories = [
-    {'value': 'gaji', 'label': '💼 Gaji', 'color': 'FF10B981'},
-    {'value': 'bonus', 'label': '🎁 Bonus', 'color': 'FFF59E0B'},
-    {'value': 'investasi', 'label': '📈 Investasi', 'color': 'FF3B82F6'},
-    {'value': 'freelance', 'label': '💻 Freelance', 'color': 'FF8B5CF6'},
-    {'value': 'hadiah', 'label': '🧧 Hadiah', 'color': 'FFEC4899'},
-    {'value': 'lainnya_masuk', 'label': '🧩 Lainnya', 'color': 'FF6B7280'},
+    {'value': 'gaji', 'name': 'Gaji'},
+    {'value': 'bonus', 'name': 'Bonus'},
+    {'value': 'investasi', 'name': 'Investasi'},
+    {'value': 'freelance', 'name': 'Freelance'},
+    {'value': 'hadiah', 'name': 'Hadiah'},
+    {'value': 'lainnya_masuk', 'name': 'Lainnya'},
   ];
 
   @override
@@ -105,9 +106,7 @@ class _AddPageState extends State<AddPage> {
       ...(type == 'expense' ? expenseCategories : incomeCategories),
       ...customCategories.map((c) => {
             'value': c.id,
-            'label': '${c.emoji} ${c.name}',
-            'color':
-                'FF10B981', // Default green highlight warna jika dicustomize
+            'name': c.name,
             'isCustom': 'true'
           })
     ];
@@ -326,8 +325,7 @@ class _AddPageState extends State<AddPage> {
                 ...(type == 'expense' ? expenseCategories : incomeCategories),
                 ...customCategories.map((c) => {
                       'value': c.id,
-                      'label': '${c.emoji} ${c.name}',
-                      'color': 'FF10B981',
+                      'name': c.name,
                       'isCustom': 'true'
                     })
               ];
@@ -387,15 +385,13 @@ class _AddPageState extends State<AddPage> {
                   final cat = currentObsCategories[index];
                   final isSelected = category == cat['value'];
                   final isCustom = cat['isCustom'] == 'true';
-
-                  final parts = cat['label']!.split(' ');
-                  final emoji = parts[0];
-                  final text = parts.sublist(1).join(' ');
+                  final catValue = cat['value']!;
+                  final catName = cat['name'] ?? catValue.capitalizeFirst!;
 
                   return Stack(
                     children: [
                       GestureDetector(
-                        onTap: () => setState(() => category = cat['value']!),
+                        onTap: () => setState(() => category = catValue),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           decoration: BoxDecoration(
@@ -420,14 +416,18 @@ class _AddPageState extends State<AddPage> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Text(emoji,
-                                    style: const TextStyle(fontSize: 24)),
+                                CategoryIcon(
+                                  category: isCustom ? catName : catValue,
+                                  size: 24,
+                                  containerSize: 40,
+                                  borderRadius: 12,
+                                ),
                                 const SizedBox(height: 8),
                                 Padding(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 4),
                                   child: Text(
-                                    text,
+                                    catName,
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: isSelected
@@ -690,212 +690,247 @@ class _AddPageState extends State<AddPage> {
   // Modal dialog untuk menambah kategori baru
   void _showAddCategoryModal(BuildContext context) {
     final TextEditingController nameCatC = TextEditingController();
-    final TextEditingController emojiCatC =
-        TextEditingController(text: '💰'); // Default emoji
 
     showModalBottomSheet(
         context: context,
         isScrollControlled: true,
         backgroundColor: Colors.transparent,
         builder: (context) {
-          return Container(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-            ),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(32)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, -5),
-                  )
-                ],
-              ),
-              child: SafeArea(
-                top: false,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Handle Bar
-                      Center(
-                        child: Container(
-                          width: 40,
-                          height: 5,
-                          margin: const EdgeInsets.only(bottom: 24),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
+          return StatefulBuilder(
+            builder: (context, setModalState) {
+              final iconPreview = nameCatC.text.isEmpty
+                  ? Icons.category_rounded
+                  : CategoryIcon.autoIcon(nameCatC.text);
+              final colorPreview = nameCatC.text.isEmpty
+                  ? Theme.of(context).colorScheme.primary
+                  : CategoryIcon.autoColor(nameCatC.text);
 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Tambah Kategori Baru',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleLarge
-                                  ?.copyWith(
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.5)),
-                          Material(
-                            color: Colors.transparent,
-                            child: IconButton(
-                              onPressed: () => Navigator.pop(context),
-                              icon: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.05),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(Icons.close, size: 20),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-
-                      Text(
-                        'Icon & Nama',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .onSurface
-                              .withOpacity(0.5),
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      Row(
-                        children: [
-                          // Input Emoji
-                          Container(
-                            width: 72,
-                            height: 64,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Theme.of(context).cardTheme.color,
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.05),
-                                )),
-                            child: TextField(
-                              controller: emojiCatC,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 32),
-                              maxLength: 2,
-                              decoration: const InputDecoration(
-                                  counterText: '',
-                                  border: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  contentPadding:
-                                      EdgeInsets.symmetric(vertical: 12)),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          // Input Name
-                          Expanded(
-                            child: Container(
-                              height: 64,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Theme.of(context).cardTheme.color,
-                                border: Border.all(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurface
-                                      .withOpacity(0.05),
-                                ),
-                              ),
-                              child: TextField(
-                                controller: nameCatC,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
-                                decoration: InputDecoration(
-                                  hintText: 'Misal: Asuransi',
-                                  hintStyle: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .onSurface
-                                          .withOpacity(0.3)),
-                                  filled: true,
-                                  fillColor: Colors.transparent,
-                                  border: InputBorder.none,
-                                  enabledBorder: InputBorder.none,
-                                  focusedBorder: InputBorder.none,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 20),
-                                ),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(18)),
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                          ),
-                          onPressed: () {
-                            if (nameCatC.text.isEmpty ||
-                                emojiCatC.text.isEmpty) {
-                              Get.snackbar(
-                                  "Error", "Nama dan Emoji tidak boleh kosong",
-                                  backgroundColor: Colors.redAccent,
-                                  colorText: Colors.white,
-                                  margin: const EdgeInsets.all(16));
-                              return;
-                            }
-
-                            controller.addCustomCategory(
-                                type, nameCatC.text, emojiCatC.text);
-                            Navigator.pop(context); // Tutup modal
-                            Get.snackbar("Berhasil",
-                                "Kategori '${nameCatC.text}' ditambahkan!",
-                                backgroundColor: Colors.green,
-                                colorText: Colors.white,
-                                margin: const EdgeInsets.all(16));
-                          },
-                          child: const Text(
-                            'Simpan Kategori',
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w700),
-                          ),
-                        ),
+              return Container(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(32)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 20,
+                        offset: const Offset(0, -5),
                       )
                     ],
                   ),
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Handle Bar
+                          Center(
+                            child: Container(
+                              width: 40,
+                              height: 5,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurface
+                                    .withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Tambah Kategori Baru',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                          fontWeight: FontWeight.w800,
+                                          letterSpacing: -0.5)),
+                              Material(
+                                color: Colors.transparent,
+                                child: IconButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.05),
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: const Icon(Icons.close, size: 20),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+
+                          Text(
+                            'Nama Kategori',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.5),
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+
+                          Row(
+                            children: [
+                              // Icon preview (live)
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeOutBack,
+                                width: 64,
+                                height: 64,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: colorPreview.withOpacity(0.12),
+                                    border: Border.all(
+                                      color: colorPreview.withOpacity(0.3),
+                                    )),
+                                alignment: Alignment.center,
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 250),
+                                  switchInCurve: Curves.easeOutBack,
+                                  transitionBuilder: (child, animation) {
+                                    return ScaleTransition(
+                                      scale: animation,
+                                      child: child,
+                                    );
+                                  },
+                                  child: Icon(
+                                    iconPreview,
+                                    key: ValueKey(iconPreview),
+                                    size: 28,
+                                    color: colorPreview,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              // Input Name
+                              Expanded(
+                                child: Container(
+                                  height: 64,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Theme.of(context).cardTheme.color,
+                                    border: Border.all(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withOpacity(0.05),
+                                    ),
+                                  ),
+                                  child: TextField(
+                                    controller: nameCatC,
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600),
+                                    onChanged: (_) => setModalState(() {}),
+                                    decoration: InputDecoration(
+                                      hintText: 'Misal: Asuransi, Kos, Parkir',
+                                      hintStyle: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onSurface
+                                              .withOpacity(0.3)),
+                                      filled: true,
+                                      fillColor: Colors.transparent,
+                                      border: InputBorder.none,
+                                      enabledBorder: InputBorder.none,
+                                      focusedBorder: InputBorder.none,
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                              horizontal: 20, vertical: 20),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+
+                          // Hint text
+                          if (nameCatC.text.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 12),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.auto_awesome_rounded,
+                                      size: 14, color: colorPreview),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Icon otomatis berdasarkan nama',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: colorPreview,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          const SizedBox(height: 32),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 56,
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18)),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                foregroundColor: Colors.white,
+                                elevation: 0,
+                              ),
+                              onPressed: () {
+                                if (nameCatC.text.isEmpty) {
+                                  Get.snackbar("Error",
+                                      "Nama kategori tidak boleh kosong",
+                                      backgroundColor: Colors.redAccent,
+                                      colorText: Colors.white,
+                                      margin: const EdgeInsets.all(16));
+                                  return;
+                                }
+
+                                controller.addCustomCategory(
+                                    type, nameCatC.text, '');
+                                Navigator.pop(context); // Tutup modal
+                                Get.snackbar("Berhasil",
+                                    "Kategori '${nameCatC.text}' ditambahkan!",
+                                    backgroundColor: Colors.green,
+                                    colorText: Colors.white,
+                                    margin: const EdgeInsets.all(16));
+                              },
+                              child: const Text(
+                                'Simpan Kategori',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           );
         });
   }
