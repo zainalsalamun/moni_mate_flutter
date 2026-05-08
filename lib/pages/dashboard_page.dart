@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/pages/shell.dart';
+import 'package:monimate/utils/category_icon.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 import '../features/budget/view/budget_section.dart';
@@ -300,7 +301,7 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white.withOpacity(0.1),
         borderRadius: BorderRadius.circular(16),
@@ -321,15 +322,17 @@ class _StatCard extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      color: Colors.white70,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -356,31 +359,6 @@ class _TransactionTileItem extends StatelessWidget {
   final TransactionModel t;
   const _TransactionTileItem({required this.t});
 
-  String _emoji(String key) {
-    switch (key) {
-      case 'makan':
-        return '🍲';
-      case 'minum':
-        return '🥤';
-      case 'transport':
-        return '🚗';
-      case 'hiburan':
-        return '🎮';
-      case 'gaji':
-        return '💼';
-      case 'belanja':
-        return '🛍️';
-      case 'kesehatan':
-        return '💊';
-      case 'pendidikan':
-        return '📚';
-      case 'tagihan':
-        return '💡';
-      default:
-        return '🧩';
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final isIncome = t.type == 'income';
@@ -397,20 +375,16 @@ class _TransactionTileItem extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: isIncome
-                ? Colors.greenAccent.withOpacity(0.15)
-                : Colors.redAccent.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(14),
+        leading: CategoryIcon(
+          category: Get.find<TransactionController>().getCategoryName(t.category),
+          containerSize: 48,
+          border: Border.all(
+            color: CategoryIcon.getColor(Get.find<TransactionController>().getCategoryName(t.category)),
+            width: 1.5,
           ),
-          alignment: Alignment.center,
-          child: Text(_emoji(t.category), style: const TextStyle(fontSize: 22)),
         ),
         title: Text(
-          t.description.isEmpty ? t.category.capitalizeFirst! : t.description,
+          t.description.isEmpty ? Get.find<TransactionController>().getCategoryName(t.category) : t.description,
           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
         subtitle: Padding(
