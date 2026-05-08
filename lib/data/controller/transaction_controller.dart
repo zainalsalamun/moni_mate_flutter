@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/models/category_model.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:uuid/uuid.dart';
+import 'package:monimate/data/controller/sync_controller.dart';
 
 class TransactionController extends GetxController {
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
@@ -37,8 +37,9 @@ class TransactionController extends GetxController {
   }
 
   void addCustomCategory(String type, String name, String emoji) {
+    final String catId = name.toLowerCase().replaceAll(RegExp(r'\s+'), '_');
     final cat = CategoryModel(
-      id: const Uuid().v4(),
+      id: catId,
       type: type,
       name: name,
       emoji: emoji,
@@ -46,11 +47,13 @@ class TransactionController extends GetxController {
     );
     HiveService.addCategory(cat);
     loadCategories();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   void deleteCustomCategory(String id) {
     HiveService.deleteCategory(id);
     loadCategories();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   void addTransaction(
@@ -67,6 +70,7 @@ class TransactionController extends GetxController {
     HiveService.addTransaction(tx);
     transactions.add(tx);
     calculateTotals();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   List<TransactionModel> get recentTransactions {
@@ -145,6 +149,7 @@ class TransactionController extends GetxController {
     HiveService.deleteTransaction(id);
     transactions.removeWhere((e) => e.id == id);
     calculateTotals();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   void calculateTotals() {
@@ -168,64 +173,14 @@ class TransactionController extends GetxController {
     transactions.clear();
     totalIncome.value = 0;
     totalExpense.value = 0;
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
-  String getEmoji(String categoryName) {
-    final name = categoryName.toLowerCase();
-    // Check custom categories
-    final custom = [...customExpenseCategories, ...customIncomeCategories]
-        .firstWhereOrNull((c) => c.name.toLowerCase() == name);
-    if (custom != null) return custom.emoji;
-
-    switch (name) {
-      case 'makan':
-        return '🍲';
-      case 'minum':
-        return '🥤';
-      case 'transport':
-        return '🚗';
-      case 'hiburan':
-        return '🎮';
-      case 'gaji':
-        return '💼';
-      case 'belanja':
-        return '🛍️';
-      case 'kesehatan':
-        return '💊';
-      case 'pendidikan':
-        return '📚';
-      case 'tagihan':
-        return '💡';
-      default:
-        return '🧩';
-    }
-  }
-
-  dynamic getColor(String categoryName) {
-    final name = categoryName.toLowerCase();
-    switch (name) {
-      case 'makan':
-        return const Color(0xFF6F86D6);
-      case 'transport':
-        return const Color(0xFF48C6EF);
-      case 'hiburan':
-        return const Color(0xFF22C55E);
-      case 'gaji':
-        return const Color(0xFFF59E0B);
-      case 'belanja':
-        return const Color(0xFFE879F9);
-      case 'kesehatan':
-        return const Color(0xFFFB7185);
-      case 'pendidikan':
-        return const Color(0xFF8B5CF6);
-      case 'tagihan':
-        return const Color(0xFFFFA500);
-      case 'minum':
-        return const Color(0xFF654444);
-      default:
-        // Hash name to color for custom categories
-        final hash = name.codeUnits.fold(0, (prev, element) => prev + element);
-        return Colors.primaries[hash % Colors.primaries.length];
-    }
+  String getCategoryName(String id) {
+    var custom = customExpenseCategories.firstWhereOrNull((c) => c.id == id);
+    if (custom != null) return custom.name;
+    custom = customIncomeCategories.firstWhereOrNull((c) => c.id == id);
+    if (custom != null) return custom.name;
+    return id.replaceAll('_', ' ').capitalizeFirst ?? id;
   }
 }
