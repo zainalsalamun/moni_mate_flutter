@@ -22,13 +22,15 @@ class ContributionModelAdapter extends TypeAdapter<ContributionModel> {
       amount: fields[2] as double,
       date: fields[3] as DateTime,
       note: fields[4] as String,
+      updatedAt: fields[5] as DateTime?,
+      isSynced: fields[6] == null ? false : fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ContributionModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class ContributionModelAdapter extends TypeAdapter<ContributionModel> {
       ..writeByte(3)
       ..write(obj.date)
       ..writeByte(4)
-      ..write(obj.note);
+      ..write(obj.note)
+      ..writeByte(5)
+      ..write(obj.updatedAt)
+      ..writeByte(6)
+      ..write(obj.isSynced);
   }
 
   @override

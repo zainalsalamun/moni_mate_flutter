@@ -22,13 +22,15 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
       name: fields[2] as String,
       emoji: fields[3] as String,
       isCustom: fields[4] as bool,
+      updatedAt: fields[5] as DateTime?,
+      isSynced: fields[6] == null ? false : fields[6] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, CategoryModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +40,11 @@ class CategoryModelAdapter extends TypeAdapter<CategoryModel> {
       ..writeByte(3)
       ..write(obj.emoji)
       ..writeByte(4)
-      ..write(obj.isCustom);
+      ..write(obj.isCustom)
+      ..writeByte(5)
+      ..write(obj.updatedAt)
+      ..writeByte(6)
+      ..write(obj.isSynced);
   }
 
   @override

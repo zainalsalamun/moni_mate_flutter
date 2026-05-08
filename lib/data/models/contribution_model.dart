@@ -20,11 +20,19 @@ class ContributionModel extends HiveObject {
   @HiveField(4)
   final String note;
 
+  @HiveField(5)
+  DateTime? updatedAt;
+
+  @HiveField(6, defaultValue: false)
+  bool isSynced;
+
   ContributionModel({
     String? id,
     required this.goalId,
     required this.amount,
     required this.date,
     this.note = '',
-  }) : id = id ?? const Uuid().v4();
+    this.updatedAt,
+    this.isSynced = false,
+  })  : id = id ?? const Uuid().v4();
 }
