@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/utils/format_currency.dart';
 import '../engine/budget_engine.dart';
+import 'package:monimate/data/controller/transaction_controller.dart';
 
 class BudgetProgressBar extends StatelessWidget {
   final BudgetUsage usage;
@@ -48,8 +49,7 @@ class BudgetProgressBar extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        usage.budget.categoryId.capitalizeFirst ??
-                            usage.budget.categoryId,
+                        Get.find<TransactionController>().getCategoryName(usage.budget.categoryId),
                         style: const TextStyle(
                             fontWeight: FontWeight.bold, fontSize: 16),
                       ),
