@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../data/models/goal_model.dart';
 import '../../../data/models/contribution_model.dart';
 import '../../../data/services/hive_service.dart';
+import 'package:monimate/data/controller/sync_controller.dart';
 
 class AchievementItem {
   final String title;
@@ -100,6 +101,7 @@ class GoalsController extends GetxController {
   Future<void> addGoal(GoalModel goal) async {
     await HiveService.addGoal(goal);
     fetchGoals();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   // Method to delete Goal
@@ -107,6 +109,7 @@ class GoalsController extends GetxController {
     await HiveService.deleteGoal(goalId);
     await HiveService.deleteContributionsByGoalId(goalId);
     fetchGoals();
+    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
   }
 
   // Method to add Contribution
@@ -121,6 +124,8 @@ class GoalsController extends GetxController {
         goal.status = 'completed';
       }
 
+      goal.updatedAt = DateTime.now();
+      goal.isSynced = false;
       await goal.save(); // Save changes to Hive
 
       final contribution = ContributionModel(
@@ -132,6 +137,7 @@ class GoalsController extends GetxController {
       await HiveService.addContribution(contribution);
 
       fetchGoals();
+      if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
     }
   }
 

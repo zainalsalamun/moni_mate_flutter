@@ -165,11 +165,20 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                       child: const Icon(Icons.arrow_back, size: 20),
                     ),
                   ),
-                  Column(
-                    children: [
-                      Text(widget.editGoal != null ? 'Edit Goal' : 'Tambah Goal', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                      Text(widget.editGoal != null ? 'Perbarui target finansialmu' : 'Tentukan target yang ingin kamu capai', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                    ],
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Column(
+                        children: [
+                          Text(widget.editGoal != null ? 'Edit Goal' : 'Tambah Goal', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(
+                            widget.editGoal != null ? 'Perbarui target finansialmu' : 'Tentukan target yang ingin kamu capai', 
+                            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                   if (widget.editGoal != null)
                     InkWell(
@@ -274,12 +283,14 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 child: Icon(Icons.account_balance_wallet, color: Colors.blue[600]),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Target Nominal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text('Berapa jumlah yang ingin kamu capai?', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Target Nominal', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('Berapa jumlah yang ingin kamu capai?', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  ],
+                ),
               )
             ],
           ),
@@ -386,12 +397,14 @@ class _CreateGoalPageState extends State<CreateGoalPage> {
                 child: Icon(Icons.calendar_today, color: Colors.green[600]),
               ),
               const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Target Waktu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                  Text('Kapan kamu ingin mencapai target ini?', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text('Target Waktu', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                    Text('Kapan kamu ingin mencapai target ini?', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                  ],
+                ),
               )
             ],
           ),

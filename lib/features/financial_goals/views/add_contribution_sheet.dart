@@ -60,7 +60,7 @@ class _AddContributionSheetState extends State<AddContributionSheet> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
         left: 20, right: 20, top: 20,
       ),
       decoration: const BoxDecoration(
