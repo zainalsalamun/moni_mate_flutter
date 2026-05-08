@@ -4,6 +4,7 @@ import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import '../data/services/export_service.dart';
 import 'recurring_manager_page.dart';
+import 'sync_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -75,6 +76,23 @@ class SettingsPage extends StatelessWidget {
                           ],
                         );
                       }),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, "Sinkronisasi"),
+                    _buildSettingCard(
+                      context,
+                      child: InkWell(
+                        onTap: () => Get.to(() => const SyncPage()),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn(
+                                "Cloud Sync", "Cadangkan data ke Google Drive"),
+                            Icon(Icons.cloud_sync_rounded,
+                                color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 24),
                     _buildSectionHeader(context, "Otomasi & Keuangan"),
