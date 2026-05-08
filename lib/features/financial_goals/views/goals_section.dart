@@ -23,21 +23,23 @@ class GoalsSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Financial Goals',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Capai tujuan finansialmu dengan konsisten 🎯',
-                    style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                  ),
-                ],
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Financial Goals',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Capai tujuan finansialmu dengan konsisten 🎯',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                    ),
+                  ],
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.add_circle, color: Color(0xFF0288D1), size: 28),
@@ -212,7 +214,8 @@ class GoalsSection extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Target: ${DateFormat('dd MMM yyyy').format(goal.targetDate)}', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+                        Expanded(child: Text('Target: ${DateFormat('dd MMM yyyy').format(goal.targetDate)}', style: TextStyle(color: Colors.grey[600], fontSize: 12), overflow: TextOverflow.ellipsis)),
+                        const SizedBox(width: 4),
                         Text('/ ${currencyFormat.format(goal.targetAmount)}', style: TextStyle(color: Colors.grey[400], fontSize: 12)),
                       ],
                     ),
