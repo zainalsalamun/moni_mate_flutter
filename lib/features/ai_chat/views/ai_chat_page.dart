@@ -115,17 +115,31 @@ class AiChatPage extends StatelessWidget {
                     : isDark
                         ? const Color(0xFF2D3748)
                         : const Color(0xFFF7FAFC),
-                borderRadius: BorderRadius.circular(20).copyWith(
-                  bottomRight: message.isUser ? const Radius.circular(4) : null,
-                  bottomLeft: !message.isUser ? const Radius.circular(4) : null,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(20),
+                  topRight: const Radius.circular(20),
+                  bottomLeft: message.isUser
+                      ? const Radius.circular(20)
+                      : const Radius.circular(6),
+                  bottomRight: message.isUser
+                      ? const Radius.circular(6)
+                      : const Radius.circular(20),
                 ),
                 border: message.isUser
                     ? null
                     : Border.all(
                         color: isDark
-                            ? const Color(0xFF4A5568)
+                            ? const Color(0xFF4A5568).withOpacity(0.6)
                             : const Color(0xFFE2E8F0),
+                        width: 1,
                       ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(isDark ? 0.15 : 0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
