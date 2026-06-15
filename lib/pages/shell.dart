@@ -5,10 +5,88 @@ import 'transactions_page.dart';
 import 'add_page.dart';
 import 'stats_page.dart';
 import 'settings_page.dart';
+import '../features/ai_chat/views/ai_chat_page.dart';
 
 class ShellController extends GetxController {
   final RxInt index = 0.obs;
   void changeTab(int i) => index.value = i;
+}
+
+class DraggableAIButton extends StatefulWidget {
+  final VoidCallback onPressed;
+  const DraggableAIButton({super.key, required this.onPressed});
+
+  @override
+  State<DraggableAIButton> createState() => _DraggableAIButtonState();
+}
+
+class _DraggableAIButtonState extends State<DraggableAIButton> {
+  late double posX;
+  late double posY;
+  bool _isDragging = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Default position: bottom-right area
+    posX = 0;
+    posY = 0;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final size = MediaQuery.of(context).size;
+      setState(() {
+        posX = size.width - 80;
+        posY = size.height - 250;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final bottomPadding = MediaQuery.of(context).viewPadding.bottom;
+    return Positioned(
+      left: posX,
+      top: posY,
+      child: GestureDetector(
+        onPanStart: (_) => _isDragging = false,
+        onPanUpdate: (details) {
+          setState(() {
+            posX += details.delta.dx;
+            posY += details.delta.dy;
+            // Clamp within screen bounds
+            final size = MediaQuery.of(context).size;
+            posX = posX.clamp(0, size.width - 60);
+            posY = posY.clamp(0, size.height - bottomPadding - 140);
+            _isDragging = true;
+          });
+        },
+        onTap: () {
+          if (!_isDragging) {
+            widget.onPressed();
+          }
+        },
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.deepPurple.withOpacity(0.4),
+                blurRadius: 16,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.psychology_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class Shell extends StatefulWidget {
@@ -32,15 +110,28 @@ class _ShellState extends State<Shell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Obx(() => AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (child, anim) =>
-                  FadeTransition(opacity: anim, child: child),
-              child: KeyedSubtree(
-                child: pages[shellC.index.value],
-              ),
-            )),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Obx(() => AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 300),
+                  transitionBuilder: (child, anim) =>
+                      FadeTransition(opacity: anim, child: child),
+                  child: KeyedSubtree(
+                    child: pages[shellC.index.value],
+                  ),
+                )),
+          ),
+          DraggableAIButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const AiChatPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       extendBody: true,
       bottomNavigationBar: Obx(() => Container(

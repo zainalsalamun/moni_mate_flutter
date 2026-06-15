@@ -1,16 +1,15 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:get/get.dart';
 
 class AiChatService {
-  static String get _geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
+  static String get _apiUrl => dotenv.env['AI_API_URL'] ?? '';
+  static String get _apiKey => dotenv.env['AI_API_KEY'] ?? '';
 
-  static bool get isApiKeyAvailable =>
-      _geminiApiKey.isNotEmpty && _geminiApiKey != 'ISI_API_KEY_ANDA_DISINI';
+  static bool get isApiKeyAvailable => _apiUrl.isNotEmpty && _apiKey.isNotEmpty;
 
-  /// Sends a message to Gemini with financial assistant context.
+  /// Sends a message to the AI API with financial assistant context.
   /// Returns a Map with 'reply' (String) and optionally 'action' data.
   static Future<Map<String, dynamic>> sendMessage(
     String userMessage, {
@@ -21,8 +20,9 @@ class AiChatService {
     if (!isApiKeyAvailable) {
       return {
         'reply':
-            'API Key belum diisi. Silakan masukkan GEMINI_API_KEY di file .env.',
+            'API Key belum diisi. Silakan masukkan AI_API_KEY di file .env.',
         'action': null,
+        'action_type': null,
       };
     }
 
@@ -90,65 +90,82 @@ $financialContext
 ''';
 
     try {
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: _geminiApiKey,
-        systemInstruction: Content.text(systemPrompt),
+      final url = Uri.parse('$_apiUrl/chat/completions');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $_apiKey',
+        },
+        body: jsonEncode({
+          'model': 'deepseek-ai/DeepSeek-V3',
+          'messages': [
+            {'role': 'system', 'content': systemPrompt},
+            {'role': 'user', 'content': userMessage},
+          ],
+          'temperature': 0.7,
+          'max_tokens': 1024,
+        }),
       );
 
-      final chat = model.startChat();
+      debugPrint("--- AI CHAT REQUEST ---");
+      debugPrint("URL: $url");
+      debugPrint(
+          "API Key: ${_apiKey.substring(0, _apiKey.length.clamp(0, 8))}...");
+      debugPrint("Status: ${response.statusCode}");
+      debugPrint("------------------------");
 
-      final response = await chat.sendMessage(
-        Content.text(userMessage),
-      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final textResponse =
+            data['choices']?[0]?['message']?['content']?.trim() ?? '';
 
-      final textResponse = response.text?.trim() ?? '';
+        debugPrint("--- AI CHAT RAW OUTPUT ---");
+        debugPrint(textResponse);
+        debugPrint("--------------------------");
 
-      String cleanedJson =
-          textResponse.replaceAll('```json', '').replaceAll('```', '').trim();
-
-      debugPrint("--- AI CHAT RAW OUTPUT ---");
-      debugPrint(cleanedJson);
-      debugPrint("--------------------------");
-
-      final Map<String, dynamic> data = jsonDecode(cleanedJson);
-      return data;
-    } catch (e) {
-      debugPrint("AI Chat Error: $e");
-
-      // Fallback: try without system instruction
-      try {
-        final model = GenerativeModel(
-          model: 'gemini-1.5-flash',
-          apiKey: _geminiApiKey,
-        );
-
-        final chat = model.startChat();
-
-        final fullPrompt = '''$systemPrompt
-
-Pengguna: $userMessage
-''';
-
-        final response = await chat.sendMessage(
-          Content.text(fullPrompt),
-        );
-
-        final textResponse = response.text?.trim() ?? '';
-
+        // Try to parse as JSON
         String cleanedJson =
             textResponse.replaceAll('```json', '').replaceAll('```', '').trim();
 
-        final Map<String, dynamic> data = jsonDecode(cleanedJson);
-        return data;
-      } catch (e2) {
-        debugPrint("AI Chat Fallback Error: $e2");
+        try {
+          final Map<String, dynamic> result = jsonDecode(cleanedJson);
+          return result;
+        } catch (parseError) {
+          debugPrint("JSON parse failed, using raw text as reply");
+          // If not valid JSON, return the raw text as a friendly reply
+          return {
+            'reply': cleanedJson.isNotEmpty
+                ? cleanedJson
+                : 'Maaf, aku tidak bisa memproses pertanyaanmu. Coba tanyakan hal lain ya! 😊',
+            'action': null,
+            'action_type': null,
+          };
+        }
+      } else {
+        debugPrint("--- AI CHAT ERROR ---");
+        debugPrint("Status Code: ${response.statusCode}");
+        debugPrint("Response Body: ${response.body}");
+        debugPrint("Headers: ${response.headers}");
+        debugPrint("---------------------");
         return {
           'reply':
-              'Maaf, terjadi kesalahan saat memproses pesanmu. Coba lagi ya! 😊',
+              'Terjadi kesalahan dari server (status ${response.statusCode}). Coba lagi ya! 😊',
           'action': null,
+          'action_type': null,
         };
       }
+    } catch (e, stackTrace) {
+      debugPrint("--- AI CHAT EXCEPTION ---");
+      debugPrint("Error: $e");
+      debugPrint("Stack Trace: $stackTrace");
+      debugPrint("-------------------------");
+      return {
+        'reply':
+            'Terjadi kesalahan saat menghubungi server. Cek koneksi internet kamu ya! 😊',
+        'action': null,
+        'action_type': null,
+      };
     }
   }
 }
