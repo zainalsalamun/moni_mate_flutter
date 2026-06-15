@@ -98,7 +98,7 @@ $financialContext
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          'model': 'deepseek-ai/DeepSeek-V3',
+          'model': 'Combo_minimax_mimo',
           'messages': [
             {'role': 'system', 'content': systemPrompt},
             {'role': 'user', 'content': userMessage},
