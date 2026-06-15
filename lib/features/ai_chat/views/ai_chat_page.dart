@@ -1,0 +1,430 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:monimate/utils/format_currency.dart';
+import '../controllers/ai_chat_controller.dart';
+
+class AiChatPage extends StatelessWidget {
+  const AiChatPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AiChatController controller = Get.put(AiChatController());
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: Colors.deepPurple.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.auto_awesome_rounded,
+                color: Colors.deepPurple,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'MoniMate AI',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                Text(
+                  'Asisten Keuangan',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withOpacity(0.5),
+                      ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+      ),
+      body: Column(
+        children: [
+          // Chat messages
+          Expanded(
+            child: Obx(() {
+              if (controller.messages.isEmpty) {
+                return const Center(
+                  child: Text('Mulai percakapan dengan MoniMate AI!'),
+                );
+              }
+
+              return ListView.builder(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                itemCount: controller.messages.length +
+                    (controller.isLoading.value ? 1 : 0),
+                itemBuilder: (context, index) {
+                  // Loading indicator
+                  if (index == controller.messages.length) {
+                    return _buildLoadingBubble(context);
+                  }
+
+                  final message = controller.messages[index];
+                  return _buildChatBubble(context, message);
+                },
+              );
+            }),
+          ),
+
+          // Input area
+          _buildInputArea(context, controller),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildChatBubble(BuildContext context, ChatMessage message) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Align(
+      alignment: message.isUser ? Alignment.centerRight : Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width * 0.85,
+        ),
+        child: Column(
+          crossAxisAlignment: message.isUser
+              ? CrossAxisAlignment.end
+              : CrossAxisAlignment.start,
+          children: [
+            // Message bubble
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              decoration: BoxDecoration(
+                color: message.isUser
+                    ? Theme.of(context).colorScheme.primary
+                    : isDark
+                        ? const Color(0xFF2D3748)
+                        : const Color(0xFFF7FAFC),
+                borderRadius: BorderRadius.circular(20).copyWith(
+                  bottomRight: message.isUser ? const Radius.circular(4) : null,
+                  bottomLeft: !message.isUser ? const Radius.circular(4) : null,
+                ),
+                border: message.isUser
+                    ? null
+                    : Border.all(
+                        color: isDark
+                            ? const Color(0xFF4A5568)
+                            : const Color(0xFFE2E8F0),
+                      ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // AI label
+                  if (!message.isUser)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.auto_awesome_rounded,
+                            size: 12,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'MoniMate AI',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  // Message text
+                  Text(
+                    message.text,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: message.isUser
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onSurface,
+                      height: 1.5,
+                    ),
+                  ),
+
+                  // Transaction action card
+                  if (message.action != null) ...[
+                    const SizedBox(height: 8),
+                    _buildActionCard(context, message.action!),
+                  ],
+                ],
+              ),
+            ),
+
+            // Timestamp
+            Padding(
+              padding: const EdgeInsets.only(top: 4, left: 8, right: 8),
+              child: Text(
+                '${message.timestamp.hour.toString().padLeft(2, '0')}:${message.timestamp.minute.toString().padLeft(2, '0')}',
+                style: TextStyle(
+                  fontSize: 10,
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionCard(BuildContext context, Map<String, dynamic> action) {
+    final type = action['type'] ?? 'expense';
+    final category = action['category'] ?? '';
+    final amount = (action['amount'] as num?)?.toDouble() ?? 0;
+    final description = action['description'] ?? '';
+
+    final isIncome = type == 'income';
+    final color = isIncome ? Colors.green : Colors.redAccent;
+    final icon =
+        isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 16),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${isIncome ? "Pemasukan" : "Pengeluaran"} · ${category.replaceAll('_', ' ')}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+                if (description.isNotEmpty)
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.6),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          Text(
+            '${isIncome ? '+' : '-'}${CurrencyFormat.format(amount)}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingBubble(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? const Color(0xFF2D3748)
+              : const Color(0xFFF7FAFC),
+          borderRadius: BorderRadius.circular(20).copyWith(
+            bottomLeft: const Radius.circular(4),
+          ),
+          border: Border.all(
+            color: Theme.of(context).brightness == Brightness.dark
+                ? const Color(0xFF4A5568)
+                : const Color(0xFFE2E8F0),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.auto_awesome_rounded,
+              size: 14,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              'Berpikir...',
+              style: TextStyle(
+                fontSize: 13,
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInputArea(BuildContext context, AiChatController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      padding: EdgeInsets.only(
+        left: 16,
+        right: 16,
+        top: 8,
+        bottom: MediaQuery.of(context).padding.bottom + 8,
+      ),
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1A202C) : Colors.white,
+        border: Border(
+          top: BorderSide(
+            color: isDark
+                ? Colors.white.withOpacity(0.05)
+                : Colors.black.withOpacity(0.05),
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Quick action buttons
+          IconButton(
+            onPressed: () {
+              controller.sendMessage('Tambah pengeluaran makan 25000');
+            },
+            icon: Icon(
+              Icons.add_circle_outline_rounded,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            tooltip: 'Contoh: Tambah pengeluaran',
+          ),
+          const SizedBox(width: 4),
+
+          // Text input
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color:
+                    isDark ? const Color(0xFF2D3748) : const Color(0xFFF7FAFC),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(
+                  color: isDark
+                      ? const Color(0xFF4A5568)
+                      : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: TextField(
+                controller: controller.textController,
+                style: const TextStyle(fontSize: 14),
+                maxLines: null,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    controller.sendMessage(value);
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Ketik pesan... (contoh: "Tambah belanja 50000")',
+                  hintStyle: TextStyle(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.4),
+                    fontSize: 13,
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(width: 8),
+
+          // Send button
+          Obx(() {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              child: IconButton(
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () {
+                        final text = controller.textController.text;
+                        if (text.trim().isNotEmpty) {
+                          controller.sendMessage(text);
+                        }
+                      },
+                icon: controller.isLoading.value
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      )
+                    : Icon(
+                        Icons.send_rounded,
+                        color: controller.textController.text.isEmpty
+                            ? Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.3)
+                            : Theme.of(context).colorScheme.primary,
+                      ),
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}

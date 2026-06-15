@@ -46,7 +46,8 @@ class BudgetSection extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Icon(Icons.arrow_forward_rounded,
-                          size: 16, color: Theme.of(context).colorScheme.primary),
+                          size: 16,
+                          color: Theme.of(context).colorScheme.primary),
                     ],
                   ),
                 )
@@ -68,7 +69,7 @@ class BudgetSection extends StatelessWidget {
               ),
             ),
             SizedBox(
-              height: 110,
+              height: 140,
               child: ListView.builder(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 scrollDirection: Axis.horizontal,
