@@ -363,7 +363,8 @@ class _StatsPageState extends State<StatsPage> {
                               ? 0
                               : (e.value / totalExpense) * 100;
                           return PieChartSectionData(
-                            color: CategoryIcon.getColor(c.getCategoryName(e.key)),
+                            color:
+                                CategoryIcon.getColor(c.getCategoryName(e.key)),
                             value: e.value,
                             radius: 60,
                             showTitle: true,
@@ -381,7 +382,8 @@ class _StatsPageState extends State<StatsPage> {
                   const SizedBox(height: 32),
                   Column(
                     children: categoryTotals.entries.map((e) {
-                      final color = CategoryIcon.getColor(c.getCategoryName(e.key));
+                      final color =
+                          CategoryIcon.getColor(c.getCategoryName(e.key));
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
                         child: Row(
@@ -661,5 +663,4 @@ class _StatsPageState extends State<StatsPage> {
       ],
     );
   }
-
 }
