@@ -24,6 +24,7 @@ class _DraggableAIButtonState extends State<DraggableAIButton> {
   late double posX;
   late double posY;
   bool _isDragging = false;
+  bool _showLabel = false;
 
   @override
   void initState() {
@@ -57,31 +58,81 @@ class _DraggableAIButtonState extends State<DraggableAIButton> {
             posX = posX.clamp(0, size.width - 60);
             posY = posY.clamp(0, size.height - bottomPadding - 140);
             _isDragging = true;
+            _showLabel = false; // Hide label while dragging
           });
         },
         onTap: () {
           if (!_isDragging) {
+            setState(() => _showLabel = true);
+            // Hide label after 2 seconds then navigate
+            Future.delayed(const Duration(seconds: 2), () {
+              if (mounted) {
+                setState(() => _showLabel = false);
+              }
+            });
             widget.onPressed();
           }
         },
-        child: Container(
+        child: SizedBox(
           width: 56,
           height: 56,
-          decoration: BoxDecoration(
-            color: Colors.deepPurple,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.deepPurple.withOpacity(0.4),
-                blurRadius: 16,
-                offset: const Offset(0, 6),
+          child: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              // AI Button
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.deepPurple,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.deepPurple.withOpacity(0.4),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.psychology_rounded,
+                  color: Colors.white,
+                  size: 28,
+                ),
+              ),
+              // Label that appears on tap (positioned above the button)
+              Positioned(
+                bottom: 64,
+                right: 0,
+                child: AnimatedOpacity(
+                  opacity: _showLabel ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 300),
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.shade700,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: const Text(
+                      'MoniMate AI Assistant ✨',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ],
-          ),
-          child: const Icon(
-            Icons.psychology_rounded,
-            color: Colors.white,
-            size: 28,
           ),
         ),
       ),

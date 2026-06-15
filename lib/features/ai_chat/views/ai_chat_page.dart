@@ -81,6 +81,9 @@ class AiChatPage extends StatelessWidget {
             }),
           ),
 
+          // Quick suggestions (only show at beginning or after AI reply)
+          _buildQuickSuggestions(context, controller),
+
           // Input area
           _buildInputArea(context, controller),
         ],
@@ -306,6 +309,81 @@ class AiChatPage extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildQuickSuggestions(
+      BuildContext context, AiChatController controller) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final primaryColor = Theme.of(context).colorScheme.primary;
+
+    final suggestions = [
+      {
+        'icon': Icons.restaurant_rounded,
+        'text': 'Tambah makan 25rb',
+        'msg': 'Tambah pengeluaran makan 25000'
+      },
+      {
+        'icon': Icons.directions_bus_rounded,
+        'text': 'Tambah transport 15rb',
+        'msg': 'Tambah pengeluaran transport 15000'
+      },
+      {
+        'icon': Icons.account_balance_wallet_rounded,
+        'text': 'Cek saldo',
+        'msg': 'Berapa total pengeluaranku?'
+      },
+      {
+        'icon': Icons.trending_down_rounded,
+        'text': 'Tips hemat',
+        'msg': 'Beri tips hemat uang bulanan'
+      },
+      {
+        'icon': Icons.shopping_bag_rounded,
+        'text': 'Tambah belanja 100rb',
+        'msg': 'Tambah pengeluaran belanja 100000'
+      },
+      {
+        'icon': Icons.savings_rounded,
+        'text': 'Tips nabung',
+        'msg': 'Beri tips menabung'
+      },
+    ];
+
+    // Only show suggestions when there are no messages besides welcome or last message is AI
+    final shouldShow =
+        controller.messages.length <= 1 || (!controller.messages.last.isUser);
+
+    if (!shouldShow) return const SizedBox.shrink();
+
+    return SizedBox(
+      height: 44,
+      child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        scrollDirection: Axis.horizontal,
+        itemCount: suggestions.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 8),
+        itemBuilder: (context, index) {
+          final s = suggestions[index];
+          return ActionChip(
+            avatar: Icon(s['icon'] as IconData, size: 16, color: primaryColor),
+            label: Text(
+              s['text'] as String,
+              style: TextStyle(
+                fontSize: 12,
+                color: primaryColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            backgroundColor: primaryColor.withOpacity(0.08),
+            side: BorderSide.none,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            onPressed: () => controller.sendMessage(s['msg'] as String),
+          );
+        },
       ),
     );
   }

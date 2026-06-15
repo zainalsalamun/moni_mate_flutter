@@ -41,6 +41,9 @@ class AiChatController extends GetxController {
     textController.clear();
     isLoading.value = true;
 
+    debugPrint("--- AI CHAT CONTROLLER: Processing message... ---");
+    debugPrint("User input: '$text'");
+
     try {
       final txController = Get.find<TransactionController>();
 
@@ -55,6 +58,11 @@ class AiChatController extends GetxController {
         };
       }).toList();
 
+      debugPrint("--- AI CHAT CONTROLLER: Sending to AI service... ---");
+      debugPrint("Transaction summary count: ${recentTxs.length}");
+      debugPrint(
+          "Income: Rp ${txController.totalIncome.value.toStringAsFixed(0)}, Expense: Rp ${txController.totalExpense.value.toStringAsFixed(0)}");
+
       final response = await AiChatService.sendMessage(
         text,
         transactionSummary: recentTxs,
@@ -62,9 +70,15 @@ class AiChatController extends GetxController {
         totalExpense: txController.totalExpense.value,
       );
 
+      debugPrint("--- AI CHAT CONTROLLER: Response received ---");
+      debugPrint("Reply: ${response['reply']}");
+      debugPrint("Action type: ${response['action_type']}");
+
       final String reply = response['reply'] ?? 'Maaf, aku tidak mengerti.';
       final String? actionType = response['action_type'];
       final Map<String, dynamic>? action = response['action'];
+
+      debugPrint("--- AI CHAT CONTROLLER: Processing action... ---");
 
       // Execute action if present
       if (actionType == 'add_transaction' && action != null) {
@@ -95,13 +109,17 @@ class AiChatController extends GetxController {
           action: action,
         ));
       }
-    } catch (e) {
-      debugPrint('Chat error: $e');
+    } catch (e, stackTrace) {
+      debugPrint("--- AI CHAT CONTROLLER: ERROR ---");
+      debugPrint("Error: $e");
+      debugPrint("Stack Trace: $stackTrace");
+      debugPrint("--------------------------------");
       messages.add(ChatMessage(
         text: 'Oops! Ada gangguan nih, coba lagi ya 😅',
         isUser: false,
       ));
     } finally {
+      debugPrint("--- AI CHAT CONTROLLER: Processing complete ---");
       isLoading.value = false;
     }
   }
