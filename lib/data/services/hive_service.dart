@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/transaction_model.dart';
 import '../models/category_model.dart';
@@ -13,6 +14,7 @@ class HiveService {
   static const String budgetBoxName = 'budgets';
   static const String goalBoxName = 'goals';
   static const String contributionBoxName = 'contributions';
+  static const String chatHistoryBoxName = 'chat_history';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -30,6 +32,7 @@ class HiveService {
     await Hive.openBox<BudgetModel>(budgetBoxName);
     await Hive.openBox<GoalModel>(goalBoxName);
     await Hive.openBox<ContributionModel>(contributionBoxName);
+    await Hive.openBox<String>(chatHistoryBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -98,7 +101,8 @@ class HiveService {
 
   // Financial Goals Functionality
   static Box<GoalModel> get goalBox => Hive.box<GoalModel>(goalBoxName);
-  static Box<ContributionModel> get contributionBox => Hive.box<ContributionModel>(contributionBoxName);
+  static Box<ContributionModel> get contributionBox =>
+      Hive.box<ContributionModel>(contributionBoxName);
 
   static Future<void> addGoal(GoalModel goal) async {
     await goalBox.put(goal.id, goal);
@@ -121,9 +125,29 @@ class HiveService {
   }
 
   static Future<void> deleteContributionsByGoalId(String goalId) async {
-    final contributions = contributionBox.values.where((c) => c.goalId == goalId).toList();
+    final contributions =
+        contributionBox.values.where((c) => c.goalId == goalId).toList();
     for (var c in contributions) {
       await c.delete();
     }
+  }
+
+  // Chat History Functionality
+  static Box<String> get chatHistoryBox => Hive.box<String>(chatHistoryBoxName);
+
+  static Future<void> saveChatHistory(
+      List<Map<String, String>> messages) async {
+    await chatHistoryBox.put('messages', jsonEncode(messages));
+  }
+
+  static List<Map<String, String>> getChatHistory() {
+    final data = chatHistoryBox.get('messages');
+    if (data == null || data.isEmpty) return [];
+    final List<dynamic> decoded = jsonDecode(data);
+    return decoded.map((e) => Map<String, String>.from(e as Map)).toList();
+  }
+
+  static Future<void> clearChatHistory() async {
+    await chatHistoryBox.delete('messages');
   }
 }

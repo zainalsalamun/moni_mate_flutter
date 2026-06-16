@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
+import 'package:monimate/data/services/hive_service.dart';
 import '../services/ai_chat_service.dart';
 
 class ChatMessage {
@@ -22,15 +24,109 @@ class AiChatController extends GetxController {
   final RxBool isLoading = false.obs;
   final TextEditingController textController = TextEditingController();
 
+  /// Max chat history messages to keep for AI context
+  static const int _maxHistoryForAI = 20;
+
   @override
   void onInit() {
     super.onInit();
-    // Welcome message
+    _loadChatHistory();
+  }
+
+  /// Load chat history from Hive local storage
+  void _loadChatHistory() {
+    try {
+      final savedHistory = HiveService.getChatHistory();
+      if (savedHistory.isNotEmpty) {
+        // Reconstruct ChatMessage objects from saved data
+        for (final msg in savedHistory) {
+          messages.add(ChatMessage(
+            text: msg['text'] ?? '',
+            isUser: msg['isUser'] == 'true',
+            timestamp:
+                DateTime.tryParse(msg['timestamp'] ?? '') ?? DateTime.now(),
+            action: msg['action'] != null && msg['action']!.isNotEmpty
+                ? _parseAction(msg['action']!)
+                : null,
+          ));
+        }
+        debugPrint(
+            "Loaded ${messages.length} chat messages from local storage");
+      }
+    } catch (e) {
+      debugPrint("Error loading chat history: $e");
+    }
+
+    // Always ensure at least a welcome message
+    if (messages.isEmpty) {
+      messages.add(ChatMessage(
+        text:
+            'Halo! 👋 Aku MoniMate AI, asisten keuanganmu.\n\nKamu bisa:\n💰 Tambah pengeluaran/pemasukan\n📊 Tanya kondisi keuangan\n💡 Minta tips hemat\n\nCoba ketik: "Tambah pengeluaran makan 25000"',
+        isUser: false,
+      ));
+    }
+  }
+
+  Map<String, dynamic> _parseAction(String actionJson) {
+    try {
+      if (actionJson.startsWith('{')) {
+        final decoded = jsonDecode(actionJson);
+        if (decoded is Map) {
+          return Map<String, dynamic>.from(decoded);
+        }
+      }
+    } catch (_) {}
+    return {};
+  }
+
+  /// Save chat history to Hive local storage
+  Future<void> _saveChatHistory() async {
+    try {
+      final List<Map<String, String>> historyData = [];
+      for (final msg in messages) {
+        historyData.add({
+          'text': msg.text,
+          'isUser': msg.isUser.toString(),
+          'timestamp': msg.timestamp.toIso8601String(),
+          if (msg.action != null) 'action': jsonEncode(msg.action),
+        });
+      }
+      await HiveService.saveChatHistory(historyData);
+      debugPrint("Chat history saved: ${historyData.length} messages");
+    } catch (e) {
+      debugPrint("Error saving chat history: $e");
+    }
+  }
+
+  /// Clear all chat history
+  Future<void> clearChatHistory() async {
+    messages.clear();
+    await HiveService.clearChatHistory();
+    // Re-add welcome message
     messages.add(ChatMessage(
       text:
           'Halo! 👋 Aku MoniMate AI, asisten keuanganmu.\n\nKamu bisa:\n💰 Tambah pengeluaran/pemasukan\n📊 Tanya kondisi keuangan\n💡 Minta tips hemat\n\nCoba ketik: "Tambah pengeluaran makan 25000"',
       isUser: false,
     ));
+  }
+
+  /// Build chat history for AI context (role/content format)
+  List<Map<String, String>> _buildChatHistoryForAI() {
+    final List<Map<String, String>> history = [];
+    // Skip welcome message, take recent messages
+    final startIdx = messages.length > _maxHistoryForAI
+        ? messages.length - _maxHistoryForAI
+        : 0;
+
+    for (var i = startIdx; i < messages.length; i++) {
+      final msg = messages[i];
+      // Only include user and AI text messages, skip action cards
+      history.add({
+        'role': msg.isUser ? 'user' : 'assistant',
+        'content': msg.text,
+      });
+    }
+    return history;
   }
 
   Future<void> sendMessage(String text) async {
@@ -40,6 +136,9 @@ class AiChatController extends GetxController {
     messages.add(ChatMessage(text: text.trim(), isUser: true));
     textController.clear();
     isLoading.value = true;
+
+    // Save after user message
+    await _saveChatHistory();
 
     debugPrint("--- AI CHAT CONTROLLER: Processing message... ---");
     debugPrint("User input: '$text'");
@@ -60,14 +159,17 @@ class AiChatController extends GetxController {
 
       debugPrint("--- AI CHAT CONTROLLER: Sending to AI service... ---");
       debugPrint("Transaction summary count: ${recentTxs.length}");
-      debugPrint(
-          "Income: Rp ${txController.totalIncome.value.toStringAsFixed(0)}, Expense: Rp ${txController.totalExpense.value.toStringAsFixed(0)}");
+
+      // Build chat history for AI context
+      final chatHistory = _buildChatHistoryForAI();
+      debugPrint("Chat history for AI: ${chatHistory.length} messages");
 
       final response = await AiChatService.sendMessage(
         text,
         transactionSummary: recentTxs,
         totalIncome: txController.totalIncome.value,
         totalExpense: txController.totalExpense.value,
+        chatHistory: chatHistory,
       );
 
       debugPrint("--- AI CHAT CONTROLLER: Response received ---");
@@ -109,6 +211,9 @@ class AiChatController extends GetxController {
           action: action,
         ));
       }
+
+      // Save after AI reply
+      await _saveChatHistory();
     } catch (e, stackTrace) {
       debugPrint("--- AI CHAT CONTROLLER: ERROR ---");
       debugPrint("Error: $e");
@@ -118,6 +223,7 @@ class AiChatController extends GetxController {
         text: 'Oops! Ada gangguan nih, coba lagi ya 😅',
         isUser: false,
       ));
+      await _saveChatHistory();
     } finally {
       debugPrint("--- AI CHAT CONTROLLER: Processing complete ---");
       isLoading.value = false;
