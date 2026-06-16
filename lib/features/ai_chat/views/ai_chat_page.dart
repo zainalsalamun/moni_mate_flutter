@@ -430,27 +430,23 @@ class AiChatPage extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             // Quick action buttons
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: IconButton(
-                onPressed: () {
-                  controller.sendMessage('Tambah pengeluaran makan 25000');
-                },
-                icon: Icon(
-                  Icons.add_circle_outline_rounded,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                tooltip: 'Contoh: Tambah pengeluaran',
+            IconButton(
+              onPressed: () {
+                controller.sendMessage('Tambah pengeluaran makan 25000');
+              },
+              icon: Icon(
+                Icons.add_circle_outline_rounded,
+                color: Theme.of(context).colorScheme.primary,
               ),
+              tooltip: 'Contoh: Tambah pengeluaran',
             ),
 
             // Text input
             Expanded(
               child: Container(
-                constraints: const BoxConstraints(minHeight: 44),
                 decoration: BoxDecoration(
                   color: isDark
                       ? const Color(0xFF2D3748)
@@ -460,6 +456,7 @@ class AiChatPage extends StatelessWidget {
                     color: isDark
                         ? const Color(0xFF4A5568)
                         : const Color(0xFFE2E8F0),
+                    width: 1,
                   ),
                 ),
                 child: TextField(
@@ -486,7 +483,7 @@ class AiChatPage extends StatelessWidget {
                     enabledBorder: InputBorder.none,
                     focusedBorder: InputBorder.none,
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                        horizontal: 16, vertical: 13),
                   ),
                 ),
               ),
@@ -495,39 +492,36 @@ class AiChatPage extends StatelessWidget {
             const SizedBox(width: 4),
 
             // Send button
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Obx(() {
-                return IconButton(
-                  onPressed: controller.isLoading.value
-                      ? null
-                      : () {
-                          final text = controller.textController.text;
-                          if (text.trim().isNotEmpty) {
-                            controller.sendMessage(text);
-                          }
-                        },
-                  icon: controller.isLoading.value
-                      ? SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
-                        )
-                      : Icon(
-                          Icons.send_rounded,
-                          color: controller.textController.text.isEmpty
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .onSurface
-                                  .withOpacity(0.3)
-                              : Theme.of(context).colorScheme.primary,
+            Obx(() {
+              return IconButton(
+                onPressed: controller.isLoading.value
+                    ? null
+                    : () {
+                        final text = controller.textController.text;
+                        if (text.trim().isNotEmpty) {
+                          controller.sendMessage(text);
+                        }
+                      },
+                icon: controller.isLoading.value
+                    ? SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                );
-              }),
-            ),
+                      )
+                    : Icon(
+                        Icons.send_rounded,
+                        color: controller.textController.text.isEmpty
+                            ? Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withOpacity(0.3)
+                            : Theme.of(context).colorScheme.primary,
+                      ),
+              );
+            }),
           ],
         ),
       ),
