@@ -52,41 +52,44 @@ class AiChatPage extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.transparent,
       ),
-      body: Column(
-        children: [
-          // Chat messages
-          Expanded(
-            child: Obx(() {
-              if (controller.messages.isEmpty) {
-                return const Center(
-                  child: Text('Mulai percakapan dengan MoniMate AI!'),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            // Chat messages
+            Expanded(
+              child: Obx(() {
+                if (controller.messages.isEmpty) {
+                  return const Center(
+                    child: Text('Mulai percakapan dengan MoniMate AI!'),
+                  );
+                }
+
+                return ListView.builder(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: controller.messages.length +
+                      (controller.isLoading.value ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    // Loading indicator
+                    if (index == controller.messages.length) {
+                      return _buildLoadingBubble(context);
+                    }
+
+                    final message = controller.messages[index];
+                    return _buildChatBubble(context, message);
+                  },
                 );
-              }
+              }),
+            ),
 
-              return ListView.builder(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: controller.messages.length +
-                    (controller.isLoading.value ? 1 : 0),
-                itemBuilder: (context, index) {
-                  // Loading indicator
-                  if (index == controller.messages.length) {
-                    return _buildLoadingBubble(context);
-                  }
+            // Quick suggestions (only show at beginning or after AI reply)
+            _buildQuickSuggestions(context, controller),
 
-                  final message = controller.messages[index];
-                  return _buildChatBubble(context, message);
-                },
-              );
-            }),
-          ),
-
-          // Quick suggestions (only show at beginning or after AI reply)
-          _buildQuickSuggestions(context, controller),
-
-          // Input area
-          _buildInputArea(context, controller),
-        ],
+            // Input area
+            _buildInputArea(context, controller),
+          ],
+        ),
       ),
     );
   }
@@ -329,7 +332,6 @@ class AiChatPage extends StatelessWidget {
 
   Widget _buildQuickSuggestions(
       BuildContext context, AiChatController controller) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     final suggestions = [
