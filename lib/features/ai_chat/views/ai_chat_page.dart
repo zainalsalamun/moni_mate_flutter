@@ -407,117 +407,129 @@ class AiChatPage extends StatelessWidget {
   Widget _buildInputArea(BuildContext context, AiChatController controller) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Container(
       padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 8,
-        bottom: MediaQuery.of(context).padding.bottom + 8,
+        left: 12,
+        right: 12,
+        top: 10,
+        bottom: bottomPadding > 0 ? bottomPadding + 12 : 16,
       ),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1A202C) : Colors.white,
         border: Border(
           top: BorderSide(
             color: isDark
-                ? Colors.white.withOpacity(0.05)
-                : Colors.black.withOpacity(0.05),
+                ? Colors.white.withOpacity(0.08)
+                : Colors.black.withOpacity(0.08),
+            width: 0.5,
           ),
         ),
       ),
-      child: Row(
-        children: [
-          // Quick action buttons
-          IconButton(
-            onPressed: () {
-              controller.sendMessage('Tambah pengeluaran makan 25000');
-            },
-            icon: Icon(
-              Icons.add_circle_outline_rounded,
-              color: Theme.of(context).colorScheme.primary,
-            ),
-            tooltip: 'Contoh: Tambah pengeluaran',
-          ),
-          const SizedBox(width: 4),
-
-          // Text input
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color:
-                    isDark ? const Color(0xFF2D3748) : const Color(0xFFF7FAFC),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: isDark
-                      ? const Color(0xFF4A5568)
-                      : const Color(0xFFE2E8F0),
-                ),
-              ),
-              child: TextField(
-                controller: controller.textController,
-                style: const TextStyle(fontSize: 14),
-                maxLines: null,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (value) {
-                  if (value.trim().isNotEmpty) {
-                    controller.sendMessage(value);
-                  }
-                },
-                decoration: InputDecoration(
-                  hintText: 'Ketik pesan... (contoh: "Tambah belanja 50000")',
-                  hintStyle: TextStyle(
-                    color: Theme.of(context)
-                        .colorScheme
-                        .onSurface
-                        .withOpacity(0.4),
-                    fontSize: 13,
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  focusedBorder: InputBorder.none,
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(width: 8),
-
-          // Send button
-          Obx(() {
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
+      child: SafeArea(
+        top: false,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            // Quick action buttons
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
               child: IconButton(
-                onPressed: controller.isLoading.value
-                    ? null
-                    : () {
-                        final text = controller.textController.text;
-                        if (text.trim().isNotEmpty) {
-                          controller.sendMessage(text);
-                        }
-                      },
-                icon: controller.isLoading.value
-                    ? SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      )
-                    : Icon(
-                        Icons.send_rounded,
-                        color: controller.textController.text.isEmpty
-                            ? Theme.of(context)
-                                .colorScheme
-                                .onSurface
-                                .withOpacity(0.3)
-                            : Theme.of(context).colorScheme.primary,
-                      ),
+                onPressed: () {
+                  controller.sendMessage('Tambah pengeluaran makan 25000');
+                },
+                icon: Icon(
+                  Icons.add_circle_outline_rounded,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                tooltip: 'Contoh: Tambah pengeluaran',
               ),
-            );
-          }),
-        ],
+            ),
+
+            // Text input
+            Expanded(
+              child: Container(
+                constraints: const BoxConstraints(minHeight: 44),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFF2D3748)
+                      : const Color(0xFFF7FAFC),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFF4A5568)
+                        : const Color(0xFFE2E8F0),
+                  ),
+                ),
+                child: TextField(
+                  controller: controller.textController,
+                  style: const TextStyle(fontSize: 14),
+                  maxLines: 5,
+                  minLines: 1,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (value) {
+                    if (value.trim().isNotEmpty) {
+                      controller.sendMessage(value);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Ketik pesan...',
+                    hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onSurface
+                          .withOpacity(0.4),
+                      fontSize: 14,
+                    ),
+                    border: InputBorder.none,
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(width: 4),
+
+            // Send button
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Obx(() {
+                return IconButton(
+                  onPressed: controller.isLoading.value
+                      ? null
+                      : () {
+                          final text = controller.textController.text;
+                          if (text.trim().isNotEmpty) {
+                            controller.sendMessage(text);
+                          }
+                        },
+                  icon: controller.isLoading.value
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                        )
+                      : Icon(
+                          Icons.send_rounded,
+                          color: controller.textController.text.isEmpty
+                              ? Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withOpacity(0.3)
+                              : Theme.of(context).colorScheme.primary,
+                        ),
+                );
+              }),
+            ),
+          ],
+        ),
       ),
     );
   }
