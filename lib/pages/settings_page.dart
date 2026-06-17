@@ -5,6 +5,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import '../data/services/export_service.dart';
 import 'recurring_manager_page.dart';
 import 'sync_page.dart';
+import '../features/wallet/views/wallet_manage_page.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -96,6 +97,22 @@ class SettingsPage extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                     _buildSectionHeader(context, "Otomasi & Keuangan"),
+                    _buildSettingCard(
+                      context,
+                      child: InkWell(
+                        onTap: () => Get.to(() => const WalletManagePage()),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildInfoColumn("Kelola Dompet",
+                                "Atur multi-wallet: tunai, bank, e-wallet"),
+                            Icon(Icons.account_balance_wallet_rounded,
+                                color: Theme.of(context).colorScheme.primary),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
                     _buildSettingCard(
                       context,
                       child: InkWell(

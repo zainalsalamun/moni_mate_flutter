@@ -10,6 +10,7 @@ import 'package:monimate/data/controller/sync_controller.dart';
 import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/services/notification_service.dart';
 import 'package:monimate/features/budget/controller/budget_controller.dart';
+import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
 
 import 'shell.dart';
 
@@ -39,6 +40,7 @@ class _SplashPageState extends State<SplashPage> {
       Get.put(ThemeController(), permanent: true);
       Get.put(BudgetController(), permanent: true);
       Get.put(SyncController(), permanent: true);
+      Get.put(WalletController(), permanent: true);
 
       // Seed dummy transaction data
       // await SeederService.seedTransactions();
