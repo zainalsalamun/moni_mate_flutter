@@ -28,6 +28,9 @@ class TransactionModel extends HiveObject {
   @HiveField(7, defaultValue: false)
   bool isSynced;
 
+  @HiveField(8, defaultValue: '')
+  String walletId;
+
   TransactionModel({
     required this.id,
     required this.type,
@@ -37,5 +40,6 @@ class TransactionModel extends HiveObject {
     required this.date,
     this.updatedAt,
     this.isSynced = false,
+    this.walletId = '',
   });
 }

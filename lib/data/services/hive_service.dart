@@ -6,6 +6,7 @@ import '../models/recurring_transaction_model.dart';
 import '../models/goal_model.dart';
 import '../models/contribution_model.dart';
 import '../../features/budget/model/budget_model.dart';
+import '../../features/wallet/data/models/wallet_model.dart';
 
 class HiveService {
   static const String boxName = 'transactions';
@@ -15,6 +16,7 @@ class HiveService {
   static const String goalBoxName = 'goals';
   static const String contributionBoxName = 'contributions';
   static const String chatHistoryBoxName = 'chat_history';
+  static const String walletBoxName = 'wallets';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -25,6 +27,7 @@ class HiveService {
     Hive.registerAdapter(BudgetPeriodAdapter());
     Hive.registerAdapter(GoalModelAdapter());
     Hive.registerAdapter(ContributionModelAdapter());
+    Hive.registerAdapter(WalletModelAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
@@ -33,6 +36,7 @@ class HiveService {
     await Hive.openBox<GoalModel>(goalBoxName);
     await Hive.openBox<ContributionModel>(contributionBoxName);
     await Hive.openBox<String>(chatHistoryBoxName);
+    await Hive.openBox<WalletModel>(walletBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -149,5 +153,50 @@ class HiveService {
 
   static Future<void> clearChatHistory() async {
     await chatHistoryBox.delete('messages');
+  }
+
+  // Wallet Functionality
+  static Box<WalletModel> get walletBox => Hive.box<WalletModel>(walletBoxName);
+
+  static Future<void> addWallet(WalletModel wallet) async {
+    await walletBox.put(wallet.id, wallet);
+  }
+
+  static List<WalletModel> getAllWallets() {
+    return walletBox.values.toList();
+  }
+
+  static WalletModel? getWalletById(String id) {
+    return walletBox.get(id);
+  }
+
+  static Future<void> updateWallet(WalletModel wallet) async {
+    await walletBox.put(wallet.id, wallet);
+  }
+
+  static Future<void> deleteWallet(String id) async {
+    await walletBox.delete(id);
+  }
+
+  static WalletModel? getDefaultWallet() {
+    try {
+      return walletBox.values.firstWhere((w) => w.isDefault);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<void> setDefaultWallet(String walletId) async {
+    // Remove default from all wallets
+    for (var wallet in walletBox.values) {
+      wallet.isDefault = false;
+      await walletBox.put(wallet.id, wallet);
+    }
+    // Set new default
+    final wallet = walletBox.get(walletId);
+    if (wallet != null) {
+      wallet.isDefault = true;
+      await walletBox.put(wallet.id, wallet);
+    }
   }
 }
