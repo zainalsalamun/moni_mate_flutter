@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/wallet_controller.dart';
 import '../data/models/wallet_model.dart';
+import '../../../utils/wallet_brand.dart';
 
 class WalletManagePage extends StatelessWidget {
   const WalletManagePage({super.key});
@@ -44,6 +45,9 @@ class WalletManagePage extends StatelessWidget {
     bool isActive,
     WalletController walletC,
   ) {
+    final brand = WalletBrand.getBrand(wallet.name, wallet.type);
+    final fallbackIcon = WalletBrand.getFallbackIcon(wallet.name, wallet.type);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -52,7 +56,7 @@ class WalletManagePage extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         border: isActive
             ? Border.all(
-                color: Theme.of(context).colorScheme.primary,
+                color: brand.color,
                 width: 2,
               )
             : Border.all(
@@ -63,8 +67,7 @@ class WalletManagePage extends StatelessWidget {
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                  color: brand.color.withOpacity(0.15),
                   blurRadius: 12,
                   offset: const Offset(0, 4),
                 ),
@@ -73,17 +76,7 @@ class WalletManagePage extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        leading: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-            color: _parseColor(wallet.colorHex).withOpacity(0.15),
-            borderRadius: BorderRadius.circular(14),
-          ),
-          child: Center(
-            child: Text(wallet.icon, style: const TextStyle(fontSize: 24)),
-          ),
-        ),
+        leading: _buildBrandLogo(brand, fallbackIcon),
         title: Row(
           children: [
             Expanded(
@@ -99,8 +92,7 @@ class WalletManagePage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).colorScheme.primary.withOpacity(0.15),
+                  color: brand.color.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -108,7 +100,7 @@ class WalletManagePage extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: brand.color,
                   ),
                 ),
               ),
@@ -163,23 +155,126 @@ class WalletManagePage extends StatelessWidget {
     );
   }
 
+  /// Build a beautiful brand-style logo with gradient background
+  Widget _buildBrandLogo(WalletBrand brand, IconData fallbackIcon) {
+    return Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            brand.color,
+            brand.color.withOpacity(0.75),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: brand.color.withOpacity(0.3),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Center(
+        child: Icon(
+          fallbackIcon,
+          color: Colors.white,
+          size: 26,
+        ),
+      ),
+    );
+  }
+
   void _showAddWalletSheet(BuildContext context, WalletController walletC) {
     final nameC = TextEditingController();
     String selectedType = 'cash';
-    String selectedIcon = '💰';
-    String selectedColor = '#0288D1';
 
-    final icons = ['💰', '🏦', '📱', '💳', '🪙', '💎', '🏧', '🫰'];
-    final colors = [
-      '#0288D1',
-      '#4CAF50',
-      '#FF9800',
-      '#9C27B0',
-      '#E91E63',
-      '#00BCD4',
-      '#607D8B',
-      '#795548',
+    // Popular bank/wallet presets with brand colors and icons
+    final presets = <Map<String, dynamic>>[
+      {
+        'name': 'BCA',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFF003DA5)
+      },
+      {
+        'name': 'Mandiri',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFF003D6B)
+      },
+      {
+        'name': 'BNI',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFFED1C24)
+      },
+      {
+        'name': 'BRI',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFF003DA5)
+      },
+      {
+        'name': 'BSI',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFF1A6B3C)
+      },
+      {
+        'name': 'CIMB Niaga',
+        'type': 'bank',
+        'icon': Icons.account_balance_rounded,
+        'color': const Color(0xFF8B0000)
+      },
+      {
+        'name': 'GoPay',
+        'type': 'ewallet',
+        'icon': Icons.account_balance_wallet_rounded,
+        'color': const Color(0xFF00AED6)
+      },
+      {
+        'name': 'OVO',
+        'type': 'ewallet',
+        'icon': Icons.account_balance_wallet_rounded,
+        'color': const Color(0xFF4C3494)
+      },
+      {
+        'name': 'DANA',
+        'type': 'ewallet',
+        'icon': Icons.account_balance_wallet_rounded,
+        'color': const Color(0xFF108EE9)
+      },
+      {
+        'name': 'ShopeePay',
+        'type': 'ewallet',
+        'icon': Icons.account_balance_wallet_rounded,
+        'color': const Color(0xFFEE4D2D)
+      },
+      {
+        'name': 'LinkAja',
+        'type': 'ewallet',
+        'icon': Icons.account_balance_wallet_rounded,
+        'color': const Color(0xFFDD2C2E)
+      },
+      {
+        'name': 'Bibit',
+        'type': 'investment',
+        'icon': Icons.trending_up_rounded,
+        'color': const Color(0xFF00A85A)
+      },
+      {
+        'name': 'Cash',
+        'type': 'cash',
+        'icon': Icons.payments_rounded,
+        'color': const Color(0xFF4CAF50)
+      },
     ];
+
+    Map<String, dynamic>? selectedPreset;
 
     Get.bottomSheet(
       StatefulBuilder(
@@ -208,19 +303,122 @@ class WalletManagePage extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
                   const Text(
-                    'Tambah Dompet Baru',
+                    'Pilih Dompet',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Pilih bank/e-wallet favorit atau buat custom',
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+                  ),
                   const SizedBox(height: 20),
+                  const Text(
+                    'Dompet Populer',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  // Grid of brand presets
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      childAspectRatio: 0.85,
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
+                    ),
+                    itemCount: presets.length,
+                    itemBuilder: (context, idx) {
+                      final p = presets[idx];
+                      final isSelected = selectedPreset?['name'] == p['name'];
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedPreset = p;
+                            selectedType = p['type'] as String;
+                            nameC.text = p['name'] as String;
+                          });
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    p['color'] as Color,
+                                    (p['color'] as Color).withOpacity(0.75),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: isSelected
+                                    ? Border.all(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .primary,
+                                        width: 3,
+                                      )
+                                    : null,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        (p['color'] as Color).withOpacity(0.3),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                p['icon'] as IconData,
+                                color: Colors.white,
+                                size: 28,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              p['name'] as String,
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: isSelected
+                                    ? FontWeight.w700
+                                    : FontWeight.w500,
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Atau Buat Custom',
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
                   TextField(
                     controller: nameC,
+                    onChanged: (_) {
+                      if (selectedPreset != null) {
+                        setState(() => selectedPreset = null);
+                      }
+                    },
                     decoration: InputDecoration(
                       labelText: 'Nama Dompet',
-                      hintText: 'Contoh: BCA, GoPay, Cash',
+                      hintText: 'Ketik nama dompet...',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      prefixIcon: const Icon(Icons.account_balance_wallet),
+                      prefixIcon: const Icon(Icons.edit),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -230,6 +428,7 @@ class WalletManagePage extends StatelessWidget {
                   const SizedBox(height: 8),
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _typeChip('cash', '💵 Tunai', selectedType,
                           (v) => setState(() => selectedType = v)),
@@ -243,77 +442,6 @@ class WalletManagePage extends StatelessWidget {
                           (v) => setState(() => selectedType = v)),
                     ],
                   ),
-                  const SizedBox(height: 16),
-                  const Text('Ikon',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: icons
-                        .map((icon) => GestureDetector(
-                              onTap: () => setState(() => selectedIcon = icon),
-                              child: Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  color: selectedIcon == icon
-                                      ? Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withOpacity(0.15)
-                                      : Colors.grey.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: selectedIcon == icon
-                                      ? Border.all(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          width: 2)
-                                      : null,
-                                ),
-                                child: Center(
-                                    child: Text(icon,
-                                        style: const TextStyle(fontSize: 22))),
-                              ),
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Warna',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: colors
-                        .map((color) => GestureDetector(
-                              onTap: () =>
-                                  setState(() => selectedColor = color),
-                              child: Container(
-                                width: 36,
-                                height: 36,
-                                decoration: BoxDecoration(
-                                  color: _parseColor(color),
-                                  shape: BoxShape.circle,
-                                  border: selectedColor == color
-                                      ? Border.all(
-                                          color: Colors.white, width: 3)
-                                      : null,
-                                  boxShadow: selectedColor == color
-                                      ? [
-                                          BoxShadow(
-                                            color: _parseColor(color)
-                                                .withOpacity(0.5),
-                                            blurRadius: 8,
-                                          )
-                                        ]
-                                      : null,
-                                ),
-                              ),
-                            ))
-                        .toList(),
-                  ),
                   const SizedBox(height: 24),
                   SizedBox(
                     width: double.infinity,
@@ -325,11 +453,32 @@ class WalletManagePage extends StatelessWidget {
                               snackPosition: SnackPosition.TOP);
                           return;
                         }
+                        // Determine icon & color from preset or fallback
+                        String iconEmoji = '💰';
+                        String colorHex = '#0288D1';
+                        if (selectedPreset != null) {
+                          final brandColor = selectedPreset!['color'] as Color;
+                          colorHex =
+                              '#${brandColor.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+                          // Map icon to emoji for storage
+                          final iconData = selectedPreset!['icon'] as IconData;
+                          iconEmoji = _iconToEmoji(iconData, selectedType);
+                        } else {
+                          // Auto-pick icon & color based on type
+                          final fallback = WalletBrand.getFallbackIcon(
+                              nameC.text, selectedType);
+                          iconEmoji = _iconToEmoji(fallback, selectedType);
+                          final brand =
+                              WalletBrand.getBrand(nameC.text, selectedType);
+                          colorHex =
+                              '#${brand.color.value.toRadixString(16).padLeft(8, '0').substring(2).toUpperCase()}';
+                        }
+
                         walletC.addWallet(
                           name: nameC.text.trim(),
                           type: selectedType,
-                          icon: selectedIcon,
-                          colorHex: selectedColor,
+                          icon: iconEmoji,
+                          colorHex: colorHex,
                         );
                         Get.back();
                         Get.snackbar('Berhasil',
@@ -357,6 +506,23 @@ class WalletManagePage extends StatelessWidget {
       ),
       isScrollControlled: true,
     );
+  }
+
+  /// Convert IconData to emoji for storage
+  static String _iconToEmoji(IconData icon, String type) {
+    if (icon == Icons.account_balance_rounded) {
+      switch (type) {
+        case 'bank':
+          return '🏦';
+        default:
+          return '🏦';
+      }
+    }
+    if (icon == Icons.account_balance_wallet_rounded) return '📱';
+    if (icon == Icons.payments_rounded) return '💵';
+    if (icon == Icons.trending_up_rounded) return '📈';
+    if (icon == Icons.wallet_rounded) return '💰';
+    return '💰';
   }
 
   void _confirmDelete(
