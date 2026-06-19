@@ -172,16 +172,24 @@ class AiChatPage extends StatelessWidget {
                     ),
 
                   // Message text
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: message.isUser
-                          ? Colors.white
-                          : Theme.of(context).colorScheme.onSurface,
-                      height: 1.5,
+                  if (message.isUser)
+                    Text(
+                      message.text,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
+                    )
+                  else
+                    Text(
+                      message.text,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Theme.of(context).colorScheme.onSurface,
+                        height: 1.5,
+                      ),
                     ),
-                  ),
 
                   // Transaction action card
                   if (message.action != null) ...[
@@ -446,44 +454,56 @@ class AiChatPage extends StatelessWidget {
 
             // Text input
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: isDark
+              child: TextField(
+                controller: controller.textController,
+                style: const TextStyle(fontSize: 14),
+                maxLines: 5,
+                minLines: 1,
+                textInputAction: TextInputAction.send,
+                onSubmitted: (value) {
+                  if (value.trim().isNotEmpty) {
+                    controller.sendMessage(value);
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Ketik pesan...',
+                  hintStyle: TextStyle(
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.4),
+                    fontSize: 14,
+                  ),
+                  filled: true,
+                  fillColor: isDark
                       ? const Color(0xFF2D3748)
                       : const Color(0xFFF7FAFC),
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: isDark
-                        ? const Color(0xFF4A5568)
-                        : const Color(0xFFE2E8F0),
-                    width: 1,
-                  ),
-                ),
-                child: TextField(
-                  controller: controller.textController,
-                  style: const TextStyle(fontSize: 14),
-                  maxLines: 5,
-                  minLines: 1,
-                  textInputAction: TextInputAction.send,
-                  onSubmitted: (value) {
-                    if (value.trim().isNotEmpty) {
-                      controller.sendMessage(value);
-                    }
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Ketik pesan...',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onSurface
-                          .withOpacity(0.4),
-                      fontSize: 14,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF4A5568)
+                          : const Color(0xFFE2E8F0),
+                      width: 1,
                     ),
-                    border: InputBorder.none,
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 13),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: isDark
+                          ? const Color(0xFF4A5568)
+                          : const Color(0xFFE2E8F0),
+                      width: 1,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 1.5,
+                    ),
                   ),
                 ),
               ),
