@@ -5,6 +5,7 @@ import 'package:monimate/data/models/category_model.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:uuid/uuid.dart';
 import 'package:monimate/data/controller/sync_controller.dart';
+import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
 
 class TransactionController extends GetxController {
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
@@ -47,17 +48,20 @@ class TransactionController extends GetxController {
     );
     HiveService.addCategory(cat);
     loadCategories();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>())
+      Get.find<SyncController>().notifyDataChanged();
   }
 
   void deleteCustomCategory(String id) {
     HiveService.deleteCategory(id);
     loadCategories();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>())
+      Get.find<SyncController>().notifyDataChanged();
   }
 
   void addTransaction(
-      String type, String category, double amount, String description) {
+      String type, String category, double amount, String description,
+      {String? walletId}) {
     final tx = TransactionModel(
       id: const Uuid().v4(),
       type: type,
@@ -65,12 +69,19 @@ class TransactionController extends GetxController {
       amount: amount,
       description: description,
       date: DateTime.now(),
+      walletId: walletId ?? '',
     );
 
     HiveService.addTransaction(tx);
     transactions.add(tx);
     calculateTotals();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>())
+      Get.find<SyncController>().notifyDataChanged();
+
+    // Notify WalletController to recalculate balances
+    if (Get.isRegistered<WalletController>()) {
+      Get.find<WalletController>().recalculateAllBalances();
+    }
   }
 
   List<TransactionModel> get recentTransactions {
@@ -149,7 +160,8 @@ class TransactionController extends GetxController {
     HiveService.deleteTransaction(id);
     transactions.removeWhere((e) => e.id == id);
     calculateTotals();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>())
+      Get.find<SyncController>().notifyDataChanged();
   }
 
   void calculateTotals() {
@@ -173,7 +185,8 @@ class TransactionController extends GetxController {
     transactions.clear();
     totalIncome.value = 0;
     totalExpense.value = 0;
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>())
+      Get.find<SyncController>().notifyDataChanged();
   }
 
   String getCategoryName(String id) {
