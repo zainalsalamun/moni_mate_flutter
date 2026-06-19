@@ -9,6 +9,26 @@ class AiChatService {
 
   static bool get isApiKeyAvailable => _apiUrl.isNotEmpty && _apiKey.isNotEmpty;
 
+  /// Strip markdown formatting from text for plain Text widget display
+  static String _stripMarkdown(String text) {
+    String result = text;
+    // Remove bold/italic markers
+    result =
+        result.replaceAllMapped(RegExp(r'\*\*(.+?)\*\*'), (m) => m.group(1)!);
+    result = result.replaceAllMapped(RegExp(r'\*(.+?)\*'), (m) => m.group(1)!);
+    result = result.replaceAllMapped(RegExp(r'__(.+?)__'), (m) => m.group(1)!);
+    result = result.replaceAllMapped(RegExp(r'_(.+?)_'), (m) => m.group(1)!);
+    // Remove inline code
+    result = result.replaceAllMapped(RegExp(r'`(.+?)`'), (m) => m.group(1)!);
+    // Remove horizontal rules
+    result = result.replaceAll(RegExp(r'^-{3,}\s*$', multiLine: true), '');
+    // Remove markdown table rows (lines starting with |)
+    result = result.replaceAll(RegExp(r'^\|.*\|\s*$', multiLine: true), '');
+    // Remove consecutive empty lines (clean up after table removal)
+    result = result.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+    return result.trim();
+  }
+
   /// Sends a message to the AI API with financial assistant context.
   /// Returns a Map with 'reply' (String) and optionally 'action' data.
   static Future<Map<String, dynamic>> sendMessage(
@@ -54,11 +74,17 @@ TUGAS UTAMA:
 2. Jika pengguna BERTANYA tentang keuangan mereka, jawab berdasarkan data yang diberikan.
 3. Jika pengguna bertanya TIPS keuangan, berikan saran yang praktis.
 
-ATURAN OUTPUT:
+ATURAN PENTING - FORMAT OUTPUT:
+- JANGAN gunakan markdown (**bold**, *italic*, `code`, tabel | |, atau pembatas ---)
+- JANGAN gunakan simbol markdown apapun di dalam field "reply"
+- Tulis teks biasa yang bisa langsung dibaca. Gunakan emoji untuk hiasan.
+- Contoh yang BENAR: "Total pengeluaranmu Rp 1.163.000. Kamu sudah belanja makan Rp 988.000 hari ini."
+- Contoh SALAH: "| Keterangan | Nominal |" atau "**Rp 1.163.000**"
+- Untuk merangkum data, cukup tulis dalam kalimat biasa, jangan pakai tabel.
 - Selalu balas dengan JSON yang valid TANPA markdown code blocks
 - Format respons:
 {
-  "reply": "Teks balasan untuk pengguna",
+  "reply": "Teks balasan untuk pengguna dalam tulisan biasa tanpa markdown",
   "action": null,
   "action_type": null
 }
@@ -91,9 +117,7 @@ $financialContext
 ''';
 
     try {
-      debugPrint("--- AI CHAT: Sending request... ---");
-      debugPrint("Model: Combo_minimax_mimo");
-      debugPrint("User message: $userMessage");
+      debugPrint("AI Chat: Sending to Gemini...");
 
       // Build messages list with chat history for context
       final List<Map<String, String>> messages = [
@@ -179,13 +203,17 @@ $financialContext
 
         try {
           final Map<String, dynamic> result = jsonDecode(cleanedJson);
+          // Strip any markdown from the reply field for plain Text display
+          if (result['reply'] is String) {
+            result['reply'] = _stripMarkdown(result['reply'] as String);
+          }
           return result;
         } catch (parseError) {
           debugPrint("JSON parse failed, using raw text as reply");
           // If not valid JSON, return the raw text as a friendly reply
           return {
             'reply': cleanedJson.isNotEmpty
-                ? cleanedJson
+                ? _stripMarkdown(cleanedJson)
                 : 'Maaf, aku tidak bisa memproses pertanyaanmu. Coba tanyakan hal lain ya! 😊',
             'action': null,
             'action_type': null,
