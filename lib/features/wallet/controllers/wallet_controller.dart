@@ -10,16 +10,29 @@ class WalletController extends GetxController {
   final RxList<WalletModel> wallets = <WalletModel>[].obs;
   final Rx<WalletModel?> activeWallet = Rx<WalletModel?>(null);
   final RxString activeWalletId = ''.obs;
+  final RxDouble _totalBalance = 0.0.obs;
 
   @override
   void onInit() {
     super.onInit();
     loadWallets();
+
+    // Listen to transaction totals to keep totalBalance reactive
+    everAll(
+      [
+        Get.find<TransactionController>().totalIncome,
+        Get.find<TransactionController>().totalExpense,
+      ],
+      (_) => _recalcTotalBalance(),
+    );
   }
 
   void loadWallets() {
     final all = HiveService.getAllWallets();
     wallets.assignAll(all);
+
+    // Recalculate all wallet balances from actual transactions
+    recalculateAllBalances();
 
     // If no wallets exist, create a default one
     if (wallets.isEmpty) {
@@ -54,6 +67,14 @@ class WalletController extends GetxController {
     wallets.add(wallet);
     activeWallet.value = wallet;
     activeWalletId.value = wallet.id;
+    _recalcTotalBalance();
+  }
+
+  void _recalcTotalBalance() {
+    // Sum all wallet balances for the total
+    _totalBalance.value = wallets.fold(0.0, (sum, w) => sum + w.balance);
+    // Trigger reactivity
+    wallets.refresh();
   }
 
   void setActiveWallet(String walletId) {
@@ -92,6 +113,7 @@ class WalletController extends GetxController {
     );
     HiveService.addWallet(wallet);
     wallets.add(wallet);
+    _recalcTotalBalance();
     if (wallets.length == 1) {
       activeWallet.value = wallet;
       activeWalletId.value = wallet.id;
@@ -110,6 +132,7 @@ class WalletController extends GetxController {
     if (activeWallet.value?.id == wallet.id) {
       activeWallet.value = wallet;
     }
+    _recalcTotalBalance();
     if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
     }
@@ -132,17 +155,22 @@ class WalletController extends GetxController {
       activeWallet.value = wallets.first;
       activeWalletId.value = wallets.first.id;
     }
+    _recalcTotalBalance();
     if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
     }
   }
 
   /// Get transactions filtered by active wallet
+  /// Transactions with empty walletId are treated as belonging to the default wallet
   List<TransactionModel> getWalletTransactions(String walletId) {
     if (Get.isRegistered<TransactionController>()) {
       final txController = Get.find<TransactionController>();
+      final isDefault =
+          wallets.firstWhereOrNull((w) => w.id == walletId)?.isDefault ?? false;
       return txController.transactions
-          .where((t) => t.walletId == walletId)
+          .where((t) =>
+              t.walletId == walletId || (isDefault && t.walletId.isEmpty))
           .toList();
     }
     return [];
@@ -170,6 +198,7 @@ class WalletController extends GetxController {
         activeWallet.value = wallet;
       }
     }
+    _recalcTotalBalance();
   }
 
   /// Recalculate all wallet balances
@@ -177,12 +206,11 @@ class WalletController extends GetxController {
     for (var wallet in wallets) {
       recalculateBalance(wallet.id);
     }
+    _recalcTotalBalance();
   }
 
-  /// Get total balance across all wallets
-  double get totalBalance {
-    return wallets.fold(0.0, (sum, w) => sum + w.balance);
-  }
+  /// Get total balance across all wallets (reactive)
+  double get totalBalance => _totalBalance.value;
 
   /// Add transaction with wallet integration
   void addTransactionToWallet({
