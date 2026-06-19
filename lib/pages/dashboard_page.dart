@@ -8,6 +8,7 @@ import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
 import '../features/budget/view/budget_section.dart';
 import '../features/financial_goals/views/goals_section.dart';
+import '../features/wallet/controllers/wallet_controller.dart';
 import '../theme/app_theme.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -16,6 +17,7 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = Get.find<TransactionController>();
+    final walletC = Get.find<WalletController>();
     final shellC = Get.find<ShellController>();
 
     return Obx(() {
@@ -136,8 +138,7 @@ class DashboardPage extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            CurrencyFormat.format(
-                                    c.totalIncome.value - c.totalExpense.value)
+                            CurrencyFormat.format(walletC.totalBalance)
                                 .replaceAll('Rp ', '')
                                 .trim(),
                             style: const TextStyle(
@@ -376,15 +377,19 @@ class _TransactionTileItem extends StatelessWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CategoryIcon(
-          category: Get.find<TransactionController>().getCategoryName(t.category),
+          category:
+              Get.find<TransactionController>().getCategoryName(t.category),
           containerSize: 48,
           border: Border.all(
-            color: CategoryIcon.getColor(Get.find<TransactionController>().getCategoryName(t.category)),
+            color: CategoryIcon.getColor(
+                Get.find<TransactionController>().getCategoryName(t.category)),
             width: 1.5,
           ),
         ),
         title: Text(
-          t.description.isEmpty ? Get.find<TransactionController>().getCategoryName(t.category) : t.description,
+          t.description.isEmpty
+              ? Get.find<TransactionController>().getCategoryName(t.category)
+              : t.description,
           style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
         ),
         subtitle: Padding(
