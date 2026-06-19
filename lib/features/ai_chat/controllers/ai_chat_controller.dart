@@ -140,9 +140,6 @@ class AiChatController extends GetxController {
     // Save after user message
     await _saveChatHistory();
 
-    debugPrint("--- AI CHAT CONTROLLER: Processing message... ---");
-    debugPrint("User input: '$text'");
-
     try {
       final txController = Get.find<TransactionController>();
 
@@ -157,12 +154,7 @@ class AiChatController extends GetxController {
         };
       }).toList();
 
-      debugPrint("--- AI CHAT CONTROLLER: Sending to AI service... ---");
-      debugPrint("Transaction summary count: ${recentTxs.length}");
-
-      // Build chat history for AI context
       final chatHistory = _buildChatHistoryForAI();
-      debugPrint("Chat history for AI: ${chatHistory.length} messages");
 
       final response = await AiChatService.sendMessage(
         text,
@@ -172,15 +164,9 @@ class AiChatController extends GetxController {
         chatHistory: chatHistory,
       );
 
-      debugPrint("--- AI CHAT CONTROLLER: Response received ---");
-      debugPrint("Reply: ${response['reply']}");
-      debugPrint("Action type: ${response['action_type']}");
-
       final String reply = response['reply'] ?? 'Maaf, aku tidak mengerti.';
       final String? actionType = response['action_type'];
       final Map<String, dynamic>? action = response['action'];
-
-      debugPrint("--- AI CHAT CONTROLLER: Processing action... ---");
 
       // Execute action if present
       if (actionType == 'add_transaction' && action != null) {
