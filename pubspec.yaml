@@ -41,6 +41,8 @@ dependencies:
   http: ^1.2.1
   connectivity_plus: ^6.1.4
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
+  pdf: ^3.12.0
+  screenshot: ^3.0.0
 
 
 dev_dependencies:
