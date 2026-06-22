@@ -66,17 +66,20 @@ class AiChatPage extends StatelessWidget {
                 }
 
                 return ListView.builder(
+                  reverse: true,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: controller.messages.length +
                       (controller.isLoading.value ? 1 : 0),
                   itemBuilder: (context, index) {
-                    // Loading indicator
-                    if (index == controller.messages.length) {
+                    if (controller.isLoading.value && index == 0) {
                       return _buildLoadingBubble(context);
                     }
 
-                    final message = controller.messages[index];
+                    final messageIndex = controller.messages.length -
+                        1 -
+                        (controller.isLoading.value ? index - 1 : index);
+                    final message = controller.messages[messageIndex];
                     return _buildChatBubble(context, message);
                   },
                 );
@@ -442,9 +445,7 @@ class AiChatPage extends StatelessWidget {
           children: [
             // Quick action buttons
             IconButton(
-              onPressed: () {
-                controller.sendMessage('Tambah pengeluaran makan 25000');
-              },
+              onPressed: () => _showAddTransactionOptions(context, controller),
               icon: Icon(
                 Icons.add_circle_outline_rounded,
                 color: Theme.of(context).colorScheme.primary,
@@ -545,6 +546,118 @@ class AiChatPage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showAddTransactionOptions(
+      BuildContext context, AiChatController controller) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Saran Prompt Cepat',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Pilih contoh ini agar AI langsung mencatat tanpa perlu mengetik',
+                style: TextStyle(
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  const Icon(Icons.arrow_upward_rounded,
+                      color: Colors.redAccent, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Pengeluaran',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildPromptChip(context, controller, 'Catat beli kopi 25rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat makan siang 50rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat isi bensin 50rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat bayar parkir 5rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat ongkos ojol 20rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat beli cemilan 15rb'),
+                ],
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  const Icon(Icons.arrow_downward_rounded,
+                      color: Colors.green, size: 20),
+                  const SizedBox(width: 8),
+                  Text('Pemasukan',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).colorScheme.onSurface)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  _buildPromptChip(context, controller, 'Catat gajian 5jt'),
+                  _buildPromptChip(
+                      context, controller, 'Catat dapat bonus 500rb'),
+                  _buildPromptChip(
+                      context, controller, 'Catat hasil freelance 1jt'),
+                  _buildPromptChip(
+                      context, controller, 'Catat dikasih uang 100rb'),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromptChip(
+      BuildContext context, AiChatController controller, String prompt) {
+    return ActionChip(
+      label: Text(prompt, style: const TextStyle(fontSize: 13)),
+      backgroundColor:
+          Theme.of(context).colorScheme.primaryContainer.withOpacity(0.4),
+      side: BorderSide(
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.2)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      onPressed: () {
+        Navigator.pop(context);
+        controller.sendMessage(prompt);
+      },
     );
   }
 }
