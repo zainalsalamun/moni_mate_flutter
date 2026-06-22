@@ -7,6 +7,8 @@ import '../models/goal_model.dart';
 import '../models/contribution_model.dart';
 import '../../features/budget/model/budget_model.dart';
 import '../../features/wallet/data/models/wallet_model.dart';
+import '../../features/monthly_report/models/monthly_report_model.dart';
+import '../../features/ai_insights/models/predictive_insight_model.dart';
 
 class HiveService {
   static const String boxName = 'transactions';
@@ -17,6 +19,8 @@ class HiveService {
   static const String contributionBoxName = 'contributions';
   static const String chatHistoryBoxName = 'chat_history';
   static const String walletBoxName = 'wallets';
+  static const String monthlyReportBoxName = 'monthly_reports';
+  static const String predictiveInsightBoxName = 'predictive_insights';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -28,6 +32,8 @@ class HiveService {
     Hive.registerAdapter(GoalModelAdapter());
     Hive.registerAdapter(ContributionModelAdapter());
     Hive.registerAdapter(WalletModelAdapter());
+    Hive.registerAdapter(MonthlyReportModelAdapter());
+    Hive.registerAdapter(PredictiveInsightModelAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
@@ -37,6 +43,8 @@ class HiveService {
     await Hive.openBox<ContributionModel>(contributionBoxName);
     await Hive.openBox<String>(chatHistoryBoxName);
     await Hive.openBox<WalletModel>(walletBoxName);
+    await Hive.openBox<MonthlyReportModel>(monthlyReportBoxName);
+    await Hive.openBox<PredictiveInsightModel>(predictiveInsightBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -166,6 +174,22 @@ class HiveService {
     return walletBox.values.toList();
   }
 
+  // Monthly Report Functionality
+  static Box<MonthlyReportModel> get monthlyReportBox =>
+      Hive.box<MonthlyReportModel>(monthlyReportBoxName);
+
+  static Future<void> addMonthlyReport(MonthlyReportModel report) async {
+    await monthlyReportBox.put(report.id, report);
+  }
+
+  static List<MonthlyReportModel> getAllMonthlyReports() {
+    return monthlyReportBox.values.toList();
+  }
+
+  static Future<void> deleteMonthlyReport(String id) async {
+    await monthlyReportBox.delete(id);
+  }
+
   static WalletModel? getWalletById(String id) {
     return walletBox.get(id);
   }
@@ -198,5 +222,24 @@ class HiveService {
       wallet.isDefault = true;
       await walletBox.put(wallet.id, wallet);
     }
+  }
+
+  // --- PREDICTIVE INSIGHT METHODS ---
+  static List<PredictiveInsightModel> getAllPredictiveInsights() {
+    final box = Hive.box<PredictiveInsightModel>(predictiveInsightBoxName);
+    return box.values.toList();
+  }
+
+  static Future<void> savePredictiveInsights(List<PredictiveInsightModel> insights) async {
+    final box = Hive.box<PredictiveInsightModel>(predictiveInsightBoxName);
+    await box.clear(); // Replace old cache
+    for (var insight in insights) {
+      await box.put(insight.id, insight);
+    }
+  }
+
+  static Future<void> clearPredictiveInsights() async {
+    final box = Hive.box<PredictiveInsightModel>(predictiveInsightBoxName);
+    await box.clear();
   }
 }
