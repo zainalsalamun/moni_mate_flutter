@@ -19,13 +19,19 @@ Aplikasi ini memudahkan pengguna untuk:
 ## 🔥 Fitur Unggulan
 
 - 🧠 **Hybrid AI Receipt Scanner** — Scan struk belanja menggunakan kamera. Menggunakan **Google Gemini API** untuk ekstraksi data dengan akurasi tinggi (nominal dan nama merchant), dan otomatis *fallback* ke **Google ML Kit** (offline) jika terjadi masalah koneksi atau limit API. Hasil scan dapat di-review dan diedit sebelum disimpan.
+- 💳 **Multi Wallet System** — Mengelola dompet ganda dengan mudah. Dukungan untuk berbagai jenis akun seperti Tunai (Cash), Bank, dan E-Wallet dengan perhitungan akumulasi kekayaan otomatis.
 - 🎯 **Smart Budgeting** — Atur budget bulanan per kategori. Pantau penggunaan secara real-time dengan progress bar interaktif:
   - 🟢 < 70%: Hemat (Ocean Toska)
   - 🟠 70-90%: Waspada (Orange)
   - 🔴 > 90%: Bahaya (Red + Shake Animation)
 - 🔒 **Strict Mode** — Fitur keamanan finansial level pro yang mencegah pencatatan transaksi jika sudah melebihi budget yang ditentukan.
-- 💡 **AI Financial Insights** — Analisis otomatis perilaku keuangan (analisis akhir pekan, tren pengeluaran bulanan, dan deteksi kebiasaan ngopi).
+- 📈 **Net Worth Dashboard** — Pantau perkembangan nilai kekayaan bersih harian secara *real-time* lewat grafik yang indah dan informatif.
+- 🏥 **Financial Health Score** — Sistem skoring pintar otomatis (0-100) yang mengevaluasi kesehatan finansial berdasarkan tabungan, dana darurat, profil pengeluaran, dan stabilitas pendapatan bulanan.
+- 🛡️ **Emergency Fund Tracker** — Hitung dan pantau kebutuhan dana darurat berdasarkan profil status (Single, Married, Freelance). Memberikan progres real-time untuk mencapai ketahanan finansial.
+- 💡 **AI Financial Insights & Predictive Coach** — Analisis otomatis perilaku keuangan (analisis akhir pekan, tren pengeluaran bulanan) dan saran prediksi jika budget hampir habis atau dana darurat kritis.
+- 🤖 **Gemini AI Chat Assistant** — Asisten keuangan *smart chat* berbasis Google Gemini yang siap membantu menjawab pertanyaan finansialmu atau menganalisa riwayat pengeluaran secara personal.
 - 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
+- 📑 **Monthly Financial Report** — *Generate* laporan keuangan bulanan lengkap berbentuk PDF atau Gambar beresolusi tinggi. Mendukung logo kustom dan layout laporan siap-cetak.
 - 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
 - 🏆 **Achievements & Gamification** — Sistem pencapaian yang memotivasi pengguna untuk mencapai target keuangan. Kumpulkan badge dan lacak progres pencapaianmu.
 - 🌊 **Modern Fintech UI** — Antarmuka premium dengan kombinasi warna *Ocean Toska* (`#0288D1` & `#4FC3F7`), pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi Lottie yang halus, dan layout responsif untuk pengalaman pengguna yang maksimal.
