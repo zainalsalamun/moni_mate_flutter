@@ -48,15 +48,17 @@ class TransactionController extends GetxController {
     );
     HiveService.addCategory(cat);
     loadCategories();
-    if (Get.isRegistered<SyncController>())
+    if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
   }
 
   void deleteCustomCategory(String id) {
     HiveService.deleteCategory(id);
     loadCategories();
-    if (Get.isRegistered<SyncController>())
+    if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
   }
 
   void addTransaction(
@@ -75,8 +77,9 @@ class TransactionController extends GetxController {
     HiveService.addTransaction(tx);
     transactions.add(tx);
     calculateTotals();
-    if (Get.isRegistered<SyncController>())
+    if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
 
     // Notify WalletController to recalculate balances
     if (Get.isRegistered<WalletController>()) {
@@ -160,8 +163,9 @@ class TransactionController extends GetxController {
     HiveService.deleteTransaction(id);
     transactions.removeWhere((e) => e.id == id);
     calculateTotals();
-    if (Get.isRegistered<SyncController>())
+    if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
   }
 
   void calculateTotals() {
@@ -185,8 +189,9 @@ class TransactionController extends GetxController {
     transactions.clear();
     totalIncome.value = 0;
     totalExpense.value = 0;
-    if (Get.isRegistered<SyncController>())
+    if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
   }
 
   String getCategoryName(String id) {
