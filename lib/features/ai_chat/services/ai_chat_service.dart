@@ -81,7 +81,8 @@ ATURAN PENTING - FORMAT OUTPUT:
 - Contoh yang BENAR: "Total pengeluaranmu Rp 1.163.000. Kamu sudah belanja makan Rp 988.000 hari ini."
 - Contoh SALAH: "| Keterangan | Nominal |" atau "**Rp 1.163.000**"
 - Untuk merangkum data, cukup tulis dalam kalimat biasa, jangan pakai tabel.
-- Selalu balas dengan JSON yang valid TANPA markdown code blocks
+- Selalu balas HANYA dengan objek JSON tunggal yang valid TANPA awalan teks, TANPA akhiran teks, dan TANPA markdown code blocks.
+- Ekstrak nominal (amount) SECARA SAMA PERSIS dengan angka yang disebutkan pengguna. JANGAN PERNAH mengalikan (x2), menjumlahkan, atau mengakumulasikan nominal dengan transaksi sebelumnya di riwayat chat.
 - Format respons:
 {
   "reply": "Teks balasan untuk pengguna dalam tulisan biasa tanpa markdown",
@@ -197,12 +198,27 @@ $financialContext
         cleanedJson =
             cleanedJson.replaceAll('```json', '').replaceAll('```', '').trim();
 
+        // Extract JSON object if the model includes conversational text
+        int startIndex = cleanedJson.indexOf('{');
+        int endIndex = cleanedJson.lastIndexOf('}');
+        if (startIndex != -1 && endIndex != -1 && endIndex > startIndex) {
+            cleanedJson = cleanedJson.substring(startIndex, endIndex + 1);
+        }
+
         debugPrint("--- AI CHAT CLEANED OUTPUT ---");
         debugPrint(cleanedJson);
         debugPrint("--------------------------------");
 
         try {
           final Map<String, dynamic> result = jsonDecode(cleanedJson);
+          
+          // Handle 'actiontype' typo from LLM
+          if (result['action_type'] == null && result['actiontype'] != null) {
+            String type = result['actiontype'].toString();
+            if (type == 'addtransaction') type = 'add_transaction';
+            result['action_type'] = type;
+          }
+
           // Strip any markdown from the reply field for plain Text display
           if (result['reply'] is String) {
             result['reply'] = _stripMarkdown(result['reply'] as String);
