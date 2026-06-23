@@ -11,7 +11,11 @@ import '../models/recurring_transaction_model.dart';
 import '../models/goal_model.dart';
 import '../models/contribution_model.dart';
 import '../../features/budget/model/budget_model.dart';
+import '../../features/emergency_fund/controllers/emergency_fund_controller.dart';
+import '../../features/emergency_fund/models/emergency_fund_profile.dart';
+import '../../features/net_worth/models/net_worth_snapshot_model.dart';
 import 'hive_service.dart';
+import 'package:get/get.dart';
 
 /// SyncService handles bidirectional sync between local Hive storage and Google Drive.
 /// Uses incremental sync (only unsynced data) + Last-Write-Wins conflict resolution.
@@ -248,6 +252,26 @@ class SyncService {
                 'updatedAt': (c.updatedAt ?? DateTime.now()).toIso8601String(),
               })
           .toList(),
+      'emergencyFundProfile': {
+        'type': HiveService.getEmergencyFundProfile().type,
+        'customMultiplier': HiveService.getEmergencyFundProfile().customMultiplier,
+        'updatedAt': HiveService.getEmergencyFundProfile().updatedAt.toIso8601String(),
+      },
+      'netWorthSnapshots': HiveService.netWorthSnapshotBox.values
+          .map((s) => {
+                'id': s.id,
+                'year': s.year,
+                'month': s.month,
+                'snapshotDate': s.snapshotDate.toIso8601String(),
+                'totalAssets': s.totalAssets,
+                'totalLiabilities': s.totalLiabilities,
+                'netWorth': s.netWorth,
+                'growthPercentMoM': s.growthPercentMoM,
+                'growthPercentYoY': s.growthPercentYoY,
+                'createdAt': s.createdAt.toIso8601String(),
+                'updatedAt': s.createdAt.toIso8601String(),
+              })
+          .toList(),
     };
   }
 
@@ -475,6 +499,56 @@ class SyncService {
         );
       }
     }
+
+    // Merge Emergency Fund Profile
+    final remoteEmergencyFund = remoteData['emergencyFundProfile'] as Map<String, dynamic>?;
+    if (remoteEmergencyFund != null) {
+      final localProfile = HiveService.getEmergencyFundProfile();
+      final remoteUpdatedAt = DateTime.parse(remoteEmergencyFund['updatedAt']);
+      
+      if (remoteUpdatedAt.isAfter(localProfile.updatedAt)) {
+        final newProfile = EmergencyFundProfile(
+          id: localProfile.id, // keep local ID to overwrite
+          type: remoteEmergencyFund['type'],
+          customMultiplier: remoteEmergencyFund['customMultiplier'] ?? 3,
+          updatedAt: remoteUpdatedAt,
+          isSynced: true,
+        );
+        await HiveService.updateEmergencyFundProfile(newProfile);
+
+        // Trigger recalculation if controller is active
+        if (Get.isRegistered<EmergencyFundController>()) {
+          Get.find<EmergencyFundController>().profile.value = newProfile;
+          Get.find<EmergencyFundController>().calculateMetrics();
+        }
+      }
+    }
+
+    // Merge NetWorthSnapshots
+    final remoteNwList = remoteData['netWorthSnapshots'] as List? ?? [];
+    for (final rnw in remoteNwList) {
+      final localNw = HiveService.netWorthSnapshotBox.get(rnw['id']);
+      final remoteUpdatedAt = DateTime.parse(rnw['updatedAt'] ?? rnw['createdAt']);
+
+      if (localNw == null) {
+        // New item
+        await HiveService.netWorthSnapshotBox.put(
+          rnw['id'],
+          NetWorthSnapshotModel(
+            id: rnw['id'],
+            year: rnw['year'],
+            month: rnw['month'],
+            snapshotDate: DateTime.parse(rnw['snapshotDate']),
+            totalAssets: (rnw['totalAssets'] as num).toDouble(),
+            totalLiabilities: (rnw['totalLiabilities'] as num).toDouble(),
+            netWorth: (rnw['netWorth'] as num).toDouble(),
+            growthPercentMoM: (rnw['growthPercentMoM'] as num).toDouble(),
+            growthPercentYoY: (rnw['growthPercentYoY'] as num).toDouble(),
+            createdAt: DateTime.parse(rnw['createdAt']),
+          ),
+        );
+      }
+    }
   }
 
   // ─────────────────────────────────────────────
@@ -517,6 +591,12 @@ class SyncService {
         cb.isSynced = true;
         await cb.save();
       }
+    }
+
+    final efp = HiveService.getEmergencyFundProfile();
+    if (!efp.isSynced) {
+      efp.isSynced = true;
+      await HiveService.updateEmergencyFundProfile(efp);
     }
   }
 
@@ -627,8 +707,10 @@ class SyncService {
     count += HiveService.recurringBox.values.where((e) => !e.isSynced).length;
     count += HiveService.budgetBox.values.where((e) => !e.isSynced).length;
     count += HiveService.goalBox.values.where((e) => !e.isSynced).length;
-    count +=
         HiveService.contributionBox.values.where((e) => !e.isSynced).length;
+    
+    if (!HiveService.getEmergencyFundProfile().isSynced) count += 1;
+
     return count;
   }
 }
