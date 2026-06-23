@@ -50,30 +50,33 @@ class PredictiveInsightController extends GetxController {
   Future<void> _generateInsights({required bool forceApi}) async {
     isLoading.value = true;
     try {
+      // Always generate Local Insights fresh (real-time)
+      final contextModel = _buildFinancialContext();
+      final localInsights = LocalInsightEngine.generateInsights(contextModel);
+
       final cached = HiveService.getAllPredictiveInsights();
       bool shouldCallApi = forceApi;
 
       if (!forceApi && cached.isNotEmpty) {
-        // Find newest cache
         final newest = cached.reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b);
         final diff = DateTime.now().difference(newest.createdAt);
         if (diff.inHours >= 6) {
           shouldCallApi = true;
         } else {
-          // Cache is still fresh, just return local updates + cached API updates
-          _sortAndSetInsights(cached);
-          isOfflineMode.value = !cached.any((element) => element.source == 'ai_api');
+          // Cache is still fresh, merge fresh local insights with cached API insights
+          final aiCached = cached.where((e) => e.source == 'ai_api').toList();
+          final Map<String, PredictiveInsightModel> merged = {};
+          
+          for (var item in localInsights) merged[item.type] = item;
+          for (var item in aiCached) merged[item.type] = item;
+          
+          _sortAndSetInsights(merged.values.toList());
+          isOfflineMode.value = aiCached.isEmpty;
           return;
         }
       } else if (cached.isEmpty) {
         shouldCallApi = true;
       }
-
-      // Build Context
-      final contextModel = _buildFinancialContext();
-      
-      // Generate Local
-      final localInsights = LocalInsightEngine.generateInsights(contextModel);
 
       List<PredictiveInsightModel> finalInsights = List.from(localInsights);
       isOfflineMode.value = true;
