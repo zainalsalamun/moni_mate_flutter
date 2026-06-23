@@ -33,7 +33,7 @@ Aplikasi ini memudahkan pengguna untuk:
 - 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
 - 📑 **Monthly Financial Report** — *Generate* laporan keuangan bulanan lengkap berbentuk PDF atau Gambar beresolusi tinggi. Mendukung logo kustom dan layout laporan siap-cetak.
 - 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
-- 🏆 **Achievements & Gamification** — Sistem pencapaian yang memotivasi pengguna untuk mencapai target keuangan. Kumpulkan badge dan lacak progres pencapaianmu.
+- 🏆 **Gamification 2.0 (Level & Streak)** — Ubah perjalanan finansialmu menjadi sebuah petualangan seru! Dapatkan **XP**, naikkan **Level**, dan kumpulkan **Badge** dari berbagai aktivitas (seperti mencatat transaksi, mencapai target dana darurat, hingga rutin membaca insight AI). Pantau juga **Daily Streak** kamu untuk terus termotivasi.
 - 🌊 **Modern Fintech UI** — Antarmuka premium dengan kombinasi warna *Ocean Toska* (`#0288D1` & `#4FC3F7`), pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi Lottie yang halus, dan layout responsif untuk pengalaman pengguna yang maksimal.
 - 📊 **Smart Statistics** — Visualisasi pengeluaran bulanan menggunakan *Pie Chart* dan tren mingguan dengan *Bar Chart*.
 - 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark) dengan transisi yang mulus.
