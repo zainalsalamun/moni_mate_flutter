@@ -9,6 +9,8 @@ import '../../features/budget/model/budget_model.dart';
 import '../../features/wallet/data/models/wallet_model.dart';
 import '../../features/monthly_report/models/monthly_report_model.dart';
 import '../../features/ai_insights/models/predictive_insight_model.dart';
+import '../../features/emergency_fund/models/emergency_fund_profile.dart';
+import '../../features/net_worth/models/net_worth_snapshot_model.dart';
 
 class HiveService {
   static const String boxName = 'transactions';
@@ -21,6 +23,8 @@ class HiveService {
   static const String walletBoxName = 'wallets';
   static const String monthlyReportBoxName = 'monthly_reports';
   static const String predictiveInsightBoxName = 'predictive_insights';
+  static const String emergencyFundProfileBoxName = 'emergency_fund_profiles';
+  static const String netWorthSnapshotBoxName = 'net_worth_snapshots';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -34,6 +38,8 @@ class HiveService {
     Hive.registerAdapter(WalletModelAdapter());
     Hive.registerAdapter(MonthlyReportModelAdapter());
     Hive.registerAdapter(PredictiveInsightModelAdapter());
+    Hive.registerAdapter(EmergencyFundProfileAdapter());
+    Hive.registerAdapter(NetWorthSnapshotModelAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
@@ -45,6 +51,8 @@ class HiveService {
     await Hive.openBox<WalletModel>(walletBoxName);
     await Hive.openBox<MonthlyReportModel>(monthlyReportBoxName);
     await Hive.openBox<PredictiveInsightModel>(predictiveInsightBoxName);
+    await Hive.openBox<EmergencyFundProfile>(emergencyFundProfileBoxName);
+    await Hive.openBox<NetWorthSnapshotModel>(netWorthSnapshotBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -52,6 +60,8 @@ class HiveService {
       Hive.box<CategoryModel>(categoryBoxName);
   static Box<RecurringTransactionModel> get recurringBox =>
       Hive.box<RecurringTransactionModel>(recurringBoxName);
+  static Box<NetWorthSnapshotModel> get netWorthSnapshotBox =>
+      Hive.box<NetWorthSnapshotModel>(netWorthSnapshotBoxName);
 
   static Future<void> addTransaction(TransactionModel tx) async {
     await box.put(tx.id, tx);
@@ -241,5 +251,32 @@ class HiveService {
   static Future<void> clearPredictiveInsights() async {
     final box = Hive.box<PredictiveInsightModel>(predictiveInsightBoxName);
     await box.clear();
+  }
+
+  // --- EMERGENCY FUND PROFILE METHODS ---
+  static Box<EmergencyFundProfile> get emergencyFundProfileBox =>
+      Hive.box<EmergencyFundProfile>(emergencyFundProfileBoxName);
+
+  static EmergencyFundProfile getEmergencyFundProfile() {
+    if (emergencyFundProfileBox.values.isEmpty) {
+      final defaultProfile = EmergencyFundProfile();
+      emergencyFundProfileBox.put(defaultProfile.id, defaultProfile);
+      return defaultProfile;
+    }
+    return emergencyFundProfileBox.values.first;
+  }
+
+  static Future<void> updateEmergencyFundProfile(EmergencyFundProfile profile) async {
+    await emergencyFundProfileBox.clear();
+    await emergencyFundProfileBox.put(profile.id, profile);
+  }
+
+  // --- NET WORTH SNAPSHOTS METHODS ---
+  static List<NetWorthSnapshotModel> getAllNetWorthSnapshots() {
+    return netWorthSnapshotBox.values.toList();
+  }
+
+  static Future<void> saveNetWorthSnapshot(NetWorthSnapshotModel snapshot) async {
+    await netWorthSnapshotBox.put(snapshot.id, snapshot);
   }
 }
