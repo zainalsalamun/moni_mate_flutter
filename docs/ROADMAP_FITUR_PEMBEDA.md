@@ -9,7 +9,7 @@
 
 | Kategori | Fitur Saat Ini |
 |----------|---------------|
-| 🤖 AI | Receipt Scanner (Gemini + ML Kit), Financial Insights |
+| 🤖 AI | Receipt Scanner (Gemini + ML Kit), Financial Insights, AI Chatbot Advisor |
 | 💰 Budget | Smart Budgeting, Strict Mode, Progress Bar |
 | 🎯 Goals | Financial Goals, Achievements & Gamification |
 | 📊 Stats | Pie Chart, Bar Chart, Calendar View |
@@ -18,6 +18,8 @@
 | 📤 Export | CSV Export & Share |
 | 🔄 Recurring | Auto Recurring Transactions |
 | 🔔 Alerts | Smart Budget Alerts |
+| 💳 Wallet | Multi-Akun Wallet, Transfer Antar Wallet, Brand Logo |
+| 🏥 Health | Financial Health Score (Skor 0-100, 5 komponen) |
 
 ---
 
