@@ -9,14 +9,14 @@
 
 | # | Prioritas | Estimasi | Status |
 |---|-----------|----------|--------|
-| 1 | P1 — High | 3-5 hari | ⬜ Belum |
-| 2 | P2 — Medium | 2-4 hari | ⬜ Belum |
-| 3 | P3 — Medium | 2-3 hari | ⬜ Belum |
+| 1 | P1 — High | 3-5 hari | ✅ Selesai |
+| 2 | P2 — Medium | 2-4 hari | ✅ Selesai |
+| 3 | P3 — Medium | 2-3 hari | ✅ Selesai |
 | 4 | P4 — Medium | 3-5 hari | ⬜ Belum |
 | 5 | P5 — Low | 2-3 hari | ⬜ Belum |
 | 6 | P6 — Low | 2-4 hari | ⬜ Belum |
 | 7 | P7 — Low | 3-5 hari | ⬜ Belum |
-| 8 | P8 — Low | 2-3 hari | ⬜ Belum |
+| 8 | P8 — Low | 2-3 hari | ✅ Selesai |
 | 9 | P9 — Low | 3-5 hari | ⬜ Belum |
 | 10 | P10 — Low | 2-4 hari | ⬜ Belum |
 
@@ -199,16 +199,16 @@
 
 ## 📝 Checklist Implementasi
 
-- [ ] **Fase 1:** Wallet Multi-Akun (#2)
-- [ ] **Fase 2:** AI Financial Advisor (#1)
-- [ ] **Fase 3:** Receipt Scanner v2 (#3)
-- [ ] **Fase 4:** Savings Challenge (#4)
-- [ ] **Fase 5:** Predictive Analytics (#5)
-- [ ] **Fase 6:** Debt Tracker (#8)
-- [ ] **Fase 7:** Smart Tags (#9)
-- [ ] **Fase 8:** Bill Split / Shared Finance (#6)
-- [ ] **Fase 9:** Multi-Currency (#7)
-- [ ] **Fase 10:** Theme Customizer & Widgets (#10)
+- [x] **Fase 1:** Wallet Multi-Akun (#2) — ✅ Selesai
+- [x] **Fase 2:** AI Financial Advisor (#1) — ✅ Selesai
+- [x] **Fase 3:** Receipt Scanner v2 (#3) — ✅ Selesai (Basic)
+- [ ] **Fase 4:** Savings Challenge (#4) — ⬜ Belum
+- [ ] **Fase 5:** Predictive Analytics (#5) — ⬜ Belum
+- [x] **Fase 6:** Financial Health Score (Bonus) — ✅ Selesai
+- [ ] **Fase 7:** Smart Tags (#9) — ⬜ Belum
+- [ ] **Fase 8:** Bill Split / Shared Finance (#6) — ⬜ Belum
+- [ ] **Fase 9:** Multi-Currency (#7) — ⬜ Belum
+- [ ] **Fase 10:** Theme Customizer & Widgets (#10) — ⬜ Belum
 
 ---
 
@@ -222,6 +222,48 @@
 
 ---
 
+## 📊 Ringkasan Progress
+
+### ✅ Fitur yang Sudah Selesai (19-21 Juni 2026)
+
+#### 1. 💰 Wallet Multi-Akun
+- Multi wallet: Cash, Bank BCA, GoPay, Dana, dll
+- Total saldo reaktif di dashboard
+- Transfer antar wallet
+- Edit wallet dengan brand logo
+- Wallet logo assets (17 bank/e-wallet)
+
+#### 2. 🤖 AI Financial Advisor
+- Chatbot berbasis Gemini API
+- Context-aware dengan data transaksi aktual
+- Custom system prompt untuk analisis keuangan
+- Streaming response
+- Chat history tersimpan
+- Markdown stripping untuk plain text display
+
+#### 3. 📸 Smart Receipt Scanner
+- Scan struk dengan Gemini Vision
+- Extract itemized list dari receipt
+- Review page dengan editable items
+- Multi-item extraction
+
+#### 4. 🏥 Financial Health Score (Bonus)
+- Skor kesehatan keuangan 0-100
+- 5 komponen: Budget (30), Goals (25), Saving (20), Trend (15), Emergency (10)
+- Animated score ring
+- Breakdown card dengan progress bar
+- Insight cards berdasarkan analisis
+- Kategori: Excellent, Good, Fair, Needs Improvement, Critical
+
+#### 5. 🔧 Infrastructure Updates
+- Wallet brand logo utility
+- Currency formatter dengan thousand separators
+- Format currency utility
+- Recurring transaction controller
+- Theme controller improvements
+
+---
+
 > **Catatan:** Semua fitur di atas dirancang untuk menjaga MoniMate tetap **offline-first** dan **privacy-focused** sebagai DNA utama aplikasi.
 
-*Last updated: 15 June 2026*
+*Last updated: 21 June 2026*
