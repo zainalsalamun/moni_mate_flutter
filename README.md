@@ -28,8 +28,9 @@ Aplikasi ini memudahkan pengguna untuk:
 - 📈 **Net Worth Dashboard** — Pantau perkembangan nilai kekayaan bersih harian secara *real-time* lewat grafik yang indah dan informatif.
 - 🏥 **Financial Health Score** — Sistem skoring pintar otomatis (0-100) yang mengevaluasi kesehatan finansial berdasarkan tabungan, dana darurat, profil pengeluaran, dan stabilitas pendapatan bulanan.
 - 🛡️ **Emergency Fund Tracker** — Hitung dan pantau kebutuhan dana darurat berdasarkan profil status (Single, Married, Freelance). Memberikan progres real-time untuk mencapai ketahanan finansial.
+- 🌅 **AI Daily Coach & Smart Financial Brief** — Dapatkan *briefing* keuangan otomatis setiap pagi (08:00) dan malam (20:00). MoniMate bertindak sebagai *financial coach* pribadi yang menganalisis progres *budget*, target *emergency fund*, kesehatan finansial, serta *gamification streak* untuk memberikan insight *actionable* setiap hari.
 - 💡 **AI Financial Insights & Predictive Coach** — Analisis otomatis perilaku keuangan (analisis akhir pekan, tren pengeluaran bulanan) dan saran prediksi jika budget hampir habis atau dana darurat kritis.
-- 🤖 **Gemini AI Chat Assistant** — Asisten keuangan *smart chat* berbasis Google Gemini yang siap membantu menjawab pertanyaan finansialmu atau menganalisa riwayat pengeluaran secara personal.
+- 🤖 **Gemini & DeepSeek AI Chat Assistant** — Asisten keuangan *smart chat* multi-model (mendukung Google Gemini & DeepSeek v4) yang siap membantu menjawab pertanyaan finansialmu atau menganalisa riwayat pengeluaran secara personal.
 - 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
 - 📑 **Monthly Financial Report** — *Generate* laporan keuangan bulanan lengkap berbentuk PDF atau Gambar beresolusi tinggi. Mendukung logo kustom dan layout laporan siap-cetak.
 - 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
