@@ -43,6 +43,8 @@ dependencies:
   extension_google_sign_in_as_googleapis_auth: ^2.0.12
   pdf: ^3.12.0
   screenshot: ^3.0.0
+  timezone: ^0.10.1
+  flutter_timezone: ^5.1.0
 
 
 dev_dependencies:
