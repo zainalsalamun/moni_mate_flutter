@@ -142,11 +142,10 @@ $financialContext
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          'model': 'Combo_minimax_mimo',
+          'model': 'deepseek-v4-flash',
           'messages': messages,
           'stream': false,
           'temperature': 0.7,
-          'max_tokens': 1024,
         }),
       );
 
