@@ -11,6 +11,9 @@ import '../../features/monthly_report/models/monthly_report_model.dart';
 import '../../features/ai_insights/models/predictive_insight_model.dart';
 import '../../features/emergency_fund/models/emergency_fund_profile.dart';
 import '../../features/net_worth/models/net_worth_snapshot_model.dart';
+import '../../features/gamification/models/user_progress_model.dart';
+import '../../features/gamification/models/achievement_model.dart';
+import '../../features/daily_brief/models/daily_financial_brief_model.dart';
 
 class HiveService {
   static const String boxName = 'transactions';
@@ -25,6 +28,9 @@ class HiveService {
   static const String predictiveInsightBoxName = 'predictive_insights';
   static const String emergencyFundProfileBoxName = 'emergency_fund_profiles';
   static const String netWorthSnapshotBoxName = 'net_worth_snapshots';
+  static const String userProgressBoxName = 'user_progress';
+  static const String achievementsBoxName = 'achievements';
+  static const String dailyBriefBoxName = 'daily_briefs';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -40,6 +46,11 @@ class HiveService {
     Hive.registerAdapter(PredictiveInsightModelAdapter());
     Hive.registerAdapter(EmergencyFundProfileAdapter());
     Hive.registerAdapter(NetWorthSnapshotModelAdapter());
+    Hive.registerAdapter(UserProgressModelAdapter());
+    Hive.registerAdapter(AchievementModelAdapter());
+    Hive.registerAdapter(DailyBriefPriorityAdapter());
+    Hive.registerAdapter(DailyBriefCategoryAdapter());
+    Hive.registerAdapter(DailyFinancialBriefModelAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
@@ -53,6 +64,9 @@ class HiveService {
     await Hive.openBox<PredictiveInsightModel>(predictiveInsightBoxName);
     await Hive.openBox<EmergencyFundProfile>(emergencyFundProfileBoxName);
     await Hive.openBox<NetWorthSnapshotModel>(netWorthSnapshotBoxName);
+    await Hive.openBox<UserProgressModel>(userProgressBoxName);
+    await Hive.openBox<AchievementModel>(achievementsBoxName);
+    await Hive.openBox<DailyFinancialBriefModel>(dailyBriefBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -62,6 +76,8 @@ class HiveService {
       Hive.box<RecurringTransactionModel>(recurringBoxName);
   static Box<NetWorthSnapshotModel> get netWorthSnapshotBox =>
       Hive.box<NetWorthSnapshotModel>(netWorthSnapshotBoxName);
+  static Box<DailyFinancialBriefModel> get dailyBriefBox =>
+      Hive.box<DailyFinancialBriefModel>(dailyBriefBoxName);
 
   static Future<void> addTransaction(TransactionModel tx) async {
     await box.put(tx.id, tx);
@@ -278,5 +294,57 @@ class HiveService {
 
   static Future<void> saveNetWorthSnapshot(NetWorthSnapshotModel snapshot) async {
     await netWorthSnapshotBox.put(snapshot.id, snapshot);
+  }
+
+  // --- GAMIFICATION METHODS ---
+  static Box<UserProgressModel> get userProgressBox =>
+      Hive.box<UserProgressModel>(userProgressBoxName);
+
+  static UserProgressModel getUserProgress() {
+    if (userProgressBox.values.isEmpty) {
+      final defaultProgress = UserProgressModel(
+        id: 'progress_1',
+        updatedAt: DateTime.now(),
+      );
+      userProgressBox.put(defaultProgress.id, defaultProgress);
+      return defaultProgress;
+    }
+    return userProgressBox.values.first;
+  }
+
+  static Future<void> saveUserProgress(UserProgressModel progress) async {
+    await userProgressBox.put(progress.id, progress);
+  }
+
+  static Box<AchievementModel> get achievementsBox =>
+      Hive.box<AchievementModel>(achievementsBoxName);
+
+  static List<AchievementModel> getAllAchievements() {
+    return achievementsBox.values.toList();
+  }
+
+  static Future<void> saveAchievement(AchievementModel achievement) async {
+    await achievementsBox.put(achievement.id, achievement);
+  }
+
+  // --- DAILY FINANCIAL BRIEF METHODS ---
+  static List<DailyFinancialBriefModel> getAllDailyBriefs() {
+    return dailyBriefBox.values.toList()
+      ..sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
+  }
+
+  static Future<void> saveDailyBrief(DailyFinancialBriefModel brief) async {
+    await dailyBriefBox.put(brief.id, brief);
+  }
+
+  static Future<void> clearDailyBriefs() async {
+    await dailyBriefBox.clear();
+  }
+
+  static DailyFinancialBriefModel? getLatestDailyBrief() {
+    if (dailyBriefBox.values.isEmpty) return null;
+    final briefs = dailyBriefBox.values.toList()
+      ..sort((a, b) => b.generatedAt.compareTo(a.generatedAt));
+    return briefs.first;
   }
 }
