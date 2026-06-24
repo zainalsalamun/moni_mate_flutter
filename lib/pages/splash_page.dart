@@ -11,6 +11,14 @@ import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/services/notification_service.dart';
 import 'package:monimate/features/budget/controller/budget_controller.dart';
 import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
+import 'package:monimate/features/emergency_fund/controllers/emergency_fund_controller.dart';
+import 'package:monimate/features/financial_health/controllers/financial_health_controller.dart';
+import 'package:monimate/features/net_worth/controllers/net_worth_controller.dart';
+import 'package:monimate/features/net_worth/services/wealth_timeline_service.dart';
+import 'package:monimate/features/net_worth/controllers/wealth_timeline_controller.dart';
+import 'package:monimate/features/gamification/controllers/gamification_controller.dart';
+import 'package:monimate/features/ai_insights/services/ai_insight_api_service.dart';
+import 'package:monimate/features/daily_brief/services/daily_coach_service.dart';
 
 import 'shell.dart';
 
@@ -41,6 +49,15 @@ class _SplashPageState extends State<SplashPage> {
       Get.put(BudgetController(), permanent: true);
       Get.put(SyncController(), permanent: true);
       Get.put(WalletController(), permanent: true);
+      Get.put(EmergencyFundController(), permanent: true);
+      Get.put(FinancialHealthController(), permanent: true);
+      Get.put(NetWorthController(), permanent: true);
+      Get.put(WealthTimelineService(), permanent: true);
+      Get.put(WealthTimelineController(), permanent: true);
+      Get.put(GamificationController(), permanent: true);
+      Get.put(AiInsightApiService(), permanent: true);
+      final coachService = Get.put(DailyCoachService(), permanent: true);
+      await coachService.init();
 
       // Seed dummy transaction data
       // await SeederService.seedTransactions();
