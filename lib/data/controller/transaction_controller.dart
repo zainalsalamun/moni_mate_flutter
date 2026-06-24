@@ -6,6 +6,7 @@ import 'package:monimate/utils/date_formater.dart';
 import 'package:uuid/uuid.dart';
 import 'package:monimate/data/controller/sync_controller.dart';
 import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
+import 'package:monimate/features/gamification/controllers/gamification_controller.dart';
 
 class TransactionController extends GetxController {
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
@@ -79,6 +80,12 @@ class TransactionController extends GetxController {
     calculateTotals();
     if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
+    }
+
+    if (Get.isRegistered<GamificationController>()) {
+      final gC = Get.find<GamificationController>();
+      gC.recordActivity();
+      gC.addXp(5, 'Tambah transaksi');
     }
 
     // Notify WalletController to recalculate balances
