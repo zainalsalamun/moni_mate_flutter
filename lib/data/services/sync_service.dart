@@ -272,6 +272,28 @@ class SyncService {
                 'updatedAt': s.createdAt.toIso8601String(),
               })
           .toList(),
+      'userProgress': {
+        'id': HiveService.getUserProgress().id,
+        'currentLevel': HiveService.getUserProgress().currentLevel,
+        'totalXpEarned': HiveService.getUserProgress().totalXpEarned,
+        'currentRank': HiveService.getUserProgress().currentRank,
+        'currentStreak': HiveService.getUserProgress().currentStreak,
+        'longestStreak': HiveService.getUserProgress().longestStreak,
+        'lastTransactionDate': HiveService.getUserProgress().lastTransactionDate?.toIso8601String(),
+        'updatedAt': HiveService.getUserProgress().updatedAt.toIso8601String(),
+      },
+      'achievements': HiveService.getAllAchievements()
+          .map((a) => {
+                'id': a.id,
+                'title': a.title,
+                'description': a.description,
+                'category': a.category,
+                'icon': a.icon,
+                'colorHex': a.colorHex,
+                'status': a.status,
+                'unlockedAt': a.unlockedAt?.toIso8601String(),
+              })
+          .toList(),
     };
   }
 
@@ -528,7 +550,6 @@ class SyncService {
     final remoteNwList = remoteData['netWorthSnapshots'] as List? ?? [];
     for (final rnw in remoteNwList) {
       final localNw = HiveService.netWorthSnapshotBox.get(rnw['id']);
-      final remoteUpdatedAt = DateTime.parse(rnw['updatedAt'] ?? rnw['createdAt']);
 
       if (localNw == null) {
         // New item
