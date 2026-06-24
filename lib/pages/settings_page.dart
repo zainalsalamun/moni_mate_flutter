@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import '../features/daily_brief/services/daily_coach_service.dart';
 import 'package:monimate/data/controller/theme_controller.dart';
 import 'package:monimate/data/controller/transaction_controller.dart';
 import '../data/services/export_service.dart';
@@ -127,6 +129,12 @@ class SettingsPage extends StatelessWidget {
                           ],
                         ),
                       ),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildSectionHeader(context, "Asisten & Notifikasi"),
+                    _buildSettingCard(
+                      context,
+                      child: const _NotificationSettingsWidget(),
                     ),
                     const SizedBox(height: 24),
                     _buildSectionHeader(context, "Data & Riwayat"),
@@ -313,6 +321,94 @@ class SettingsPage extends StatelessWidget {
             fontSize: 13,
             color: Colors.grey.shade500,
           ),
+        ),
+      ],
+    );
+  }
+}
+
+class _NotificationSettingsWidget extends StatefulWidget {
+  const _NotificationSettingsWidget({super.key});
+
+  @override
+  State<_NotificationSettingsWidget> createState() =>
+      _NotificationSettingsWidgetState();
+}
+
+class _NotificationSettingsWidgetState
+    extends State<_NotificationSettingsWidget> {
+  final _storage = GetStorage();
+  bool morningEnabled = true;
+  bool eveningEnabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    morningEnabled = _storage.read<bool>('morning_brief_enabled') ?? true;
+    eveningEnabled = _storage.read<bool>('evening_brief_enabled') ?? true;
+  }
+
+  void _updateSettings() {
+    _storage.write('morning_brief_enabled', morningEnabled);
+    _storage.write('evening_brief_enabled', eveningEnabled);
+
+    if (Get.isRegistered<DailyCoachService>()) {
+      Get.find<DailyCoachService>().init(); // re-schedule
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Morning Brief",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                Text("Notifikasi jam 08:00 pagi",
+                    style:
+                        TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+              ],
+            ),
+            Switch.adaptive(
+              value: morningEnabled,
+              activeColor: Theme.of(context).colorScheme.primary,
+              onChanged: (val) {
+                setState(() => morningEnabled = val);
+                _updateSettings();
+              },
+            ),
+          ],
+        ),
+        const Divider(height: 24),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Evening Brief",
+                    style:
+                        TextStyle(fontWeight: FontWeight.w700, fontSize: 15)),
+                Text("Notifikasi jam 20:00 malam",
+                    style:
+                        TextStyle(fontSize: 13, color: Colors.grey.shade500)),
+              ],
+            ),
+            Switch.adaptive(
+              value: eveningEnabled,
+              activeColor: Theme.of(context).colorScheme.primary,
+              onChanged: (val) {
+                setState(() => eveningEnabled = val);
+                _updateSettings();
+              },
+            ),
+          ],
         ),
       ],
     );
