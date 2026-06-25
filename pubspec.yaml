@@ -45,6 +45,7 @@ dependencies:
   screenshot: ^3.0.0
   timezone: ^0.10.1
   flutter_timezone: ^5.1.0
+  timeago: ^3.7.1
 
 
 dev_dependencies:
@@ -61,6 +62,7 @@ flutter:
     - assets/
     - assets/images/monimate_logo.png
     - assets/images/banks/
+    - assets/images/ai_assistant/
     - .env
 
 
