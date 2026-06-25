@@ -14,6 +14,7 @@ import '../../features/net_worth/models/net_worth_snapshot_model.dart';
 import '../../features/gamification/models/user_progress_model.dart';
 import '../../features/gamification/models/achievement_model.dart';
 import '../../features/daily_brief/models/daily_financial_brief_model.dart';
+import '../../features/financial_inbox/models/financial_notification_model.dart';
 
 class HiveService {
   static const String boxName = 'transactions';
@@ -31,6 +32,7 @@ class HiveService {
   static const String userProgressBoxName = 'user_progress';
   static const String achievementsBoxName = 'achievements';
   static const String dailyBriefBoxName = 'daily_briefs';
+  static const String financialInboxBoxName = 'financial_inbox';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -51,6 +53,9 @@ class HiveService {
     Hive.registerAdapter(DailyBriefPriorityAdapter());
     Hive.registerAdapter(DailyBriefCategoryAdapter());
     Hive.registerAdapter(DailyFinancialBriefModelAdapter());
+    Hive.registerAdapter(FinancialNotificationModelAdapter());
+    Hive.registerAdapter(NotificationCategoryAdapter());
+    Hive.registerAdapter(NotificationPriorityAdapter());
 
     await Hive.openBox<TransactionModel>(boxName);
     await Hive.openBox<CategoryModel>(categoryBoxName);
@@ -67,6 +72,7 @@ class HiveService {
     await Hive.openBox<UserProgressModel>(userProgressBoxName);
     await Hive.openBox<AchievementModel>(achievementsBoxName);
     await Hive.openBox<DailyFinancialBriefModel>(dailyBriefBoxName);
+    await Hive.openBox<FinancialNotificationModel>(financialInboxBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -78,6 +84,8 @@ class HiveService {
       Hive.box<NetWorthSnapshotModel>(netWorthSnapshotBoxName);
   static Box<DailyFinancialBriefModel> get dailyBriefBox =>
       Hive.box<DailyFinancialBriefModel>(dailyBriefBoxName);
+  static Box<FinancialNotificationModel> get financialInboxBox =>
+      Hive.box<FinancialNotificationModel>(financialInboxBoxName);
 
   static Future<void> addTransaction(TransactionModel tx) async {
     await box.put(tx.id, tx);
