@@ -87,7 +87,7 @@ class AiChatPage extends StatelessWidget {
             ),
 
             // Quick suggestions (only show at beginning or after AI reply)
-            _buildQuickSuggestions(context, controller),
+            Obx(() => _buildQuickSuggestions(context, controller)),
 
             // Input area
             _buildInputArea(context, controller),
