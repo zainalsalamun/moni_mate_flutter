@@ -9,7 +9,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ReceiptScannerService {
   // Mengambil API Key dari file .env agar aman jika dipush ke GitHub publik
-  static String get _geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
+  static String get _geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? dotenv.env['AI_API_KEY'] ?? '';
 
   static Future<Map<String, dynamic>?> scanReceipt() async {
     // 1. Peringatan jika API Key belum diisi
