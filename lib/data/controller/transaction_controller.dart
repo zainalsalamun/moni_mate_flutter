@@ -7,6 +7,9 @@ import 'package:uuid/uuid.dart';
 import 'package:monimate/data/controller/sync_controller.dart';
 import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
 import 'package:monimate/features/gamification/controllers/gamification_controller.dart';
+import 'package:monimate/features/financial_inbox/services/financial_notification_service.dart';
+import 'package:monimate/features/financial_inbox/models/financial_notification_model.dart';
+import 'package:monimate/utils/format_currency.dart';
 
 class TransactionController extends GetxController {
   final RxList<TransactionModel> transactions = <TransactionModel>[].obs;
@@ -91,6 +94,27 @@ class TransactionController extends GetxController {
     // Notify WalletController to recalculate balances
     if (Get.isRegistered<WalletController>()) {
       Get.find<WalletController>().recalculateAllBalances();
+    }
+
+    // Send Notification
+    if (Get.isRegistered<FinancialNotificationService>()) {
+      final notifService = Get.find<FinancialNotificationService>();
+      final formattedAmount = CurrencyFormat.format(amount);
+      if (type == 'expense') {
+        notifService.sendNotification(
+          title: 'Pengeluaran Baru',
+          message: 'Berhasil mencatat pengeluaran sebesar $formattedAmount untuk $category.',
+          category: NotificationCategory.smartSpending,
+          priority: NotificationPriority.info,
+        );
+      } else {
+        notifService.sendNotification(
+          title: 'Pemasukan Baru',
+          message: 'Berhasil menambahkan saldo sebesar $formattedAmount dari $category.',
+          category: NotificationCategory.achievement,
+          priority: NotificationPriority.success,
+        );
+      }
     }
   }
 
