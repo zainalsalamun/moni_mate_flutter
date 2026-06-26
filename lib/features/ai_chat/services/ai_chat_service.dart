@@ -57,11 +57,15 @@ class AiChatService {
       financialContext +=
           'Saldo: Rp ${(totalIncome - totalExpense).toStringAsFixed(0)}\n';
     }
+    final now = DateTime.now();
+    financialContext += 'Waktu saat ini (hari ini): ${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}\n';
+
     if (transactionSummary != null && transactionSummary.isNotEmpty) {
       financialContext += 'Transaksi terakhir:\n';
       for (var tx in transactionSummary.take(10)) {
+        final dateStr = tx['date'] != null ? tx['date']!.split('T').first : '';
         financialContext +=
-            '- ${tx['type'] == 'income' ? 'Pemasukan' : 'Pengeluaran'}: ${tx['category']} Rp ${tx['amount']} (${tx['description']})\n';
+            '- [$dateStr] ${tx['type'] == 'income' ? 'Pemasukan' : 'Pengeluaran'}: ${tx['category']} Rp ${tx['amount']} (${tx['description']})\n';
       }
     }
 
