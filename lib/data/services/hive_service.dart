@@ -33,6 +33,7 @@ class HiveService {
   static const String achievementsBoxName = 'achievements';
   static const String dailyBriefBoxName = 'daily_briefs';
   static const String financialInboxBoxName = 'financial_inbox';
+  static const String settingsBoxName = 'settings';
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -73,6 +74,7 @@ class HiveService {
     await Hive.openBox<AchievementModel>(achievementsBoxName);
     await Hive.openBox<DailyFinancialBriefModel>(dailyBriefBoxName);
     await Hive.openBox<FinancialNotificationModel>(financialInboxBoxName);
+    await Hive.openBox<dynamic>(settingsBoxName);
   }
 
   static Box<TransactionModel> get box => Hive.box<TransactionModel>(boxName);
@@ -86,6 +88,7 @@ class HiveService {
       Hive.box<DailyFinancialBriefModel>(dailyBriefBoxName);
   static Box<FinancialNotificationModel> get financialInboxBox =>
       Hive.box<FinancialNotificationModel>(financialInboxBoxName);
+  static Box<dynamic> get settingsBox => Hive.box<dynamic>(settingsBoxName);
 
   static Future<void> addTransaction(TransactionModel tx) async {
     await box.put(tx.id, tx);
