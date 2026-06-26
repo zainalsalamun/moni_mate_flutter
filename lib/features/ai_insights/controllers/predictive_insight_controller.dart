@@ -11,13 +11,15 @@ import '../../financial_health/services/financial_health_service.dart';
 import '../../wallet/controllers/wallet_controller.dart';
 import '../../wallet/data/models/wallet_model.dart';
 import '../../../data/controller/recurring_controller.dart';
+import '../../gamification/controllers/gamification_controller.dart';
 import '../models/financial_context_model.dart';
 import '../models/predictive_insight_model.dart';
 import '../services/ai_insight_api_service.dart';
 import '../services/local_insight_engine.dart';
 
 class PredictiveInsightController extends GetxController {
-  final RxList<PredictiveInsightModel> insights = <PredictiveInsightModel>[].obs;
+  final RxList<PredictiveInsightModel> insights =
+      <PredictiveInsightModel>[].obs;
   final RxBool isLoading = false.obs;
   final RxBool isOfflineMode = false.obs;
 
@@ -58,7 +60,8 @@ class PredictiveInsightController extends GetxController {
       bool shouldCallApi = forceApi;
 
       if (!forceApi && cached.isNotEmpty) {
-        final newest = cached.reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b);
+        final newest =
+            cached.reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b);
         final diff = DateTime.now().difference(newest.createdAt);
         if (diff.inHours >= 6) {
           shouldCallApi = true;
@@ -66,10 +69,14 @@ class PredictiveInsightController extends GetxController {
           // Cache is still fresh, merge fresh local insights with cached API insights
           final aiCached = cached.where((e) => e.source == 'ai_api').toList();
           final Map<String, PredictiveInsightModel> merged = {};
-          
-          for (var item in localInsights) merged[item.type] = item;
-          for (var item in aiCached) merged[item.type] = item;
-          
+
+          for (var item in localInsights) {
+            merged[item.type] = item;
+          }
+          for (var item in aiCached) {
+            merged[item.type] = item;
+          }
+
           _sortAndSetInsights(merged.values.toList());
           isOfflineMode.value = aiCached.isEmpty;
           return;
@@ -84,17 +91,18 @@ class PredictiveInsightController extends GetxController {
       if (shouldCallApi) {
         try {
           // Call AI API
-          final aiInsights = await AiInsightApiService.generateCoachInsights(contextModel);
+          final aiInsights =
+              await AiInsightApiService.generateCoachInsights(contextModel);
           if (aiInsights.isNotEmpty) {
             isOfflineMode.value = false;
-            
+
             final Map<String, PredictiveInsightModel> merged = {};
-            
+
             // Add local first
             for (var item in localInsights) {
               merged[item.type] = item;
             }
-            
+
             // AI overwrites local if same type
             for (var item in aiInsights) {
               merged[item.type] = item;
@@ -112,6 +120,10 @@ class PredictiveInsightController extends GetxController {
       _sortAndSetInsights(finalInsights);
       await HiveService.savePredictiveInsights(finalInsights);
 
+      if (Get.isRegistered<GamificationController>()) {
+        final gc = Get.find<GamificationController>();
+        gc.addXp(15, 'Membaca Insight AI');
+      }
     } catch (e) {
       print("PredictiveInsight Critical Error: \$e");
     } finally {
@@ -131,7 +143,9 @@ class PredictiveInsightController extends GetxController {
     list.sort((a, b) {
       final scoreA = severityScore(a.severity);
       final scoreB = severityScore(b.severity);
-      if (scoreA != scoreB) return scoreB.compareTo(scoreA); // Descending severity
+      if (scoreA != scoreB) {
+        return scoreB.compareTo(scoreA); // Descending severity
+      }
       return b.createdAt.compareTo(a.createdAt); // Newest first
     });
 
@@ -141,25 +155,31 @@ class PredictiveInsightController extends GetxController {
   FinancialContextModel _buildFinancialContext() {
     final now = DateTime.now();
     final String monthName = DateFormat('MMMM', 'id_ID').format(now);
-    
+
     double totalIncome = 0;
     double totalExpense = 0;
     List<Map<String, dynamic>> topExpenseCategories = [];
-    
+
     if (Get.isRegistered<TransactionController>()) {
       final tc = Get.find<TransactionController>();
       totalIncome = tc.totalIncome.value;
       totalExpense = tc.totalExpense.value;
-      
+
       // Top categories
       final Map<String, double> catExpense = {};
       for (var tx in tc.transactions) {
-        if (tx.type == 'expense' && tx.date.month == now.month && tx.date.year == now.year) {
+        if (tx.type == 'expense' &&
+            tx.date.month == now.month &&
+            tx.date.year == now.year) {
           catExpense[tx.category] = (catExpense[tx.category] ?? 0) + tx.amount;
         }
       }
-      final sortedCats = catExpense.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-      topExpenseCategories = sortedCats.take(5).map((e) => {'category': e.key, 'amount': e.value}).toList();
+      final sortedCats = catExpense.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+      topExpenseCategories = sortedCats
+          .take(5)
+          .map((e) => {'category': e.key, 'amount': e.value})
+          .toList();
     }
 
     double savingAmount = totalIncome - totalExpense;
@@ -187,13 +207,15 @@ class PredictiveInsightController extends GetxController {
       for (var g in activeGoals) {
         final totalDays = g.targetDate.difference(g.createdAt).inDays;
         final elapsedDays = now.difference(g.createdAt).inDays;
-        final expectedProgress = totalDays > 0 ? (elapsedDays / totalDays) * 100 : 0;
+        final expectedProgress =
+            totalDays > 0 ? (elapsedDays / totalDays) * 100 : 0;
         final actualProgress = g.progressPercentage * 100;
 
         activeGoalsSummary.add({
           'title': g.title,
           'progressPercent': actualProgress,
-          'prediction': actualProgress >= expectedProgress ? 'on_track' : 'behind',
+          'prediction':
+              actualProgress >= expectedProgress ? 'on_track' : 'behind',
         });
       }
     }
@@ -204,8 +226,14 @@ class PredictiveInsightController extends GetxController {
       final rc = Get.find<RecurringController>();
       for (var r in rc.recurrings) {
         if (r.isActive) {
-          if (r.type == 'income') recurringSummary['income'] = (recurringSummary['income'] ?? 0) + r.amount;
-          if (r.type == 'expense') recurringSummary['expense'] = (recurringSummary['expense'] ?? 0) + r.amount;
+          if (r.type == 'income') {
+            recurringSummary['income'] =
+                (recurringSummary['income'] ?? 0) + r.amount;
+          }
+          if (r.type == 'expense') {
+            recurringSummary['expense'] =
+                (recurringSummary['expense'] ?? 0) + r.amount;
+          }
         }
       }
     }
@@ -229,7 +257,7 @@ class PredictiveInsightController extends GetxController {
 
     // Health Score
     final healthScore = FinancialHealthService.calculate();
-    
+
     // Growth (Simple approx based on saving vs networth)
     final prevNetWorth = netWorth - savingAmount;
     final growth = prevNetWorth > 0 ? (savingAmount / prevNetWorth) : 0.0;
