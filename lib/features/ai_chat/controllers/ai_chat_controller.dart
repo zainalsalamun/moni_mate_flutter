@@ -171,7 +171,14 @@ class AiChatController extends GetxController {
           ?? response['actiontype']?.toString();
           
       final String? actionType = actionTypeRaw?.replaceAll('_', '')?.replaceAll(' ', '')?.toLowerCase();
-      final Map<String, dynamic>? action = response['action'];
+      Map<String, dynamic>? action;
+      if (response['action'] is Map) {
+        action = Map<String, dynamic>.from(response['action']);
+      } else if (response['action'] is String) {
+        try {
+          action = jsonDecode(response['action']);
+        } catch (_) {}
+      }
 
       // Execute action if present
       if (actionType == 'addtransaction' && action != null) {
@@ -184,7 +191,12 @@ class AiChatController extends GetxController {
         if (rawAmount is num) {
           amount = rawAmount.toDouble();
         } else if (rawAmount is String) {
-          amount = double.tryParse(rawAmount.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+          String cleanStr = rawAmount.replaceAll(RegExp(r'[^0-9.]'), '');
+          // Fix for Indonesian formatting "25.000" where dot is thousand separator
+          if (cleanStr.contains('.') && cleanStr.split('.').last.length == 3) {
+            cleanStr = cleanStr.replaceAll('.', '');
+          }
+          amount = double.tryParse(cleanStr) ?? 0;
         }
 
         final String description = action['description'] ?? '';
