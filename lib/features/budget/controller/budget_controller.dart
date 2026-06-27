@@ -3,6 +3,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/services/hive_service.dart';
 import 'package:monimate/data/services/notification_service.dart';
 import 'package:monimate/data/controller/sync_controller.dart';
+import 'package:monimate/features/financial_inbox/services/financial_notification_service.dart';
 import '../model/budget_model.dart';
 import '../engine/budget_engine.dart';
 import 'package:uuid/uuid.dart';
@@ -89,6 +90,9 @@ class BudgetController extends GetxController {
           body:
               'Kamu sudah melewati budget kategori ${usage.budget.categoryId}',
         );
+        if (Get.isRegistered<FinancialNotificationService>()) {
+          Get.find<FinancialNotificationService>().sendBudgetAlert(usage.budget.categoryId, usage.percentage);
+        }
         _alert100Sent[key100] = true;
       } else if (usage.percentage >= 80 &&
           usage.percentage < 100 &&
@@ -99,6 +103,9 @@ class BudgetController extends GetxController {
           body:
               'Budget ${usage.budget.categoryId} sudah terpakai ${usage.percentage.toStringAsFixed(0)}%',
         );
+        if (Get.isRegistered<FinancialNotificationService>()) {
+          Get.find<FinancialNotificationService>().sendBudgetAlert(usage.budget.categoryId, usage.percentage);
+        }
         _alert80Sent[key80] = true;
       }
     }
