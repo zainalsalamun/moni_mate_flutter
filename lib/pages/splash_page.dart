@@ -18,7 +18,11 @@ import 'package:monimate/features/net_worth/services/wealth_timeline_service.dar
 import 'package:monimate/features/net_worth/controllers/wealth_timeline_controller.dart';
 import 'package:monimate/features/gamification/controllers/gamification_controller.dart';
 import 'package:monimate/features/ai_insights/services/ai_insight_api_service.dart';
+import 'package:monimate/features/financial_inbox/services/financial_notification_service.dart';
+import 'package:monimate/features/financial_inbox/controllers/financial_inbox_controller.dart';
 import 'package:monimate/features/daily_brief/services/daily_coach_service.dart';
+import 'package:monimate/data/controller/quick_actions_controller.dart';
+import 'package:monimate/data/controller/user_controller.dart';
 
 import 'shell.dart';
 
@@ -56,6 +60,10 @@ class _SplashPageState extends State<SplashPage> {
       Get.put(WealthTimelineController(), permanent: true);
       Get.put(GamificationController(), permanent: true);
       Get.put(AiInsightApiService(), permanent: true);
+      Get.put(FinancialNotificationService(), permanent: true);
+      Get.put(FinancialInboxController(), permanent: true);
+      Get.put(QuickActionsController(), permanent: true);
+      Get.put(UserController(), permanent: true);
       final coachService = Get.put(DailyCoachService(), permanent: true);
       await coachService.init();
 
