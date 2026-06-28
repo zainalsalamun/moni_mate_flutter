@@ -1,25 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/goal_model.dart';
 import '../../../data/models/contribution_model.dart';
 import '../../../data/services/hive_service.dart';
 import 'package:monimate/data/controller/sync_controller.dart';
 
-class AchievementItem {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final Color color;
-  final bool isUnlocked;
-
-  AchievementItem({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.color,
-    this.isUnlocked = false,
-  });
-}
+import 'package:monimate/features/gamification/controllers/gamification_controller.dart';
 
 class GoalsController extends GetxController {
   var goals = <GoalModel>[].obs;
@@ -54,54 +39,22 @@ class GoalsController extends GetxController {
   double get totalCollected =>
       goals.fold(0.0, (sum, item) => sum + item.currentAmount);
   int get goalsAchieved => goals.where((g) => g.status == 'completed').length;
-  int get totalAchievements =>
-      achievementsList.where((a) => a.isUnlocked).length;
-
-  List<AchievementItem> get achievementsList {
-    return [
-      AchievementItem(
-        title: 'Getting Started',
-        subtitle: 'Buat target pertama',
-        icon: Icons.stars,
-        color: Colors.teal,
-        isUnlocked: goals.isNotEmpty,
-      ),
-      AchievementItem(
-        title: 'First Save',
-        subtitle: 'Lakukan tabungan pertama',
-        icon: Icons.savings,
-        color: Colors.purple,
-        isUnlocked: goals.any((g) => g.currentAmount > 0),
-      ),
-      AchievementItem(
-        title: 'Halfway There',
-        subtitle: 'Capai 50% dari salah satu target',
-        icon: Icons.lock_open,
-        color: Colors.orange,
-        isUnlocked: goals.any((g) => g.progressPercentage >= 0.5),
-      ),
-      AchievementItem(
-        title: 'Goal Achieved',
-        subtitle: 'Selesaikan 1 target',
-        icon: Icons.emoji_events,
-        color: Colors.amber,
-        isUnlocked: goalsAchieved > 0,
-      ),
-      AchievementItem(
-        title: 'Financial Guru',
-        subtitle: 'Selesaikan 5 target',
-        icon: Icons.diamond,
-        color: Colors.blueAccent,
-        isUnlocked: goalsAchieved >= 5,
-      ),
-    ];
-  }
 
   // Method to add new Goal
   Future<void> addGoal(GoalModel goal) async {
     await HiveService.addGoal(goal);
     fetchGoals();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>()) {
+      Get.find<SyncController>().notifyDataChanged();
+    }
+
+    if (Get.isRegistered<GamificationController>()) {
+      final gc = Get.find<GamificationController>();
+      gc.addXp(20, 'Membuat goal baru');
+      if (goals.length == 1) {
+        gc.unlockAchievement('goal_first');
+      }
+    }
   }
 
   // Method to delete Goal
@@ -109,7 +62,9 @@ class GoalsController extends GetxController {
     await HiveService.deleteGoal(goalId);
     await HiveService.deleteContributionsByGoalId(goalId);
     fetchGoals();
-    if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+    if (Get.isRegistered<SyncController>()) {
+      Get.find<SyncController>().notifyDataChanged();
+    }
   }
 
   // Method to add Contribution
@@ -137,7 +92,22 @@ class GoalsController extends GetxController {
       await HiveService.addContribution(contribution);
 
       fetchGoals();
-      if (Get.isRegistered<SyncController>()) Get.find<SyncController>().notifyDataChanged();
+      if (Get.isRegistered<SyncController>()) {
+        Get.find<SyncController>().notifyDataChanged();
+      }
+
+      if (Get.isRegistered<GamificationController>()) {
+        final gc = Get.find<GamificationController>();
+        gc.addXp(10, 'Menambah tabungan goal');
+
+        if (goal.status == 'completed') {
+          gc.addXp(200, 'Goal selesai');
+          gc.unlockAchievement('goal_finisher');
+          if (goalsAchieved >= 5) {
+            gc.unlockAchievement('goal_master');
+          }
+        }
+      }
     }
   }
 
