@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:get/get.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:camera/camera.dart';
@@ -11,7 +10,8 @@ import 'package:monimate/pages/scan_receipt_page.dart';
 
 class ReceiptScannerService {
   // Mengambil API Key dari file .env agar aman jika dipush ke GitHub publik
-  static String get _geminiApiKey => dotenv.env['GEMINI_API_KEY'] ?? dotenv.env['AI_API_KEY'] ?? '';
+  static String get _geminiApiKey =>
+      dotenv.env['GEMINI_API_KEY'] ?? dotenv.env['AI_API_KEY'] ?? '';
 
   static Future<Map<String, dynamic>?> scanReceipt() async {
     // 1. Peringatan jika API Key belum diisi
@@ -30,7 +30,9 @@ class ReceiptScannerService {
     // 2. Ambil gambar dari kamera custom
     final cameras = await availableCameras();
     if (cameras.isEmpty) {
-      Get.snackbar("Kamera Tidak Ditemukan", "Tidak ada kamera yang tersedia di perangkat ini.", backgroundColor: Colors.redAccent, colorText: Colors.white);
+      Get.snackbar("Kamera Tidak Ditemukan",
+          "Tidak ada kamera yang tersedia di perangkat ini.",
+          backgroundColor: Colors.redAccent, colorText: Colors.white);
       return null;
     }
     final camera = cameras.first;
