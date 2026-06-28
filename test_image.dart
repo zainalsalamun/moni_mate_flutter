@@ -14,7 +14,7 @@ void main() {
               'netWorth': 100000.0,
               'savingRate': 0.2,
               'closestProgress': 0.5,
-              'insights': const ['Insight 1']
+              'insights': ['Insight 1']
             },
             month: 6,
             year: 2026,
