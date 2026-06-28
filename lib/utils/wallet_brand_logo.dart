@@ -56,10 +56,10 @@ class WalletBrandLogo extends StatelessWidget {
           ),
         ],
       ),
-      child: hasUrl
-          ? _buildNetworkLogo(brand)
-          : hasAsset
-              ? _buildAssetLogo(brand)
+      child: hasAsset
+          ? _buildAssetLogo(brand)
+          : hasUrl
+              ? _buildNetworkLogo(brand)
               : _buildInitial(brand),
     );
   }
