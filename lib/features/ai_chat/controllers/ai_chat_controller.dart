@@ -165,12 +165,13 @@ class AiChatController extends GetxController {
       );
 
       final String reply = response['reply'] ?? 'Maaf, aku tidak mengerti.';
-      
-      String? actionTypeRaw = response['action_type']?.toString() 
-          ?? response['actionType']?.toString()
-          ?? response['actiontype']?.toString();
-          
-      final String? actionType = actionTypeRaw?.replaceAll('_', '')?.replaceAll(' ', '')?.toLowerCase();
+
+      String? actionTypeRaw = response['action_type']?.toString() ??
+          response['actionType']?.toString() ??
+          response['actiontype']?.toString();
+
+      final String? actionType =
+          actionTypeRaw?.replaceAll('_', '').replaceAll(' ', '').toLowerCase();
       Map<String, dynamic>? action;
       if (response['action'] is Map) {
         action = Map<String, dynamic>.from(response['action']);
@@ -184,7 +185,7 @@ class AiChatController extends GetxController {
       if (actionType == 'addtransaction' && action != null) {
         final String type = action['type'] ?? 'expense';
         final String category = action['category'] ?? 'lainnya';
-        
+
         // Safely parse amount whether it's a string or number
         double amount = 0;
         final rawAmount = action['amount'];
