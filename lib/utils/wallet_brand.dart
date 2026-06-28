@@ -277,6 +277,18 @@ class WalletBrand {
           color: Color(0xFF6A1B9A),
           backgroundColor: Color(0xFFF3E5F5),
         );
+      case 'credit':
+        return const WalletBrand(
+          icon: '💳',
+          color: Color(0xFFE53935),
+          backgroundColor: Color(0xFFFFEBEE),
+        );
+      case 'debt':
+        return const WalletBrand(
+          icon: '📝',
+          color: Color(0xFFF57C00),
+          backgroundColor: Color(0xFFFFF3E0),
+        );
       default:
         return const WalletBrand(
           icon: '💰',
@@ -335,6 +347,10 @@ class WalletBrand {
         return Icons.account_balance_wallet_rounded;
       case 'investment':
         return Icons.trending_up_rounded;
+      case 'credit':
+        return Icons.credit_card_rounded;
+      case 'debt':
+        return Icons.receipt_long_rounded;
       default:
         return Icons.wallet_rounded;
     }
