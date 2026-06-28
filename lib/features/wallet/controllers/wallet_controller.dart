@@ -11,6 +11,11 @@ class WalletController extends GetxController {
   final Rx<WalletModel?> activeWallet = Rx<WalletModel?>(null);
   final RxString activeWalletId = ''.obs;
   final RxDouble _totalBalance = 0.0.obs;
+  final RxBool isBalanceHidden = false.obs;
+
+  void toggleBalanceVisibility() {
+    isBalanceHidden.value = !isBalanceHidden.value;
+  }
 
   @override
   void onInit() {
@@ -113,6 +118,24 @@ class WalletController extends GetxController {
     );
     HiveService.addWallet(wallet);
     wallets.add(wallet);
+
+    // Inject initial balance as a transaction so recalculateAllBalances doesn't zero it out
+    if (initialBalance != 0 && Get.isRegistered<TransactionController>()) {
+      final txController = Get.find<TransactionController>();
+      final tx = TransactionModel(
+        id: const Uuid().v4(),
+        type: initialBalance > 0 ? 'income' : 'expense',
+        category: 'lainnya',
+        amount: initialBalance.abs(),
+        description: 'Saldo awal $name',
+        date: DateTime.now(),
+        walletId: wallet.id,
+      );
+      HiveService.addTransaction(tx);
+      txController.transactions.add(tx);
+      txController.calculateTotals();
+    }
+
     _recalcTotalBalance();
     if (wallets.length == 1) {
       activeWallet.value = wallet;
@@ -136,6 +159,28 @@ class WalletController extends GetxController {
     if (Get.isRegistered<SyncController>()) {
       Get.find<SyncController>().notifyDataChanged();
     }
+  }
+
+  void updateWalletWithBalance(WalletModel wallet, double oldBalance) {
+    final diff = wallet.balance - oldBalance;
+    
+    if (diff != 0 && Get.isRegistered<TransactionController>()) {
+      final txController = Get.find<TransactionController>();
+      final tx = TransactionModel(
+        id: const Uuid().v4(),
+        type: diff > 0 ? 'income' : 'expense',
+        category: 'lainnya',
+        amount: diff.abs(),
+        description: 'Penyesuaian saldo ${wallet.name}',
+        date: DateTime.now(),
+        walletId: wallet.id,
+      );
+      HiveService.addTransaction(tx);
+      txController.transactions.add(tx);
+      txController.calculateTotals();
+    }
+    
+    updateWallet(wallet);
   }
 
   void deleteWallet(String walletId) {
