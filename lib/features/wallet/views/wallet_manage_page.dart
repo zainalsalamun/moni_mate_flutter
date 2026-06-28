@@ -205,14 +205,12 @@ class WalletManagePage extends StatelessWidget {
       {'name': 'GoPay', 'type': 'ewallet', 'color': const Color(0xFF00AED6)},
       {'name': 'OVO', 'type': 'ewallet', 'color': const Color(0xFF4C3494)},
       {'name': 'DANA', 'type': 'ewallet', 'color': const Color(0xFF108EE9)},
-      {
-        'name': 'ShopeePay',
-        'type': 'ewallet',
-        'color': const Color(0xFFEE4D2D)
-      },
+      {'name': 'ShopeePay', 'type': 'ewallet', 'color': const Color(0xFFEE4D2D)},
       {'name': 'LinkAja', 'type': 'ewallet', 'color': const Color(0xFFDD2C2E)},
       {'name': 'Bibit', 'type': 'investment', 'color': const Color(0xFF00A85A)},
       {'name': 'Cash', 'type': 'cash', 'color': const Color(0xFF4CAF50)},
+      {'name': 'Kartu Kredit', 'type': 'credit', 'color': const Color(0xFFE53935)},
+      {'name': 'Pinjaman', 'type': 'debt', 'color': const Color(0xFFF57C00)},
     ];
 
     Map<String, dynamic>? selectedPreset;
@@ -361,10 +359,11 @@ class WalletManagePage extends StatelessWidget {
                                   (v) => setState(() => selectedType = v)),
                               _typeChip('ewallet', '📱 E-Wallet', selectedType,
                                   (v) => setState(() => selectedType = v)),
-                              _typeChip(
-                                  'investment',
-                                  '📈 Investasi',
-                                  selectedType,
+                              _typeChip('investment', '📈 Investasi', selectedType,
+                                  (v) => setState(() => selectedType = v)),
+                              _typeChip('credit', '💳 Kartu Kredit', selectedType,
+                                  (v) => setState(() => selectedType = v)),
+                              _typeChip('debt', '📝 Pinjaman', selectedType,
                                   (v) => setState(() => selectedType = v)),
                               _typeChip('other', '📦 Lainnya', selectedType,
                                   (v) => setState(() => selectedType = v)),
@@ -469,6 +468,7 @@ class WalletManagePage extends StatelessWidget {
 
   void _showEditWalletSheet(
       BuildContext context, WalletController walletC, WalletModel wallet) {
+    final double oldBalance = wallet.balance;
     final nameC = TextEditingController(text: wallet.name);
     final balanceC = TextEditingController(
       text: wallet.balance > 0
@@ -558,10 +558,11 @@ class WalletManagePage extends StatelessWidget {
                                   (v) => setState(() => selectedType = v)),
                               _typeChip('ewallet', '📱 E-Wallet', selectedType,
                                   (v) => setState(() => selectedType = v)),
-                              _typeChip(
-                                  'investment',
-                                  '📈 Investasi',
-                                  selectedType,
+                              _typeChip('investment', '📈 Investasi', selectedType,
+                                  (v) => setState(() => selectedType = v)),
+                              _typeChip('credit', '💳 Kartu Kredit', selectedType,
+                                  (v) => setState(() => selectedType = v)),
+                              _typeChip('debt', '📝 Pinjaman', selectedType,
                                   (v) => setState(() => selectedType = v)),
                               _typeChip('other', '📦 Lainnya', selectedType,
                                   (v) => setState(() => selectedType = v)),
@@ -620,7 +621,7 @@ class WalletManagePage extends StatelessWidget {
                         wallet.colorHex = colorHex;
                         wallet.balance = newBalance;
                         wallet.updatedAt = DateTime.now();
-                        walletC.updateWallet(wallet);
+                        walletC.updateWalletWithBalance(wallet, oldBalance);
 
                         final walletName = nameC.text.trim();
                         Navigator.of(context).pop();
@@ -727,6 +728,10 @@ class WalletManagePage extends StatelessWidget {
         return 'E-Wallet';
       case 'investment':
         return 'Investasi';
+      case 'credit':
+        return 'Kartu Kredit';
+      case 'debt':
+        return 'Pinjaman';
       default:
         return 'Lainnya';
     }
