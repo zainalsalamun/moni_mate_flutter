@@ -5,7 +5,7 @@ import '../controllers/goals_controller.dart';
 import '../../../data/models/goal_model.dart';
 import 'create_goal_page.dart';
 import 'add_contribution_sheet.dart';
-import 'achievements_view.dart';
+
 
 class GoalsSection extends StatelessWidget {
   GoalsSection({super.key});
@@ -64,7 +64,6 @@ class GoalsSection extends StatelessWidget {
                 },
               )),
           const SizedBox(height: 12),
-          _buildAchievementsSection(),
         ],
       ),
     );
@@ -86,7 +85,6 @@ class GoalsSection extends StatelessWidget {
               _summaryItem(Icons.track_changes, 'Total Goals', '${controller.totalGoals}', Colors.blue),
               _summaryItem(Icons.trending_up, 'Total Terkumpul', currencyFormat.format(controller.totalCollected), Colors.green),
               _summaryItem(Icons.calendar_today, 'Goal Tercapai', '${controller.goalsAchieved}', Colors.orange),
-              _summaryItem(Icons.emoji_events, 'Achievement', '${controller.totalAchievements}', Colors.purple, showArrow: true),
             ],
           )),
     );
@@ -286,56 +284,4 @@ class GoalsSection extends StatelessWidget {
     ));
   }
 
-  Widget _buildAchievementsSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text('Achievement', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            TextButton(
-              onPressed: () => Get.to(() => const AchievementsView()),
-              child: const Text('Lihat Semua', style: TextStyle(color: Color(0xFF0288D1))),
-            ),
-          ],
-        ),
-        SizedBox(
-          height: 120,
-          child: Obx(() => ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: controller.achievementsList.length,
-            itemBuilder: (context, index) {
-              final ach = controller.achievementsList[index];
-              return _achievementBadge(ach);
-            },
-          )),
-        ),
-      ],
-    );
-  }
-
-  Widget _achievementBadge(AchievementItem ach) {
-    return Container(
-      width: 100,
-      margin: const EdgeInsets.only(right: 12),
-      child: Column(
-        children: [
-          Container(
-            height: 60,
-            width: 60,
-            decoration: BoxDecoration(
-              color: ach.isUnlocked ? ach.color.withOpacity(0.1) : Colors.grey[200],
-              shape: BoxShape.circle,
-              border: Border.all(color: ach.isUnlocked ? ach.color : Colors.grey[400]!, width: 2),
-            ),
-            child: Icon(ach.icon, color: ach.isUnlocked ? ach.color : Colors.grey[400], size: 30),
-          ),
-          const SizedBox(height: 8),
-          Text(ach.title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: ach.isUnlocked ? Colors.black87 : Colors.grey), textAlign: TextAlign.center),
-          Text(ach.subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 10), textAlign: TextAlign.center, maxLines: 2),
-        ],
-      ),
-    );
-  }
 }
