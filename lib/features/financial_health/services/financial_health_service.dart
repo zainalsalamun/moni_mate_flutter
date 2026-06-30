@@ -3,8 +3,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/data/models/transaction_model.dart';
 import 'package:monimate/features/budget/controller/budget_controller.dart';
 import 'package:monimate/features/financial_goals/controllers/goals_controller.dart';
-import 'package:monimate/features/wallet/controllers/wallet_controller.dart';
-import 'package:monimate/features/wallet/data/models/wallet_model.dart';
+import '../../emergency_fund/controllers/emergency_fund_controller.dart';
 import '../models/financial_health_model.dart';
 
 class FinancialHealthService {
@@ -156,57 +155,13 @@ class FinancialHealthService {
   // =========================================================================
   // 5. EMERGENCY FUND READINESS (max 10 points)
   // =========================================================================
-  static double _calculateEmergencyScore(
-      List<TransactionModel> transactions) {
-    if (!Get.isRegistered<WalletController>()) return 0;
-    final walletCtrl = Get.find<WalletController>();
+  static double _calculateEmergencyScore(List<TransactionModel> transactions) {
+    if (!Get.isRegistered<EmergencyFundController>()) return 0;
+    final controller = Get.find<EmergencyFundController>();
 
-    // Cash + Bank wallet balances
-    double liquidFunds = 0;
-    for (var wallet in walletCtrl.wallets) {
-      if (wallet.type == 'cash' || wallet.type == 'bank') {
-        liquidFunds += wallet.balance;
-      }
-    }
-
-    // Check for emergency goal
-    if (Get.isRegistered<GoalsController>()) {
-      final goalsCtrl = Get.find<GoalsController>();
-      final emergencyGoal = goalsCtrl.goals.firstWhereOrNull(
-        (g) =>
-            g.name.toLowerCase().contains('darurat') ||
-            g.name.toLowerCase().contains('emergency'),
-      );
-      if (emergencyGoal != null) {
-        liquidFunds += emergencyGoal.currentAmount;
-      }
-    }
-
-    // Calculate average monthly expenses (last 3 months)
-    final now = DateTime.now();
-    double totalExpense3Months = 0;
-    for (int i = 0; i < 3; i++) {
-      final m = now.month - i;
-      final y = m <= 0 ? now.year - 1 : now.year;
-      final month = m <= 0 ? m + 12 : m;
-
-      totalExpense3Months += transactions
-          .where((t) =>
-              t.type == 'expense' &&
-              t.date.year == y &&
-              t.date.month == month)
-          .fold(0.0, (sum, t) => sum + t.amount);
-    }
-
-    final avgMonthlyExpense = totalExpense3Months / 3;
-    if (avgMonthlyExpense <= 0) return 10; // No expenses → fully covered
-
-    final monthsCovered = liquidFunds / avgMonthlyExpense;
-
-    if (monthsCovered >= 3) return 10;
-    if (monthsCovered >= 2) return 7;
-    if (monthsCovered >= 1) return 5;
-    return 0;
+    // Readiness score ranges from 0 to 100.
+    // Financial health weight for Emergency Fund Readiness is 10 points.
+    return (controller.metrics.value.readinessScore / 100) * 10;
   }
 
   // =========================================================================
@@ -228,7 +183,8 @@ class FinancialHealthService {
     if (budgetScore >= 27) {
       insights.add('Kamu berhasil menjaga budget bulan ini! 💪');
     } else if (budgetScore < 15) {
-      insights.add('Banyak budget yang terlampaui. Coba kurangi pengeluaran di kategori yang melebihi batas.');
+      insights.add(
+          'Banyak budget yang terlampaui. Coba kurangi pengeluaran di kategori yang melebihi batas.');
     }
 
     // Saving ratio insights
@@ -293,17 +249,23 @@ class FinancialHealthService {
     }
 
     // Emergency fund insights
-    if (emergencyScore >= 10) {
-      insights.add('Dana darurat kamu sudah aman untuk 3 bulan ke depan. 🛡️');
-    } else if (emergencyScore == 0) {
-      insights.add(
-          'Dana darurat belum mencukupi. Sisihkan minimal 10% penghasilan untuk dana darurat.');
+    if (Get.isRegistered<EmergencyFundController>()) {
+      final metrics = Get.find<EmergencyFundController>().metrics.value;
+      if (metrics.readinessScore == 100) {
+        insights.add(
+            'Dana darurat kamu sudah memenuhi standar yang direkomendasikan. 🛡️');
+      } else if (metrics.readinessScore < 25) {
+        insights.add(
+            'Dana darurat belum mencukupi. Target ideal kamu adalah ${metrics.multiplier} bulan.');
+      } else if (metrics.readinessScore >= 25 && metrics.readinessScore < 100) {
+        insights.add(
+            'Dana darurat kamu saat ini cukup untuk ${metrics.monthsCovered.toStringAsFixed(1)} bulan pengeluaran.');
+      }
     }
 
     // Overall
     if (totalScore >= 90) {
-      insights.add(
-          'Kondisi keuangan kamu luar biasa! Pertahankan! ✨');
+      insights.add('Kondisi keuangan kamu luar biasa! Pertahankan! ✨');
     }
 
     // Return max 3 insights, prioritize by importance
