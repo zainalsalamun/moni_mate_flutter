@@ -102,6 +102,26 @@ class _StatsPageState extends State<StatsPage> {
       final totalExpense = expenseList.fold(0.0, (sum, t) => sum + t.amount);
       final totalIncome = incomeList.fold(0.0, (sum, t) => sum + t.amount);
 
+      final lastMonth = DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+      final pastMonthTransactions = c.transactions.where((t) {
+        return t.date.year == lastMonth.year && t.date.month == lastMonth.month;
+      }).toList();
+      final pastTotalExpense = pastMonthTransactions.where((t) => t.type == 'expense').fold(0.0, (sum, t) => sum + t.amount);
+      final pastTotalIncome = pastMonthTransactions.where((t) => t.type == 'income').fold(0.0, (sum, t) => sum + t.amount);
+
+      String calculateGrowth(double past, double current) {
+        if (past == 0 && current == 0) return "0%";
+        if (past == 0) return "↑ 100%";
+        final diff = current - past;
+        final pct = (diff / past * 100).abs().toStringAsFixed(0);
+        if (diff >= 0) return "↑ $pct%";
+        return "↓ $pct%";
+      }
+
+      final lastMonthName = DateFormatter.formatMonth(lastMonth);
+      final incomeGrowthText = "${calculateGrowth(pastTotalIncome, totalIncome)} dari $lastMonthName ${lastMonth.year}";
+      final expenseGrowthText = "${calculateGrowth(pastTotalExpense, totalExpense)} dari $lastMonthName ${lastMonth.year}";
+
       final Map<String, double> categoryTotals = {};
       for (var t in expenseList) {
         categoryTotals[t.category] =
@@ -134,6 +154,8 @@ class _StatsPageState extends State<StatsPage> {
               totalIncome: totalIncome,
               totalExpense: totalExpense,
               weeklyTotals: weeklyTotals,
+              incomeGrowthText: incomeGrowthText,
+              expenseGrowthText: expenseGrowthText,
             )
           else
             _buildCalendarView(context),
@@ -146,44 +168,65 @@ class _StatsPageState extends State<StatsPage> {
   Widget _buildMonthSelector(BuildContext context) {
     final monthName = DateFormatter.formatMonth(_selectedMonth);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(
-            icon: const Icon(Icons.chevron_left_rounded),
-            onPressed: () {
-              setState(() {
-                _selectedMonth =
-                    DateTime(_selectedMonth.year, _selectedMonth.month - 1);
-              });
-            },
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.chevron_left_rounded, size: 20),
+              color: Colors.black87,
+              onPressed: () {
+                setState(() {
+                  _selectedMonth =
+                      DateTime(_selectedMonth.year, _selectedMonth.month - 1);
+                });
+              },
+            ),
           ),
           Column(
             children: [
               Text(
                 monthName,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: Colors.black87),
               ),
+              const SizedBox(height: 2),
               Text(
                 _selectedMonth.year.toString(),
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade500, fontWeight: FontWeight.w600),
               ),
             ],
           ),
-          IconButton(
-            icon: const Icon(Icons.chevron_right_rounded),
-            onPressed: () {
-              setState(() {
-                _selectedMonth =
-                    DateTime(_selectedMonth.year, _selectedMonth.month + 1);
-              });
-            },
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade100,
+              shape: BoxShape.circle,
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.chevron_right_rounded, size: 20),
+              color: Colors.black87,
+              onPressed: () {
+                setState(() {
+                  _selectedMonth =
+                      DateTime(_selectedMonth.year, _selectedMonth.month + 1);
+                });
+              },
+            ),
           ),
         ],
       ),
@@ -211,8 +254,16 @@ class _StatsPageState extends State<StatsPage> {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade200,
-        borderRadius: BorderRadius.circular(24),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(color: Colors.grey.shade200, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          )
+        ]
       ),
       child: Row(
         children: [
@@ -223,30 +274,36 @@ class _StatsPageState extends State<StatsPage> {
                   setState(() => currentView = "summary");
                 }
               },
-              child: AnimatedScale(
-                scale: currentView == "summary" ? 1.05 : 1.0,
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutBack,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: currentView == "summary"
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Ringkasan",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: currentView == "summary"
-                          ? Colors.white
-                          : Colors.black87,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: currentView == "summary"
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.transparent,
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bar_chart_rounded, 
+                      size: 18, 
+                      color: currentView == "summary" ? Colors.white : Colors.grey.shade600
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Ringkasan",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: currentView == "summary"
+                            ? Colors.white
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -258,30 +315,36 @@ class _StatsPageState extends State<StatsPage> {
                   setState(() => currentView = "calendar");
                 }
               },
-              child: AnimatedScale(
-                scale: currentView == "calendar" ? 1.05 : 1.0,
-                duration: const Duration(milliseconds: 180),
-                curve: Curves.easeOutBack,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: currentView == "calendar"
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.transparent,
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    "Kalender",
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: currentView == "calendar"
-                          ? Colors.white
-                          : Colors.black87,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                curve: Curves.easeInOut,
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: currentView == "calendar"
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.transparent,
+                ),
+                alignment: Alignment.center,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.calendar_today_rounded, 
+                      size: 16, 
+                      color: currentView == "calendar" ? Colors.white : Colors.grey.shade600
                     ),
-                  ),
+                    const SizedBox(width: 8),
+                    Text(
+                      "Kalender",
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: currentView == "calendar"
+                            ? Colors.white
+                            : Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -297,6 +360,8 @@ class _StatsPageState extends State<StatsPage> {
     required double totalIncome,
     required double totalExpense,
     required List<double> weeklyTotals,
+    required String incomeGrowthText,
+    required String expenseGrowthText,
   }) {
     return Column(
       children: [
@@ -309,7 +374,8 @@ class _StatsPageState extends State<StatsPage> {
                 title: "Pemasukan",
                 amount: totalIncome,
                 color: Colors.green,
-                icon: Icons.south_west_rounded,
+                icon: Icons.south_rounded,
+                growthText: incomeGrowthText,
               ),
             ),
             const SizedBox(width: 12),
@@ -320,6 +386,7 @@ class _StatsPageState extends State<StatsPage> {
                 amount: totalExpense,
                 color: Colors.redAccent,
                 icon: Icons.north_east_rounded,
+                growthText: expenseGrowthText,
               ),
             ),
           ],
@@ -327,6 +394,7 @@ class _StatsPageState extends State<StatsPage> {
         const SizedBox(height: 16),
         Card(
           elevation: 3,
+          color: Colors.white,
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           child: Padding(
@@ -334,86 +402,209 @@ class _StatsPageState extends State<StatsPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Distribusi Pengeluaran",
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w800),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Distribusi Pengeluaran",
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w800),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade200),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Row(
+                        children: [
+                          Text("Persentase", style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Colors.grey.shade800)),
+                          const SizedBox(width: 4),
+                          Icon(Icons.keyboard_arrow_down_rounded, size: 16, color: Colors.grey.shade700),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 24),
                 if (categoryTotals.isEmpty)
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.all(32.0),
-                      child: Text("Tidak ada pengeluaran"),
+                      child: Text("Tidak ada pengeluaran", style: TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   )
                 else ...[
-                  SizedBox(
-                    height: 200,
-                    child: PieChart(
-                      PieChartData(
-                        centerSpaceRadius: 50,
-                        sectionsSpace: 4,
-                        startDegreeOffset: -90,
-                        pieTouchData: PieTouchData(enabled: true),
-                        sections: categoryTotals.entries.map((e) {
-                          final percent = totalExpense == 0
-                              ? 0
-                              : (e.value / totalExpense) * 100;
-                          return PieChartSectionData(
-                            color:
-                                CategoryIcon.getColor(c.getCategoryName(e.key)),
-                            value: e.value,
-                            radius: 60,
-                            showTitle: true,
-                            title: "${percent.toStringAsFixed(0)}%",
-                            titleStyle: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Column(
-                    children: categoryTotals.entries.map((e) {
-                      final color =
-                          CategoryIcon.getColor(c.getCategoryName(e.key));
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                  color: color, shape: BoxShape.circle),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                c.getCategoryName(e.key),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final chartAreaWidth = constraints.maxWidth * (5 / 11);
+                      final maxTotalRadius = chartAreaWidth / 2.6;
+                      final centerRadius = (maxTotalRadius * 0.45).clamp(15.0, 40.0);
+                      final sectionRadius = (maxTotalRadius * 0.55).clamp(20.0, 45.0);
+
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 5,
+                            child: SizedBox(
+                              height: 180,
+                              child: PieChart(
+                                PieChartData(
+                                  centerSpaceRadius: centerRadius,
+                                  sectionsSpace: 2,
+                                  startDegreeOffset: -90,
+                                  pieTouchData: PieTouchData(enabled: true),
+                                  sections: categoryTotals.entries.map((e) {
+                                    final percent = totalExpense == 0
+                                        ? 0
+                                        : (e.value / totalExpense) * 100;
+                                    final sectionColor = CategoryIcon.getColor(c.getCategoryName(e.key));
+                                    return PieChartSectionData(
+                                      color: sectionColor,
+                                      value: e.value,
+                                      radius: sectionRadius,
+                                      showTitle: false,
+                                      badgeWidget: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: sectionColor,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        child: Text(
+                                          "${percent.toStringAsFixed(0)}%",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                          ),
+                                        ),
+                                      ),
+                                      badgePositionPercentageOffset: 1.15,
+                                    );
+                                  }).toList(),
+                                ),
                               ),
                             ),
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                CurrencyFormat.format(e.value),
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 16),
+                      Expanded(
+                        flex: 6,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: categoryTotals.entries.map((e) {
+                            final percent = totalExpense == 0 ? 0 : (e.value / totalExpense) * 100;
+                            final color = CategoryIcon.getColor(c.getCategoryName(e.key));
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Column(
+                                children: [
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        width: 12,
+                                        height: 12,
+                                        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              c.getCategoryName(e.key),
+                                              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 13),
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              CurrencyFormat.format(e.value),
+                                              style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey.shade500, fontSize: 11),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: color.withOpacity(0.1),
+                                          borderRadius: BorderRadius.circular(8),
+                                        ),
+                                        child: Text(
+                                          "${percent.toStringAsFixed(0)}%",
+                                          style: TextStyle(
+                                            color: color,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Divider(height: 1, color: Colors.grey.shade200),
+                                ],
                               ),
-                            ),
-                          ],
+                            );
+                          }).toList(),
                         ),
-                      );
-                    }).toList(),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              const SizedBox(height: 24),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50.withOpacity(0.5),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.pie_chart_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Total Pengeluaran", style: TextStyle(fontSize: 10, color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                child: Text(CurrencyFormat.format(totalExpense), style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, fontSize: 14)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(width: 1, height: 30, color: Colors.grey.shade300, margin: const EdgeInsets.symmetric(horizontal: 8)),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Rata-rata harian", style: TextStyle(fontSize: 10, color: Colors.grey.shade600, fontWeight: FontWeight.w600)),
+                              const SizedBox(height: 4),
+                              FittedBox(
+                                alignment: Alignment.centerLeft,
+                                fit: BoxFit.scaleDown,
+                                child: Text("${CurrencyFormat.format(totalExpense / DateUtils.getDaysInMonth(_selectedMonth.year, _selectedMonth.month))} / hari", style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.primary, fontSize: 14)),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.info_outline_rounded, size: 20, color: Theme.of(context).colorScheme.primary),
+                      ],
+                    ),
                   ),
                 ],
               ],
@@ -438,6 +629,7 @@ class _StatsPageState extends State<StatsPage> {
                   height: 180,
                   child: BarChart(
                     BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
                       borderData: FlBorderData(show: false),
                       gridData: const FlGridData(show: false),
                       titlesData: FlTitlesData(
@@ -483,36 +675,61 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Widget _buildSimpleStatCard(BuildContext context,
-      {required String title,
-      required double amount,
-      required Color color,
-      required IconData icon}) {
+  Widget _buildSimpleStatCard(
+    BuildContext context, {
+    required String title,
+    required double amount,
+    required Color color,
+    required IconData icon,
+    required String growthText,
+  }) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.2)),
+        color: color.withOpacity(0.05),
+        border: Border.all(color: color.withOpacity(0.1)),
+        borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, size: 16, color: color),
+              Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, color: Colors.white, size: 14),
+              ),
               const SizedBox(width: 8),
-              Text(title,
-                  style: TextStyle(
-                      color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+              Text(
+                title,
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  color: color,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          FittedBox(
-            child: Text(
-              CurrencyFormat.format(amount),
-              style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 16, color: color),
+          Text(
+            CurrencyFormat.format(amount),
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            growthText,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
           ),
         ],
