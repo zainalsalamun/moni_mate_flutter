@@ -33,8 +33,10 @@ Aplikasi ini memudahkan pengguna untuk:
 - 🤖 **Gemini & DeepSeek AI Chat Assistant** — Asisten keuangan *smart chat* multi-model (mendukung Google Gemini & DeepSeek v4) yang siap membantu menjawab pertanyaan finansialmu atau menganalisa riwayat pengeluaran secara personal.
 - 🕒 **Recurring Transactions** — Otomatisasi pencatatan tagihan rutin atau pendapatan berkala (gaji, bonus) untuk kemudahan jangka panjang.
 - 📑 **Monthly Financial Report** — *Generate* laporan keuangan bulanan lengkap berbentuk PDF atau Gambar beresolusi tinggi. Mendukung logo kustom dan layout laporan siap-cetak.
-- 🔔 **Smart Alerts** — Notifikasi lokal otomatis yang mengingatkanmu saat pengeluaran mencapai 80% dan 100% dari limit.
+- 🔔 **Financial Inbox & Smart Alerts** — Pusat notifikasi finansial dalam aplikasi (*in-app inbox*) dan notifikasi otomatis yang mengingatkanmu tentang limit *budget*, progres dana darurat, aktivitas gamifikasi, serta rekomendasi AI terbaru.
 - 🏆 **Gamification 2.0 (Level & Streak)** — Ubah perjalanan finansialmu menjadi sebuah petualangan seru! Dapatkan **XP**, naikkan **Level**, dan kumpulkan **Badge** dari berbagai aktivitas (seperti mencatat transaksi, mencapai target dana darurat, hingga rutin membaca insight AI). Pantau juga **Daily Streak** kamu untuk terus termotivasi.
+- ⚡ **Customizable Quick Actions** — Sesuaikan tombol aksi cepat (*shortcut*) di halaman Dashboard sesuai dengan fitur yang paling sering kamu gunakan (contoh: Pindai Struk, Cek Dompet, Target Keuangan).
+- 🎨 **Custom Categories** — Buat kategori pemasukan dan pengeluaran kustommu sendiri yang didukung oleh berbagai pilihan *emoji* agar pencatatan lebih personal.
 - 🌊 **Modern Fintech UI** — Antarmuka premium dengan kombinasi warna *Ocean Toska* (`#0288D1` & `#4FC3F7`), pemformatan Rupiah otomatis (`Rp. 1.000.000`), animasi Lottie yang halus, dan layout responsif untuk pengalaman pengguna yang maksimal.
 - 📊 **Smart Statistics** — Visualisasi pengeluaran bulanan menggunakan *Pie Chart* dan tren mingguan dengan *Bar Chart*.
 - 🌓 **Dynamic Theme** — Dukungan penuh untuk Mode Terang (Light) dan Mode Gelap (Dark) dengan transisi yang mulus.
