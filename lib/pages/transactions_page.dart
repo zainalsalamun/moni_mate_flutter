@@ -153,11 +153,9 @@ class TransactionsPage extends StatelessWidget {
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: CategoryIcon(
           category: c.getCategoryName(t.category),
-          containerSize: 48,
-          border: Border.all(
-            color: CategoryIcon.getColor(c.getCategoryName(t.category)),
-            width: 1.5,
-          ),
+          size: 24,
+          containerSize: 40,
+          borderRadius: 12,
         ),
         title: Text(
           t.description.isEmpty ? c.getCategoryName(t.category) : t.description,
