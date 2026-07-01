@@ -1,7 +1,5 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:monimate/pages/analyze_receipt_page.dart';
 
 class ScanReceiptPage extends StatefulWidget {
   final CameraDescription camera;
@@ -40,6 +38,16 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
+        title: const Text('Scan Struk', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Stack(
         children: [
           Center(child: CameraPreview(controller)),
@@ -51,7 +59,9 @@ class _ScanReceiptPageState extends State<ScanReceiptPage> {
               child: GestureDetector(
                 onTap: () async {
                   final file = await controller.takePicture();
-                  Get.to(() => AnalyzeReceiptPage(imagePath: file.path));
+                  if (context.mounted) {
+                    Navigator.pop(context, file);
+                  }
                 },
                 child: Container(
                   padding: const EdgeInsets.all(4),
