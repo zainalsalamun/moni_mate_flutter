@@ -328,7 +328,7 @@ class SettingsPage extends StatelessWidget {
 }
 
 class _NotificationSettingsWidget extends StatefulWidget {
-  const _NotificationSettingsWidget({super.key});
+  const _NotificationSettingsWidget();
 
   @override
   State<_NotificationSettingsWidget> createState() =>
