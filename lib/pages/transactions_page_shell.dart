@@ -4,6 +4,7 @@ import 'package:monimate/data/controller/transaction_controller.dart';
 import 'package:monimate/pages/shell.dart';
 import 'package:monimate/utils/date_formater.dart';
 import 'package:monimate/utils/format_currency.dart';
+import 'package:monimate/utils/category_icon.dart';
 
 class TransactionsPageShell extends StatelessWidget {
   const TransactionsPageShell({super.key});
@@ -14,7 +15,8 @@ class TransactionsPageShell extends StatelessWidget {
     final shellC = Get.find<ShellController>();
 
     return Obx(() {
-      final transactions = c.transactions.reversed.toList();
+      final transactions = c.transactions.toList()
+        ..sort((a, b) => b.date.compareTo(a.date));
 
       if (transactions.isEmpty) {
         return Center(
@@ -75,49 +77,16 @@ class TransactionsPageShell extends StatelessWidget {
           final t = transactions[i];
           final isIncome = t.type == 'income';
 
-          IconData icon;
-          switch (t.category) {
-            case 'gaji':
-              icon = Icons.work_outline;
-              break;
-            case 'makan':
-              icon = Icons.fastfood_outlined;
-              break;
-            case 'transport':
-              icon = Icons.directions_car_outlined;
-              break;
-            case 'hiburan':
-              icon = Icons.videogame_asset_outlined;
-              break;
-            case 'belanja':
-              icon = Icons.shopping_bag_outlined;
-              break;
-            case 'kesehatan':
-              icon = Icons.local_hospital_outlined;
-              break;
-            case 'pendidikan':
-              icon = Icons.school_outlined;
-              break;
-            case 'tagihan':
-              icon = Icons.receipt_long_outlined;
-              break;
-            default:
-              icon = Icons.extension_outlined;
-          }
-
           return Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             elevation: 2,
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundColor: isIncome
-                    ? Colors.greenAccent.withOpacity(0.2)
-                    : Colors.redAccent.withOpacity(0.2),
-                child: Icon(
-                  icon,
-                  color: isIncome ? Colors.green : Colors.redAccent,
-                ),
+              leading: CategoryIcon(
+                category: c.getCategoryName(t.category),
+                size: 24,
+                containerSize: 40,
+                borderRadius: 12,
               ),
               title: Text(
                 t.description.isEmpty
