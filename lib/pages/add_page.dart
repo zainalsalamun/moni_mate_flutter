@@ -6,6 +6,7 @@ import 'package:monimate/utils/clean_currency.dart';
 import 'package:monimate/utils/format_currency.dart';
 import 'package:monimate/data/services/receipt_scanner_service.dart';
 import 'package:monimate/features/budget/controller/budget_controller.dart';
+import 'package:monimate/pages/shell.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -24,6 +25,38 @@ class _AddPageState extends State<AddPage> {
   final TextEditingController descC = TextEditingController();
 
   bool isScanning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (Get.isRegistered<ShellController>()) {
+      final shell = Get.find<ShellController>();
+      
+      void applyResult(Map<String, dynamic>? result) {
+        if (result != null && mounted) {
+          setState(() {
+            if (result['amount'] != null) {
+              nominalC.text = CurrencyFormat.format(result['amount']).replaceAll(RegExp(r'Rp\.?\s*'), '');
+            }
+            if (result['merchant'] != null && result['merchant'].isNotEmpty) {
+              descC.text = result['merchant'];
+            }
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Scan Berhasil: Data struk telah disalin ke form."),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          shell.pendingScanResult.value = null;
+        }
+      }
+
+      applyResult(shell.pendingScanResult.value);
+      ever(shell.pendingScanResult, applyResult);
+    }
+  }
 
   Future<void> _startScan() async {
     setState(() {
@@ -124,26 +157,26 @@ class _AddPageState extends State<AddPage> {
         actions: [
           IconButton(
             tooltip: "Scan Struk (AI)",
-            icon: Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                color: isScanning
-                    ? Theme.of(context).colorScheme.onSurface.withOpacity(0.05)
-                    : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            style: IconButton.styleFrom(
+              backgroundColor: isScanning
+                  ? Theme.of(context).colorScheme.onSurface.withOpacity(0.05)
+                  : Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: isScanning
-                  ? SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    )
-                  : Icon(Icons.document_scanner_rounded,
-                      color: Theme.of(context).colorScheme.primary),
+              padding: const EdgeInsets.all(6),
             ),
+            icon: isScanning
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  )
+                : Icon(Icons.document_scanner_rounded,
+                    color: Theme.of(context).colorScheme.primary),
             onPressed: isScanning ? null : _startScan,
           ),
           const SizedBox(width: 8),
