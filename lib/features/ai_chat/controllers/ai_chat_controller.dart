@@ -166,23 +166,44 @@ class AiChatController extends GetxController {
 
       final String reply = response['reply'] ?? 'Maaf, aku tidak mengerti.';
 
-      String? actionTypeRaw = response['action_type']?.toString() ??
-          response['actionType']?.toString() ??
-          response['actiontype']?.toString();
+      final lowerCaseKeysMap = <String, dynamic>{};
+      response.forEach((key, value) {
+        lowerCaseKeysMap[key.toLowerCase()] = value;
+      });
+
+      String? actionTypeRaw = lowerCaseKeysMap['action_type']?.toString() ??
+          lowerCaseKeysMap['actiontype']?.toString();
 
       final String? actionType =
           actionTypeRaw?.replaceAll('_', '').replaceAll(' ', '').toLowerCase();
+          
       Map<String, dynamic>? action;
-      if (response['action'] is Map) {
-        action = Map<String, dynamic>.from(response['action']);
-      } else if (response['action'] is String) {
+      var rawAction = lowerCaseKeysMap['action'];
+      
+      if (rawAction is Map) {
+        action = Map<String, dynamic>.from(rawAction);
+      } else if (rawAction is String) {
         try {
-          action = jsonDecode(response['action']);
+          action = jsonDecode(rawAction);
         } catch (_) {}
       }
 
+      // Handle flattened JSON where LLM puts type, category, amount at the root
+      if (action == null && lowerCaseKeysMap.containsKey('amount')) {
+        action = {
+          'type': lowerCaseKeysMap['type'],
+          'category': lowerCaseKeysMap['category'],
+          'amount': lowerCaseKeysMap['amount'],
+          'description': lowerCaseKeysMap['description'],
+        };
+      }
+
+      // Determine if it's a transaction action
+      bool isAddTransaction = actionType == 'addtransaction' || 
+          (action != null && action.containsKey('amount'));
+
       // Execute action if present
-      if (actionType == 'addtransaction' && action != null) {
+      if (isAddTransaction && action != null) {
         final String type = action['type'] ?? 'expense';
         final String category = action['category'] ?? 'lainnya';
 
